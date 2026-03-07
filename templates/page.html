@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Digest — {{ today.strftime('%B %-d, %Y') }}</title>
+<style>
+  :root {
+    --local-color: #2e7d32;
+    --local-bg: #e8f5e9;
+    --sports-color: #1565c0;
+    --sports-bg: #e3f2fd;
+    --esports-color: #6a1b9a;
+    --esports-bg: #f3e5f5;
+    --high-color: #e65100;
+    --text: #1a1a1a;
+    --muted: #666;
+    --border: #e0e0e0;
+    --card-bg: #fff;
+    --page-bg: #f4f4f6;
+    --header-bg: #1a1a2e;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         background: var(--page-bg); margin: 0; padding: 0; color: var(--text); }
+
+  /* Header */
+  .site-header { background: var(--header-bg); color: #fff; padding: 20px 24px; }
+  .site-header h1 { margin: 0; font-size: 24px; font-weight: 800; }
+  .site-header .subtitle { margin: 4px 0 0; opacity: .65; font-size: 14px; }
+
+  /* Filter bar */
+  .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
+                padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; position: sticky;
+                top: 0; z-index: 10; }
+  .filter-btn { border: 2px solid var(--border); background: #fff; border-radius: 20px;
+                padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+                transition: all .15s; color: var(--muted); }
+  .filter-btn.active { color: #fff; border-color: transparent; }
+  .filter-btn[data-cat="all"].active  { background: var(--text); }
+  .filter-btn[data-cat="local"].active   { background: var(--local-color); }
+  .filter-btn[data-cat="sports"].active  { background: var(--sports-color); }
+  .filter-btn[data-cat="esports"].active { background: var(--esports-color); }
+
+  /* Layout */
+  .content { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+
+  /* Section */
+  .digest-section { margin-bottom: 32px; }
+  .digest-section h2 { font-size: 12px; font-weight: 700; letter-spacing: 1.4px;
+                        text-transform: uppercase; color: var(--muted); margin: 0 0 16px;
+                        padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+
+  /* Date group */
+  .date-group { margin-bottom: 20px; }
+  .date-label { font-size: 14px; font-weight: 700; color: #333; margin: 0 0 10px; }
+
+  /* Event card */
+  .event-card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border);
+                padding: 12px 16px; margin-bottom: 8px; position: relative;
+                transition: box-shadow .15s; }
+  .event-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+  .event-card.high-priority { border-left: 3px solid var(--high-color); padding-left: 14px; }
+
+  /* Category badge */
+  .cat-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .8px;
+               text-transform: uppercase; padding: 2px 7px; border-radius: 4px; margin-bottom: 6px; }
+  .cat-badge.local   { background: var(--local-bg);   color: var(--local-color); }
+  .cat-badge.sports  { background: var(--sports-bg);  color: var(--sports-color); }
+  .cat-badge.esports { background: var(--esports-bg); color: var(--esports-color); }
+
+  .event-title { font-size: 16px; font-weight: 600; margin: 0 0 4px; line-height: 1.3; }
+  .event-title a { color: var(--text); text-decoration: none; }
+  .event-title a:hover { text-decoration: underline; }
+  .high-star { color: var(--high-color); margin-left: 4px; }
+  .event-meta { font-size: 13px; color: var(--muted); margin: 0; }
+  .event-meta .time { font-weight: 600; color: #444; }
+
+  /* Result badge */
+  .result-badge { font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+                  margin-left: 8px; display: inline-block; }
+  .result-w { background: #e6f4ea; color: #1b5e20; }
+  .result-l { background: #fce8e8; color: #b71c1c; }
+  .result-d { background: #fff8e1; color: #e65100; }
+
+  /* No events */
+  .no-events { color: var(--muted); font-size: 14px; font-style: italic;
+               padding: 12px 0; }
+
+  /* Footer */
+  .site-footer { text-align: center; padding: 24px; font-size: 12px; color: var(--muted);
+                 border-top: 1px solid var(--border); background: #fff; margin-top: 24px; }
+
+  @media (max-width: 480px) {
+    .content { padding: 16px 12px; }
+    .event-title { font-size: 15px; }
+    .filter-btn { padding: 5px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>Daily Digest</h1>
+  <p class="subtitle">{{ today.strftime('%A, %B %-d, %Y') }}</p>
+</header>
+
+<nav class="filter-bar">
+  <button class="filter-btn active" data-cat="all">All</button>
+  <button class="filter-btn" data-cat="local">Local</button>
+  <button class="filter-btn" data-cat="sports">Sports</button>
+  <button class="filter-btn" data-cat="esports">Esports</button>
+</nav>
+
+<main class="content">
+
+  {# ── TODAY ── #}
+  <section class="digest-section">
+    <h2>Today &mdash; {{ today.strftime('%A, %B %-d') }}</h2>
+
+    {% if today_by_cat %}
+      {% for cat in category_order %}
+        {% if today_by_cat.get(cat) %}
+          {% set cat_slug = cat.value %}
+          {% for event in today_by_cat[cat] %}
+            {% set ev = event_display(event, tz) %}
+            <div class="event-card{% if ev.is_high %} high-priority{% endif %}"
+                 data-cat="{{ cat_slug }}">
+              <span class="cat-badge {{ cat_slug }}">{{ ev.category_label }}</span>
+              <p class="event-title">
+                {% if ev.url %}<a href="{{ ev.url }}" target="_blank" rel="noopener">{{ ev.title }}</a>
+                {% else %}{{ ev.title }}{% endif %}
+                {% if ev.is_high %}<span class="high-star" title="High priority">&#9733;</span>{% endif %}
+              </p>
+              <p class="event-meta">
+                <span class="time">{{ ev.time }}</span>
+                {% if ev.location %}&nbsp;&middot;&nbsp;{{ ev.location }}{% endif %}
+                {% if ev.subtitle %}&nbsp;&middot;&nbsp;<em>{{ ev.subtitle }}</em>{% endif %}
+              </p>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p class="no-events">Nothing on the calendar today.</p>
+    {% endif %}
+  </section>
+
+  {# ── YESTERDAY'S RESULTS ── #}
+  {% if results_display %}
+  <section class="digest-section">
+    <h2>Yesterday's Results</h2>
+    {% for ev in results_display %}
+      {% set result_class = 'result-w' if ev.result and ev.result.startswith('W') else ('result-d' if ev.result and ev.result.startswith('D') else 'result-l') %}
+      <div class="event-card" data-cat="sports">
+        <span class="cat-badge sports">SPORTS</span>
+        <p class="event-title">
+          {{ ev.title }}
+          {% if ev.result %}
+            <span class="result-badge {{ result_class }}">{{ ev.result }}</span>
+          {% endif %}
+        </p>
+        {% if ev.subtitle %}
+          <p class="event-meta"><em>{{ ev.subtitle }}</em></p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {# ── COMING UP ── #}
+  <section class="digest-section">
+    <h2>Coming Up &mdash; Next {{ config.lookahead_days }} Days</h2>
+    {% if upcoming_by_date %}
+      {% for day_date, day_cats in upcoming_by_date %}
+        <div class="date-group">
+          <p class="date-label">{{ day_date.strftime('%A, %B %-d') }}</p>
+          {% for cat in category_order %}
+            {% if day_cats.get(cat) %}
+              {% set cat_slug = cat.value %}
+              {% for event in day_cats[cat] %}
+                {% set ev = event_display(event, tz) %}
+                <div class="event-card{% if ev.is_high %} high-priority{% endif %}"
+                     data-cat="{{ cat_slug }}">
+                  <span class="cat-badge {{ cat_slug }}">{{ ev.category_label }}</span>
+                  <p class="event-title">
+                    {% if ev.url %}<a href="{{ ev.url }}" target="_blank" rel="noopener">{{ ev.title }}</a>
+                    {% else %}{{ ev.title }}{% endif %}
+                    {% if ev.is_high %}<span class="high-star" title="High priority">&#9733;</span>{% endif %}
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">{{ ev.time }}</span>
+                    {% if ev.location %}&nbsp;&middot;&nbsp;{{ ev.location }}{% endif %}
+                    {% if ev.subtitle %}&nbsp;&middot;&nbsp;<em>{{ ev.subtitle }}</em>{% endif %}
+                  </p>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="no-events">Nothing coming up in the next {{ config.lookahead_days }} days.</p>
+    {% endif %}
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  &#9733; = high priority &nbsp;&middot;&nbsp; Updated {{ generated_at }}
+</footer>
+
+<script>
+  (function () {
+    const btns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.event-card');
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const cat = btn.dataset.cat;
+        cards.forEach(card => {
+          if (cat === 'all' || card.dataset.cat === cat) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // Hide date-group labels if all cards in them are hidden
+        document.querySelectorAll('.date-group').forEach(group => {
+          const visible = [...group.querySelectorAll('.event-card')]
+            .some(c => c.style.display !== 'none');
+          group.style.display = visible ? '' : 'none';
+        });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

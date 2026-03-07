@@ -1,0 +1,42 @@
+name: Daily Digest
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # 12:00 UTC = 7:00/8:00 AM Eastern
+  workflow_dispatch:       # Manual trigger for testing
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # Needed for gh-pages push
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run digest pipeline
+        run: python main.py --no-deploy
+        env:
+          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          STARTGG_API_KEY: ${{ secrets.STARTGG_API_KEY }}
+          PANDASCORE_API_KEY: ${{ secrets.PANDASCORE_API_KEY }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          publish_branch: gh-pages
+          commit_message: "Daily Digest update — ${{ github.run_id }}"

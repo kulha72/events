@@ -1,0 +1,109 @@
+timezone: "America/Detroit"
+
+email:
+  to: "your-email@gmail.com"
+  from: "your-email@gmail.com"
+  send_time: "07:00"
+
+github_pages:
+  repo: "kulha72/events"
+  branch: "gh-pages"
+
+local:
+  sources:
+    - name: "tecumseh"
+      enabled: true
+    - name: "annarbor"
+      enabled: true
+    - name: "adrian"
+      enabled: true
+
+sports:
+  teams:
+    - name: "Packers"
+      league: "nfl"
+      espn_team_id: 9
+      source: "espn"
+    - name: "Tigers"
+      league: "mlb"
+      espn_team_id: 6
+      source: "espn"
+    - name: "Pistons"
+      league: "nba"
+      espn_team_id: 10
+      source: "espn"
+    - name: "Rangers"
+      league: "nhl"
+      espn_team_id: 13
+      source: "espn"
+    - name: "Michigan Football"
+      league: "ncaaf"
+      espn_team_id: 130
+      source: "espn"
+    - name: "Michigan Basketball"
+      league: "ncaamb"
+      espn_team_id: 130
+      source: "espn"
+    - name: "Arsenal"
+      league: "epl"
+      extra_leagues: ["uefa.champions", "uefa.europa", "uefa.europa.conference"]
+      espn_team_id: 359
+      source: "espn"
+    - name: "Millonarios"
+      league: "liga_betplay"
+      extra_leagues: ["conmebol.sudamericana"]
+      espn_team_id: 5484
+      source: "espn"
+
+esports:
+  games:
+    - name: "Smash Bros"
+      source: "startgg"
+      games: ["melee", "ultimate"]
+      min_tier: "major"
+    # Available but not in feed (add enabled: true to include):
+    # - name: "League of Legends"
+    #   source: "pandascore"
+    #   min_tier: "major"
+    # - name: "VALORANT"
+    #   source: "pandascore"
+    #   min_tier: "major"
+    # - name: "CS2"
+    #   source: "pandascore"
+    #   min_tier: "major"
+    # - name: "Dota 2"
+    #   source: "pandascore"
+    #   min_tier: "major"
+
+# API keys are read from environment variables — do not put real keys here.
+api_keys:
+  football_data: "${FOOTBALL_DATA_API_KEY}"
+  api_football: "${API_FOOTBALL_KEY}"
+  pandascore: "${PANDASCORE_API_KEY}"
+  startgg: "${STARTGG_API_KEY}"
+
+lookahead_days: 7
+
+priority_rules:
+  high_keywords:
+    - "playoff"
+    - "postseason"
+    - "world series"
+    - "super bowl"
+    - "march madness"
+    - "ncaa tournament"
+    - "worlds"
+    - "the international"
+    - "champions"
+    - "major"
+    - "grand finals"
+    - "supermajor"
+  rivalry_matchups:
+    - ["Michigan", "Ohio State"]
+    - ["Michigan", "Michigan State"]
+    - ["Packers", "Bears"]
+    - ["Packers", "Vikings"]
+    - ["Arsenal", "Tottenham"]
+    - ["Arsenal", "Chelsea"]
+    - ["Millonarios", "America"]
+    - ["Millonarios", "Nacional"]
