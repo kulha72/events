@@ -13,7 +13,6 @@ import uuid
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-import requests
 from bs4 import BeautifulSoup
 from dateutil import parser as dateparser
 
@@ -26,19 +25,9 @@ LOCAL_TZ = ZoneInfo("America/Detroit")
 TECUMSEH_LAT = 42.0042
 TECUMSEH_LON = -84.0058
 
-MAX_MILES = 15
+MAX_MILES = 30
 
 SEARCH_URL = "https://www.estatesales.net/MI/Tecumseh/49286"
-
-_session = requests.Session()
-_session.headers.update({
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Accept-Encoding": "gzip, deflate, br",
-    "Connection": "keep-alive",
-    "Upgrade-Insecure-Requests": "1",
-})
 
 # Zip code → (lat, lon) centroids for SE Michigan / NW Ohio.
 # Used to filter results to MAX_MILES from Tecumseh.
@@ -111,15 +100,29 @@ def _distance_from_tecumseh(zip_code: str) -> float | None:
     return _haversine_miles(TECUMSEH_LAT, TECUMSEH_LON, coords[0], coords[1])
 
 
-def _fetch_sales() -> list[dict]:
+def _fetch_html() -> str:
+    """Fetch page HTML using Playwright (real browser) to bypass bot detection."""
     try:
-        resp = _session.get(SEARCH_URL, timeout=15)
-        resp.raise_for_status()
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(SEARCH_URL, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_timeout(3000)
+            html = page.content()
+            browser.close()
+            return html
     except Exception as e:
-        print(f"  [estatesales] Fetch failed: {e}")
+        print(f"  [estatesales] Playwright fetch failed: {e}")
+        return ""
+
+
+def _fetch_sales() -> list[dict]:
+    html = _fetch_html()
+    if not html:
         return []
 
-    soup = BeautifulSoup(resp.text, "html.parser")
+    soup = BeautifulSoup(html, "html.parser")
     sales = []
 
     ld_scripts = soup.find_all("script", type="application/ld+json")
