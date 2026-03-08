@@ -17,6 +17,10 @@ local:
       enabled: true
     - name: "adrian"
       enabled: true
+    - name: "tca"
+      enabled: true
+    - name: "estatesales"
+      enabled: true
 
 sports:
   teams:

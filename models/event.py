@@ -6,6 +6,7 @@ from typing import Optional
 
 class EventCategory(Enum):
     LOCAL = "local"
+    ESTATE_SALES = "estate_sales"
     SPORTS = "sports"
     ESPORTS = "esports"
 

@@ -31,6 +31,8 @@ load_dotenv(os.path.join(_HERE, ".env"))
 from collectors.local.tecumseh import TecumsehCollector
 from collectors.local.annarbor import AnnArborCollector
 from collectors.local.adrian import AdrianCollector
+from collectors.local.tca import TCACollector
+from collectors.local.estatesales import EstateSalesCollector
 from collectors.sports.espn import ESPNCollector
 from collectors.sports.football_data import FootballDataCollector
 from collectors.sports.api_football import APIFootballCollector
@@ -53,12 +55,23 @@ def load_config(path: str = "config.yaml") -> dict:
 
 
 def compute_flags(events: list[Event], today: date, tz: ZoneInfo) -> None:
-    """Set is_today and is_past on each event based on local date."""
-    yesterday = date(today.year, today.month, today.day)
+    """Set is_today and is_past on each event based on local date.
+
+    Multi-day events (e.g. estate sales) that started before today but haven't
+    ended yet are treated as today rather than past.
+    """
     for event in events:
-        event_date = event.start.astimezone(tz).date()
-        event.is_today = (event_date == today)
-        event.is_past = (event_date < today)
+        start_date = event.start.astimezone(tz).date()
+        end_date = event.end.astimezone(tz).date() if event.end else start_date
+        if start_date == today or (start_date < today and end_date >= today):
+            event.is_today = True
+            event.is_past = False
+        elif end_date < today:
+            event.is_today = False
+            event.is_past = True
+        else:
+            event.is_today = False
+            event.is_past = False
 
 
 def main() -> None:
@@ -83,6 +96,8 @@ def main() -> None:
         TecumsehCollector(config),
         AnnArborCollector(config),
         AdrianCollector(config),
+        TCACollector(config),
+        EstateSalesCollector(config),
         ESPNCollector(config),
         FootballDataCollector(config),
         APIFootballCollector(config),
@@ -97,7 +112,7 @@ def main() -> None:
     all_events: list[Event] = []
     for collector in collectors:
         # Skip disabled local sources
-        if collector.source_name in ("tecumseh", "annarbor", "adrian"):
+        if collector.source_name in ("tecumseh", "annarbor", "adrian", "tca", "estatesales"):
             if collector.source_name not in local_enabled:
                 continue
 

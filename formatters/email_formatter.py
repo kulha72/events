@@ -15,12 +15,13 @@ from models.event import Event, EventCategory, EventPriority
 _TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 
 CATEGORY_LABEL = {
-    EventCategory.LOCAL:   "LOCAL",
-    EventCategory.SPORTS:  "SPORTS",
-    EventCategory.ESPORTS: "ESPORTS",
+    EventCategory.LOCAL:        "LOCAL",
+    EventCategory.ESTATE_SALES: "ESTATE SALES",
+    EventCategory.SPORTS:       "SPORTS",
+    EventCategory.ESPORTS:      "ESPORTS",
 }
 
-CATEGORY_ORDER = [EventCategory.LOCAL, EventCategory.SPORTS, EventCategory.ESPORTS]
+CATEGORY_ORDER = [EventCategory.LOCAL, EventCategory.ESTATE_SALES, EventCategory.SPORTS, EventCategory.ESPORTS]
 
 
 def _fmt_time(dt: datetime, tz: ZoneInfo) -> str:
