@@ -32,6 +32,8 @@ jobs:
           STARTGG_API_KEY: ${{ secrets.STARTGG_API_KEY }}
           PANDASCORE_API_KEY: ${{ secrets.PANDASCORE_API_KEY }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

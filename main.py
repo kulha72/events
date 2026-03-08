@@ -39,8 +39,10 @@ from collectors.esports.pandascore import PandaScoreCollector
 from collectors.esports.startgg import StartGGCollector
 from formatters.email_formatter import format_email
 from formatters.static_formatter import format_static_page
+from formatters.telegram_formatter import format_telegram
 from delivery.gmail import send_email
 from delivery.ghpages import deploy_page
+from delivery.telegram import send_telegram
 from models.event import Event, EventPriority
 
 
@@ -63,6 +65,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Daily Digest pipeline")
     parser.add_argument("--dry-run", action="store_true", help="Skip all delivery steps")
     parser.add_argument("--no-email", action="store_true", help="Skip Gmail send")
+    parser.add_argument("--no-telegram", action="store_true", help="Skip Telegram send")
     parser.add_argument("--no-deploy", action="store_true", help="Skip GitHub Pages deploy")
     args = parser.parse_args()
 
@@ -136,6 +139,11 @@ def main() -> None:
     if not args.no_email:
         print("\nSending email...")
         send_email(email_html, config)
+
+    if not args.no_telegram:
+        print("\nSending Telegram message...")
+        tg_messages = format_telegram(today_events, yesterday_results, upcoming, config)
+        send_telegram(tg_messages)
 
     if not args.no_deploy:
         print("\nDeploying to GitHub Pages...")
