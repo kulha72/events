@@ -2,7 +2,7 @@ name: Daily Digest
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # 12:00 UTC = 7:00/8:00 AM Eastern
+    - cron: '0 8 * * *'   # 08:00 UTC = 3:00 AM EST / 4:00 AM EDT
   workflow_dispatch:       # Manual trigger for testing
 
 jobs:
