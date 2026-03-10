@@ -3,7 +3,7 @@ timezone: "America/Detroit"
 email:
   to: "your-email@gmail.com"
   from: "your-email@gmail.com"
-  send_time: "07:00"
+  send_time: "03:00"
 
 github_pages:
   repo: "kulha72/events"
