@@ -58,6 +58,10 @@ sports:
       extra_leagues: ["conmebol.sudamericana"]
       espn_team_id: 5484
       source: "espn"
+  tours:
+    - name: "PGA Tour"
+      league: "pga"
+      source: "espn"
 
 esports:
   games:
@@ -102,6 +106,11 @@ priority_rules:
     - "major"
     - "grand finals"
     - "supermajor"
+    - "masters"
+    - "the players"
+    - "u.s. open"
+    - "open championship"
+    - "pga championship"
   rivalry_matchups:
     - ["Michigan", "Ohio State"]
     - ["Michigan", "Michigan State"]

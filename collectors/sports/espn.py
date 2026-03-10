@@ -37,6 +37,7 @@ LEAGUE_MAP = {
     "uefa.champions":            ("soccer", "uefa.champions"),
     "uefa.europa":               ("soccer", "uefa.europa"),
     "uefa.europa.conference":    ("soccer", "uefa.europa.conference"),
+    "pga":                       ("golf",   "pga"),
 }
 
 SPORT_EMOJI = {
@@ -58,6 +59,7 @@ SPORT_EMOJI = {
     "uefa.champions":         "⚽",
     "uefa.europa":            "⚽",
     "uefa.europa.conference": "⚽",
+    "pga":                    "⛳",
 }
 
 _session = requests.Session()
@@ -165,7 +167,7 @@ def _apply_priority(event: Event, config: dict) -> None:
 
 
 class ESPNCollector(BaseCollector):
-    """Collects schedule + results for all ESPN-sourced teams from config."""
+    """Collects schedule + results for all ESPN-sourced teams and tours from config."""
 
     def __init__(self, config: dict):
         self.config = config
@@ -173,10 +175,68 @@ class ESPNCollector(BaseCollector):
             t for t in config.get("sports", {}).get("teams", [])
             if t.get("source") == "espn" and t.get("league") in LEAGUE_MAP
         ]
+        self.tours = [
+            t for t in config.get("sports", {}).get("tours", [])
+            if t.get("source") == "espn" and t.get("league") in LEAGUE_MAP
+        ]
 
     @property
     def source_name(self) -> str:
         return "espn"
+
+    def _collect_tours(self, today: date, lookahead_days: int) -> list[Event]:
+        """Collect upcoming tournament events for non-team ESPN leagues (e.g. PGA Tour)."""
+        cutoff = today + timedelta(days=lookahead_days)
+        yesterday = today - timedelta(days=1)
+        events: list[Event] = []
+
+        for tour_cfg in self.tours:
+            league = tour_cfg["league"]
+            tour_name = tour_cfg["name"]
+            emoji = SPORT_EMOJI.get(league, "")
+
+            url = _scoreboard_url(league)
+            try:
+                data = _fetch_json(url)
+            except Exception as e:
+                print(f"  [espn] Warning: {tour_name} scoreboard fetch failed: {e}")
+                continue
+
+            calendar = data.get("leagues", [{}])[0].get("calendar", [])
+            for entry in calendar:
+                start_str = entry.get("startDate", "")
+                end_str = entry.get("endDate", "")
+                label = entry.get("label", "")
+                event_id = entry.get("id", "")
+                try:
+                    start_utc = datetime.fromisoformat(start_str.replace("Z", "+00:00"))
+                    end_utc = datetime.fromisoformat(end_str.replace("Z", "+00:00"))
+                except Exception:
+                    continue
+
+                start_date = start_utc.astimezone(LOCAL_TZ).date()
+                end_date = end_utc.astimezone(LOCAL_TZ).date()
+
+                # Show if tournament overlaps the [yesterday, cutoff] window
+                if end_date < yesterday or start_date > cutoff:
+                    continue
+
+                title = f"{emoji} {label}" if emoji else label
+                subtitle = f"{tour_name} · {start_date.strftime('%b %-d')}–{end_date.strftime('%-d')}"
+
+                event = Event(
+                    id=f"espn:{league}:{event_id}",
+                    title=title,
+                    category=EventCategory.SPORTS,
+                    start=start_utc,
+                    source="espn",
+                    subtitle=subtitle,
+                    tags=[league, tour_name.lower().replace(" ", "_"), "sports", "golf"],
+                )
+                _apply_priority(event, self.config)
+                events.append(event)
+
+        return events
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
         cutoff = today + timedelta(days=lookahead_days)
@@ -281,4 +341,5 @@ class ESPNCollector(BaseCollector):
                     _apply_priority(event, self.config)
                     events.append(event)
 
+        events.extend(self._collect_tours(today, lookahead_days))
         return events
