@@ -89,6 +89,17 @@ def _fetch(url: str) -> BeautifulSoup:
     return BeautifulSoup(resp.text, "html.parser")
 
 
+def _fetch_with_playwright(url: str) -> BeautifulSoup:
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, timeout=20_000, wait_until="domcontentloaded")
+        html = page.content()
+        browser.close()
+    return BeautifulSoup(html, "html.parser")
+
+
 def _line_times(line: str):
     tm = _TIME_RANGE_RE.search(line)
     if tm:
@@ -171,7 +182,10 @@ def _parse_downtown_when(when_text: str) -> list[dict]:
 
 def _scrape_downtown() -> list[dict]:
     events = []
-    soup = _fetch(DOWNTOWN_URL)
+    try:
+        soup = _fetch_with_playwright(DOWNTOWN_URL)
+    except Exception:
+        soup = _fetch(DOWNTOWN_URL)
     for event_div in soup.find_all("div", class_="event"):
         title_tag = event_div.select_one(".event__title h3") or event_div.select_one(".event__title")
         title = title_tag.get_text(strip=True) if title_tag else ""
