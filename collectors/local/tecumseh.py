@@ -182,10 +182,7 @@ def _parse_downtown_when(when_text: str) -> list[dict]:
 
 def _scrape_downtown() -> list[dict]:
     events = []
-    try:
-        soup = _fetch_with_playwright(DOWNTOWN_URL)
-    except Exception:
-        soup = _fetch(DOWNTOWN_URL)
+    soup = _fetch_with_playwright(DOWNTOWN_URL)
     for event_div in soup.find_all("div", class_="event"):
         title_tag = event_div.select_one(".event__title h3") or event_div.select_one(".event__title")
         title = title_tag.get_text(strip=True) if title_tag else ""
