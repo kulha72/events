@@ -7,6 +7,7 @@ Handles both upcoming schedules and yesterday's completed results.
 
 import uuid
 from datetime import date, datetime, timedelta, timezone
+from urllib.parse import quote_plus
 from zoneinfo import ZoneInfo
 
 import requests
@@ -133,6 +134,10 @@ def _parse_competition(comp: dict, our_team_id: str, league: str, team_name: str
 
     links = comp.get("links", [])
     event_url = next((lk["href"] for lk in links if "gamecast" in lk.get("rel", [])), None)
+    if not event_url:
+        event_url = next((lk.get("href") for lk in links if lk.get("href")), None)
+    if not event_url:
+        event_url = f"https://www.google.com/search?q={quote_plus(f'{title} {league}')}"
 
     return {
         "start_utc": start_utc,
@@ -223,6 +228,7 @@ class ESPNCollector(BaseCollector):
 
                 title = f"{emoji} {label}" if emoji else label
                 subtitle = f"{tour_name} · {start_date.strftime('%b %-d')}–{end_date.strftime('%-d')}"
+                tour_url = f"https://www.google.com/search?q={quote_plus(f'{tour_name} {label}')}"
 
                 event = Event(
                     id=f"espn:{league}:{event_id}",
@@ -230,6 +236,7 @@ class ESPNCollector(BaseCollector):
                     category=EventCategory.SPORTS,
                     start=start_utc,
                     source="espn",
+                    url=tour_url,
                     subtitle=subtitle,
                     tags=[league, tour_name.lower().replace(" ", "_"), "sports", "golf"],
                 )
