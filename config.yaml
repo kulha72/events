@@ -34,7 +34,7 @@ sports:
       source: "espn"
     - name: "Pistons"
       league: "nba"
-      espn_team_id: 10
+      espn_team_id: 8
       source: "espn"
     - name: "Rangers"
       league: "nhl"
