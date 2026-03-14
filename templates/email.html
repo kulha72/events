@@ -88,7 +88,7 @@
       {% set result_class = 'result-w' if ev.result and ev.result.startswith('W') else ('result-d' if ev.result and ev.result.startswith('D') else 'result-l') %}
       <div class="event">
         <p class="event-title">
-          {{ ev.title }}
+          {% if ev.url %}<a href="{{ ev.url }}">{{ ev.title }}</a>{% else %}{{ ev.title }}{% endif %}
           {% if ev.result %}
             <span class="result-badge {{ result_class }}">{{ ev.result }}</span>
           {% endif %}
