@@ -160,7 +160,8 @@
       <div class="event-card" data-cat="sports">
         <span class="cat-badge sports">SPORTS</span>
         <p class="event-title">
-          {{ ev.title }}
+          {% if ev.url %}<a href="{{ ev.url }}" target="_blank" rel="noopener">{{ ev.title }}</a>
+          {% else %}{{ ev.title }}{% endif %}
           {% if ev.result %}
             <span class="result-badge {{ result_class }}">{{ ev.result }}</span>
           {% endif %}
