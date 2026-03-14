@@ -137,7 +137,7 @@ def _parse_competition(comp: dict, our_team_id: str, league: str, team_name: str
     if not event_url:
         event_url = next((lk.get("href") for lk in links if lk.get("href")), None)
     if not event_url:
-        event_url = f"https://www.google.com/search?q={quote_plus(f'{title} {league}')}"
+        event_url = f"https://duckduckgo.com/?q={quote_plus(f'{title} {league}')}"
 
     return {
         "start_utc": start_utc,
@@ -228,7 +228,7 @@ class ESPNCollector(BaseCollector):
 
                 title = f"{emoji} {label}" if emoji else label
                 subtitle = f"{tour_name} · {start_date.strftime('%b %-d')}–{end_date.strftime('%-d')}"
-                tour_url = f"https://www.google.com/search?q={quote_plus(f'{tour_name} {label}')}"
+                tour_url = f"https://duckduckgo.com/?q={quote_plus(f'{tour_name} {label}')}"
 
                 event = Event(
                     id=f"espn:{league}:{event_id}",
