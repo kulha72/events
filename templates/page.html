@@ -33,8 +33,8 @@
 
   /* Filter bar */
   .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
-                padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; position: sticky;
-                top: 0; z-index: 10; }
+                padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+                position: sticky; top: 0; z-index: 10; }
   .filter-btn { border: 2px solid var(--border); background: #fff; border-radius: 20px;
                 padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
                 transition: all .15s; color: var(--muted); }
@@ -44,6 +44,34 @@
   .filter-btn[data-cat="estate_sales"].active  { background: var(--estate-color); }
   .filter-btn[data-cat="sports"].active        { background: var(--sports-color); }
   .filter-btn[data-cat="esports"].active       { background: var(--esports-color); }
+  .pref-toggle { margin-left: auto; border: 2px solid var(--border); background: #fff;
+                 border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600;
+                 cursor: pointer; color: var(--muted); transition: all .15s; display: flex;
+                 align-items: center; gap: 5px; }
+  .pref-toggle:hover { border-color: #bbb; color: var(--text); }
+  .pref-toggle.open { border-color: #bbb; color: var(--text); background: #f8f8f8; }
+
+  /* Preferences panel */
+  .pref-panel { background: #fff; border-bottom: 2px solid var(--border);
+                padding: 16px 24px; display: none; }
+  .pref-panel.open { display: block; }
+  .pref-panel-title { font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+                      text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+  .pref-panel-hint { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+  .pref-toggles { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pref-chip { display: flex; align-items: center; gap: 7px; border: 2px solid var(--border);
+               border-radius: 20px; padding: 6px 14px; cursor: pointer;
+               font-size: 13px; font-weight: 600; color: var(--muted);
+               background: #fff; user-select: none; transition: all .15s; }
+  .pref-chip input[type="checkbox"] { display: none; }
+  .pref-chip .chip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border);
+                         transition: background .15s; flex-shrink: 0; }
+  .pref-chip.checked { color: #fff; border-color: transparent; }
+  .pref-chip.checked .chip-dot { background: rgba(255,255,255,.6); }
+  .pref-chip[data-pref="local"].checked    { background: var(--local-color); }
+  .pref-chip[data-pref="estate_sales"].checked { background: var(--estate-color); }
+  .pref-chip[data-pref="sports"].checked   { background: var(--sports-color); }
+  .pref-chip[data-pref="esports"].checked  { background: var(--esports-color); }
 
   /* Layout */
   .content { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
@@ -115,7 +143,40 @@
   <button class="filter-btn" data-cat="estate_sales">Estate Sales</button>
   <button class="filter-btn" data-cat="sports">Sports</button>
   <button class="filter-btn" data-cat="esports">Esports</button>
+  <button class="pref-toggle" id="prefToggleBtn" aria-expanded="false" title="Filter categories from the All feed">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <path d="M1.5 3h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1zm2 4h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1zm2 4h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"/>
+    </svg>
+    Preferences
+  </button>
 </nav>
+
+<div class="pref-panel" id="prefPanel">
+  <p class="pref-panel-title">Feed Preferences</p>
+  <p class="pref-panel-hint">Choose which categories appear in the <strong>All</strong> feed. Individual category tabs always show everything.</p>
+  <div class="pref-toggles">
+    <label class="pref-chip" data-pref="local">
+      <input type="checkbox" value="local" checked>
+      <span class="chip-dot"></span>
+      Local
+    </label>
+    <label class="pref-chip" data-pref="estate_sales">
+      <input type="checkbox" value="estate_sales" checked>
+      <span class="chip-dot"></span>
+      Estate Sales
+    </label>
+    <label class="pref-chip" data-pref="sports">
+      <input type="checkbox" value="sports" checked>
+      <span class="chip-dot"></span>
+      Sports
+    </label>
+    <label class="pref-chip" data-pref="esports">
+      <input type="checkbox" value="esports" checked>
+      <span class="chip-dot"></span>
+      Esports
+    </label>
+  </div>
+</div>
 
 <main class="content">
 
@@ -218,31 +279,96 @@
 
 <script>
   (function () {
-    const btns = document.querySelectorAll('.filter-btn');
+    const STORAGE_KEY = 'digest_hidden_cats';
+    const ALL_CATS = ['local', 'estate_sales', 'sports', 'esports'];
+
+    // ── Preferences ────────────────────────────────────────────────────────
+    function loadHidden() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return new Set(JSON.parse(raw));
+      } catch (_) {}
+      return new Set(); // nothing hidden by default
+    }
+
+    function saveHidden(hidden) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...hidden])); } catch (_) {}
+    }
+
+    let hidden = loadHidden();
+
+    // Sync chip UI to loaded prefs
+    document.querySelectorAll('.pref-chip').forEach(chip => {
+      const cat = chip.dataset.pref;
+      const cb  = chip.querySelector('input[type="checkbox"]');
+      const isChecked = !hidden.has(cat);
+      cb.checked = isChecked;
+      chip.classList.toggle('checked', isChecked);
+    });
+
+    // Chip click handler
+    document.querySelectorAll('.pref-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const cat = chip.dataset.pref;
+        const cb  = chip.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        chip.classList.toggle('checked', cb.checked);
+        if (cb.checked) hidden.delete(cat); else hidden.add(cat);
+        saveHidden(hidden);
+        // Re-apply current filter
+        applyFilter(activeCat());
+      });
+    });
+
+    // ── Preferences panel toggle ────────────────────────────────────────────
+    const prefBtn   = document.getElementById('prefToggleBtn');
+    const prefPanel = document.getElementById('prefPanel');
+
+    prefBtn.addEventListener('click', () => {
+      const open = prefPanel.classList.toggle('open');
+      prefBtn.classList.toggle('open', open);
+      prefBtn.setAttribute('aria-expanded', open);
+    });
+
+    // ── Filter bar ─────────────────────────────────────────────────────────
+    const btns  = document.querySelectorAll('.filter-btn');
     const cards = document.querySelectorAll('.event-card');
+
+    function activeCat() {
+      const active = document.querySelector('.filter-btn.active');
+      return active ? active.dataset.cat : 'all';
+    }
+
+    function applyFilter(cat) {
+      cards.forEach(card => {
+        const cardCat = card.dataset.cat;
+        let show;
+        if (cat === 'all') {
+          show = !hidden.has(cardCat);
+        } else {
+          show = (cardCat === cat);
+        }
+        card.style.display = show ? '' : 'none';
+      });
+
+      // Hide date-group labels if all cards inside are hidden
+      document.querySelectorAll('.date-group').forEach(group => {
+        const visible = [...group.querySelectorAll('.event-card')]
+          .some(c => c.style.display !== 'none');
+        group.style.display = visible ? '' : 'none';
+      });
+    }
 
     btns.forEach(btn => {
       btn.addEventListener('click', () => {
         btns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
-        const cat = btn.dataset.cat;
-        cards.forEach(card => {
-          if (cat === 'all' || card.dataset.cat === cat) {
-            card.style.display = '';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-
-        // Hide date-group labels if all cards in them are hidden
-        document.querySelectorAll('.date-group').forEach(group => {
-          const visible = [...group.querySelectorAll('.event-card')]
-            .some(c => c.style.display !== 'none');
-          group.style.display = visible ? '' : 'none';
-        });
+        applyFilter(btn.dataset.cat);
       });
     });
+
+    // Apply preferences on initial load
+    applyFilter('all');
   })();
 </script>
 </body>
