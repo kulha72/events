@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Digest — March 15, 2026</title>
+<title>Daily Digest — March 16, 2026</title>
 <style>
   :root {
     --local-color: #2e7d32;
@@ -30,6 +30,31 @@
   .site-header { background: var(--header-bg); color: #fff; padding: 20px 24px; }
   .site-header h1 { margin: 0; font-size: 24px; font-weight: 800; }
   .site-header .subtitle { margin: 4px 0 0; opacity: .65; font-size: 14px; }
+
+  /* Quick links bar */
+  .links-bar { background: #16213e; padding: 10px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .links-bar a { color: rgba(255,255,255,.75); text-decoration: none; font-size: 13px;
+                 font-weight: 600; padding: 5px 14px; border-radius: 20px;
+                 border: 1px solid rgba(255,255,255,.2); transition: all .15s; white-space: nowrap; }
+  .links-bar a:hover { color: #fff; background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.4); }
+
+  /* NPR headlines */
+  .headlines-bar { background: #fff; border-bottom: 1px solid var(--border); padding: 12px 24px; }
+  .headlines-bar h3 { font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+                      text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .headlines-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .headlines-list li { font-size: 13px; line-height: 1.4; }
+  .headlines-list a { color: var(--text); text-decoration: none; }
+  .headlines-list a:hover { text-decoration: underline; color: #c00; }
+
+  /* AI summary */
+  .ai-summary { background: #fffdf5; border-bottom: 1px solid #f0e8c8;
+                padding: 14px 24px; display: flex; gap: 12px; align-items: flex-start; }
+  .ai-summary-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .ai-summary-body { flex: 1; }
+  .ai-summary-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+                       text-transform: uppercase; color: #a07730; margin: 0 0 5px; }
+  .ai-summary-text { font-size: 14px; line-height: 1.6; color: #3a2e00; margin: 0; }
 
   /* Filter bar */
   .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
@@ -134,8 +159,47 @@
 
 <header class="site-header">
   <h1>Daily Digest</h1>
-  <p class="subtitle">Sunday, March 15, 2026</p>
+  <p class="subtitle">Monday, March 16, 2026</p>
 </header>
+
+
+<div class="links-bar">
+  
+    <a href="https://www.npr.org" target="_blank" rel="noopener">NPR</a>
+  
+    <a href="https://ground.news" target="_blank" rel="noopener">Ground News</a>
+  
+    <a href="https://www.espn.com" target="_blank" rel="noopener">ESPN</a>
+  
+    <a href="https://www.reddit.com" target="_blank" rel="noopener">Reddit</a>
+  
+    <a href="https://www.youtube.com" target="_blank" rel="noopener">YouTube</a>
+  
+    <a href="https://meal-planner-pi-two.vercel.app/" target="_blank" rel="noopener">Meal Planner</a>
+  
+</div>
+
+
+
+<div class="headlines-bar">
+  <h3>NPR Top Headlines</h3>
+  <ul class="headlines-list">
+    
+      <li><a href="https://www.npr.org/2026/03/15/g-s1-113846/selection-sunday-march-madness-duke-uconn-ucla" target="_blank" rel="noopener">Selection Sunday: Duke gets men&#39;s top overall seed, women&#39;s teams still on deck</a></li>
+    
+      <li><a href="https://www.npr.org/2026/03/15/g-s1-113841/snow-and-wind-batter-parts-of-us-with-threat-of-thunderstorms-and-tornadoes" target="_blank" rel="noopener">Snow and wind batter parts of US, with threat of thunderstorms and tornadoes</a></li>
+    
+      <li><a href="https://www.npr.org/2026/03/15/nx-s1-5745863/how-the-u-s-is-using-ai-in-the-war-in-iran" target="_blank" rel="noopener">How the U.S. is using AI in the war in Iran</a></li>
+    
+      <li><a href="https://www.npr.org/2026/03/15/nx-s1-5745031/texass-state-animals-armadillos-are-making-north-carolina-their-home" target="_blank" rel="noopener">Texas&#39;s state animals, armadillos, are making North Carolina their home</a></li>
+    
+      <li><a href="https://www.npr.org/2026/03/15/g-s1-113834/israeli-soldiers-fire-on-family-car-in-occupied-west-bank-killing-4" target="_blank" rel="noopener">Israeli soldiers fire on family car in occupied West Bank, killing 4</a></li>
+    
+  </ul>
+</div>
+
+
+
 
 <nav class="filter-bar">
   <button class="filter-btn active" data-cat="all">All</button>
@@ -182,66 +246,12 @@
 
   
   <section class="digest-section">
-    <h2>Today &mdash; Sunday, March 15</h2>
+    <h2>Today &mdash; Monday, March 16</h2>
 
     
       
         
-          
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.tecumsehherald.com/content/volunteer-fair-0" target="_blank" rel="noopener">Volunteer Fair</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Tecumseh, MI
-                
-              </p>
-            </div>
-          
-        
       
-        
-          
-          
-            
-            <div class="event-card"
-                 data-cat="estate_sales">
-              <span class="cat-badge estate_sales">ESTATE SALES</span>
-              <p class="event-title">
-                <a href="https://www.estatesales.net/MI/Temperance/48182/4825596" target="_blank" rel="noopener">50% Off Sunday At Our Blue Moon Temperance Sale! Furniture, Decor, Collectables, Tools And More!</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">9 AM ET</span>
-                &nbsp;&middot;&nbsp;1593 Longfellow Rd, Temperance, MI 48182
-                &nbsp;&middot;&nbsp;<em>by Blue Moon Estate Sales · 28 mi</em>
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="estate_sales">
-              <span class="cat-badge estate_sales">ESTATE SALES</span>
-              <p class="event-title">
-                <a href="https://www.estatesales.net/MI/Ypsilanti/48197/4824969" target="_blank" rel="noopener">75% OFF SUNDAY -Thomas Kinkade,  Disney, Oriental Pieces &amp; More! Ypsilanti Estate Sale!</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">10 AM ET</span>
-                &nbsp;&middot;&nbsp;3589 Fieldcrest Ln, Ypsilanti, MI 48197
-                &nbsp;&middot;&nbsp;<em>by Hands Of Time Estate Sales LLC · 26 mi</em>
-              </p>
-            </div>
-          
         
       
         
@@ -252,14 +262,14 @@
                  data-cat="sports">
               <span class="cat-badge sports">SPORTS</span>
               <p class="event-title">
-                <a href="https://duckduckgo.com/?q=Tigers+%40+New+York+Yankees+mlb" target="_blank" rel="noopener">⚾ Tigers @ New York Yankees</a>
+                <a href="https://duckduckgo.com/?q=Tigers+vs+Philadelphia+Phillies+mlb" target="_blank" rel="noopener">⚾ Tigers vs Philadelphia Phillies</a>
                 
                 
               </p>
               <p class="event-meta">
                 <span class="time">1:05 PM ET</span>
-                &nbsp;&middot;&nbsp;George M. Steinbrenner Field
-                &nbsp;&middot;&nbsp;<em>George M. Steinbrenner Field</em>
+                &nbsp;&middot;&nbsp;Publix Field at Joker Marchant Stadium
+                &nbsp;&middot;&nbsp;<em>Publix Field at Joker Marchant Stadium</em>
               </p>
             </div>
           
@@ -268,30 +278,14 @@
                  data-cat="sports">
               <span class="cat-badge sports">SPORTS</span>
               <p class="event-title">
-                <a href="https://duckduckgo.com/?q=Pistons+%40+Toronto+Raptors+nba" target="_blank" rel="noopener">🏀 Pistons @ Toronto Raptors</a>
+                <a href="https://duckduckgo.com/?q=Rangers+vs+Los+Angeles+Kings+nhl" target="_blank" rel="noopener">🏒 Rangers vs Los Angeles Kings</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">3:30 PM ET</span>
-                &nbsp;&middot;&nbsp;Scotiabank Arena
-                &nbsp;&middot;&nbsp;<em>Scotiabank Arena</em>
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="sports">
-              <span class="cat-badge sports">SPORTS</span>
-              <p class="event-title">
-                <a href="https://duckduckgo.com/?q=Michigan+Basketball+vs+Purdue+Boilermakers+ncaamb" target="_blank" rel="noopener">🏀 Michigan Basketball vs Purdue Boilermakers</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">3:30 PM ET</span>
-                &nbsp;&middot;&nbsp;United Center
-                &nbsp;&middot;&nbsp;<em>Week 19 · United Center · Big Ten Tournament - Final</em>
+                <span class="time">7 PM ET</span>
+                &nbsp;&middot;&nbsp;Madison Square Garden
+                &nbsp;&middot;&nbsp;<em>Madison Square Garden</em>
               </p>
             </div>
           
@@ -311,14 +305,14 @@
       <div class="event-card" data-cat="sports">
         <span class="cat-badge sports">SPORTS</span>
         <p class="event-title">
-          <a href="https://duckduckgo.com/?q=Michigan+Basketball+vs+Wisconsin+Badgers+ncaamb" target="_blank" rel="noopener">🏀 Michigan Basketball vs Wisconsin Badgers</a>
+          <a href="https://duckduckgo.com/?q=Tigers+%40+New+York+Yankees+mlb" target="_blank" rel="noopener">⚾ Tigers @ New York Yankees</a>
           
           
-            <span class="result-badge result-w">W 68–65</span>
+            <span class="result-badge result-w">W 12–1</span>
           
         </p>
         
-          <p class="event-meta"><em>Week 19 · United Center · Big Ten Tournament - Semifinal</em></p>
+          <p class="event-meta"><em>George M. Steinbrenner Field</em></p>
         
       </div>
     
@@ -326,14 +320,14 @@
       <div class="event-card" data-cat="sports">
         <span class="cat-badge sports">SPORTS</span>
         <p class="event-title">
-          <a href="https://duckduckgo.com/?q=Tigers+%40+Toronto+Blue+Jays+mlb" target="_blank" rel="noopener">⚾ Tigers @ Toronto Blue Jays</a>
+          <a href="https://duckduckgo.com/?q=Pistons+%40+Toronto+Raptors+nba" target="_blank" rel="noopener">🏀 Pistons @ Toronto Raptors</a>
           
           
-            <span class="result-badge result-w">W 6–1</span>
+            <span class="result-badge result-l">L 108–119</span>
           
         </p>
         
-          <p class="event-meta"><em>TD Ballpark</em></p>
+          <p class="event-meta"><em>Scotiabank Arena</em></p>
         
       </div>
     
@@ -341,44 +335,14 @@
       <div class="event-card" data-cat="sports">
         <span class="cat-badge sports">SPORTS</span>
         <p class="event-title">
-          <a href="https://duckduckgo.com/?q=Arsenal+vs+Everton+epl" target="_blank" rel="noopener">⚽ Arsenal vs Everton</a>
+          <a href="https://duckduckgo.com/?q=Michigan+Basketball+vs+Purdue+Boilermakers+ncaamb" target="_blank" rel="noopener">🏀 Michigan Basketball vs Purdue Boilermakers</a>
           
           
-            <span class="result-badge result-w">W 2–0</span>
-          
-        </p>
-        
-          <p class="event-meta"><em>Emirates Stadium</em></p>
-        
-      </div>
-    
-      
-      <div class="event-card" data-cat="sports">
-        <span class="cat-badge sports">SPORTS</span>
-        <p class="event-title">
-          <a href="https://duckduckgo.com/?q=Rangers+%40+Minnesota+Wild+nhl" target="_blank" rel="noopener">🏒 Rangers @ Minnesota Wild</a>
-          
-          
-            <span class="result-badge result-w">W 4–2</span>
+            <span class="result-badge result-l">L 72–80</span>
           
         </p>
         
-          <p class="event-meta"><em>Grand Casino Arena</em></p>
-        
-      </div>
-    
-      
-      <div class="event-card" data-cat="sports">
-        <span class="cat-badge sports">SPORTS</span>
-        <p class="event-title">
-          <a href="https://duckduckgo.com/?q=Millonarios+%40+Boyac%C3%A1+Chic%C3%B3+liga_betplay" target="_blank" rel="noopener">⚽ Millonarios @ Boyacá Chicó</a>
-          
-          
-            <span class="result-badge result-l">L 1–2</span>
-          
-        </p>
-        
-          <p class="event-meta"><em>La Independencia</em></p>
+          <p class="event-meta"><em>Week 19 · United Center · Big Ten Tournament - Final</em></p>
         
       </div>
     
@@ -389,54 +353,6 @@
   <section class="digest-section">
     <h2>Coming Up &mdash; Next 7 Days</h2>
     
-      
-        <div class="date-group">
-          <p class="date-label">Monday, March 16</p>
-          
-            
-          
-            
-          
-            
-              
-              
-                
-                <div class="event-card"
-                     data-cat="sports">
-                  <span class="cat-badge sports">SPORTS</span>
-                  <p class="event-title">
-                    <a href="https://duckduckgo.com/?q=Tigers+vs+Philadelphia+Phillies+mlb" target="_blank" rel="noopener">⚾ Tigers vs Philadelphia Phillies</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">1:05 PM ET</span>
-                    &nbsp;&middot;&nbsp;Publix Field at Joker Marchant Stadium
-                    &nbsp;&middot;&nbsp;<em>Publix Field at Joker Marchant Stadium</em>
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="sports">
-                  <span class="cat-badge sports">SPORTS</span>
-                  <p class="event-title">
-                    <a href="https://duckduckgo.com/?q=Rangers+vs+Los+Angeles+Kings+nhl" target="_blank" rel="noopener">🏒 Rangers vs Los Angeles Kings</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">7 PM ET</span>
-                    &nbsp;&middot;&nbsp;Madison Square Garden
-                    &nbsp;&middot;&nbsp;<em>Madison Square Garden</em>
-                  </p>
-                </div>
-              
-            
-          
-            
-          
-        </div>
       
         <div class="date-group">
           <p class="date-label">Tuesday, March 17</p>
@@ -630,6 +546,22 @@
           
             
               
+              
+                
+                <div class="event-card"
+                     data-cat="estate_sales">
+                  <span class="cat-badge estate_sales">ESTATE SALES</span>
+                  <p class="event-title">
+                    <a href="https://www.estatesales.net/MI/Lambertville/48144/4841019" target="_blank" rel="noopener">&#34;Vintage, Collectibles, Treasures&#34; ...  Lots of Everything on Edgevale</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">9 AM ET</span>
+                    &nbsp;&middot;&nbsp;Lambertville, MI 48144
+                    &nbsp;&middot;&nbsp;<em>by Francis Findings Estate Sales · 26 mi</em>
+                  </p>
+                </div>
               
                 
                 <div class="event-card"
@@ -952,13 +884,112 @@
           
         </div>
       
+        <div class="date-group">
+          <p class="date-label">Monday, March 23</p>
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="local">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.tecumsehherald.com/content/paper-umbrella-decorating" target="_blank" rel="noopener">Paper Umbrella Decorating</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;Tecumseh, MI
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.tecumsehherald.com/content/decorate-donut" target="_blank" rel="noopener">Decorate a Donut</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;Tecumseh, MI
+                    
+                  </p>
+                </div>
+              
+            
+          
+            
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Pistons+vs+Los+Angeles+Lakers+nba" target="_blank" rel="noopener">🏀 Pistons vs Los Angeles Lakers</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">7 PM ET</span>
+                    &nbsp;&middot;&nbsp;Little Caesars Arena
+                    &nbsp;&middot;&nbsp;<em>Little Caesars Arena</em>
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Rangers+vs+Ottawa+Senators+nhl" target="_blank" rel="noopener">🏒 Rangers vs Ottawa Senators</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">7:30 PM ET</span>
+                    &nbsp;&middot;&nbsp;Madison Square Garden
+                    &nbsp;&middot;&nbsp;<em>Madison Square Garden</em>
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+%40+Colorado+Rockies+mlb" target="_blank" rel="noopener">⚾ Tigers @ Colorado Rockies</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">9:10 PM ET</span>
+                    &nbsp;&middot;&nbsp;Salt River Fields at Talking Stick
+                    &nbsp;&middot;&nbsp;<em>Salt River Fields at Talking Stick</em>
+                  </p>
+                </div>
+              
+            
+          
+            
+          
+        </div>
+      
     
   </section>
 
 </main>
 
 <footer class="site-footer">
-  &#9733; = high priority &nbsp;&middot;&nbsp; Updated March 15, 2026 at 11:57 AM ET
+  &#9733; = high priority &nbsp;&middot;&nbsp; Updated March 15, 2026 at 8:46 PM ET
 </footer>
 
 <script>
