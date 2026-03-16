@@ -31,6 +31,31 @@
   .site-header h1 { margin: 0; font-size: 24px; font-weight: 800; }
   .site-header .subtitle { margin: 4px 0 0; opacity: .65; font-size: 14px; }
 
+  /* Quick links bar */
+  .links-bar { background: #16213e; padding: 10px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .links-bar a { color: rgba(255,255,255,.75); text-decoration: none; font-size: 13px;
+                 font-weight: 600; padding: 5px 14px; border-radius: 20px;
+                 border: 1px solid rgba(255,255,255,.2); transition: all .15s; white-space: nowrap; }
+  .links-bar a:hover { color: #fff; background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.4); }
+
+  /* NPR headlines */
+  .headlines-bar { background: #fff; border-bottom: 1px solid var(--border); padding: 12px 24px; }
+  .headlines-bar h3 { font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+                      text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .headlines-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .headlines-list li { font-size: 13px; line-height: 1.4; }
+  .headlines-list a { color: var(--text); text-decoration: none; }
+  .headlines-list a:hover { text-decoration: underline; color: #c00; }
+
+  /* AI summary */
+  .ai-summary { background: #fffdf5; border-bottom: 1px solid #f0e8c8;
+                padding: 14px 24px; display: flex; gap: 12px; align-items: flex-start; }
+  .ai-summary-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .ai-summary-body { flex: 1; }
+  .ai-summary-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+                       text-transform: uppercase; color: #a07730; margin: 0 0 5px; }
+  .ai-summary-text { font-size: 14px; line-height: 1.6; color: #3a2e00; margin: 0; }
+
   /* Filter bar */
   .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
                 padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
@@ -136,6 +161,35 @@
   <h1>Daily Digest</h1>
   <p class="subtitle">{{ today.strftime('%A, %B %-d, %Y') }}</p>
 </header>
+
+{% if quick_links %}
+<div class="links-bar">
+  {% for link in quick_links %}
+    <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.name }}</a>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if npr_headlines %}
+<div class="headlines-bar">
+  <h3>NPR Top Headlines</h3>
+  <ul class="headlines-list">
+    {% for h in npr_headlines %}
+      <li><a href="{{ h.url }}" target="_blank" rel="noopener">{{ h.title }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if ai_summary %}
+<div class="ai-summary">
+  <span class="ai-summary-icon">&#10024;</span>
+  <div class="ai-summary-body">
+    <p class="ai-summary-label">Today's Briefing</p>
+    <p class="ai-summary-text">{{ ai_summary }}</p>
+  </div>
+</div>
+{% endif %}
 
 <nav class="filter-bar">
   <button class="filter-btn active" data-cat="all">All</button>

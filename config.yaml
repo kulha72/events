@@ -90,6 +90,24 @@ api_keys:
   pandascore: "${PANDASCORE_API_KEY}"
   startgg: "${STARTGG_API_KEY}"
 
+ai_summary:
+  enabled: true
+  model: "gemini-2.5-flash-lite"
+
+quick_links:
+  - name: "NPR"
+    url: "https://www.npr.org"
+  - name: "Ground News"
+    url: "https://ground.news"
+  - name: "ESPN"
+    url: "https://www.espn.com"
+  - name: "Reddit"
+    url: "https://www.reddit.com"
+  - name: "YouTube"
+    url: "https://www.youtube.com"
+  - name: "Meal Planner"
+    url: "https://meal-planner-pi-two.vercel.app/"
+
 lookahead_days: 7
 
 priority_rules:

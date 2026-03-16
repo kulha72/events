@@ -7,3 +7,4 @@ python-dateutil>=2.9
 gql>=3.5
 python-dotenv>=1.0
 playwright>=1.44
+google-genai>=1.0

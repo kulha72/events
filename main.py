@@ -39,6 +39,7 @@ from collectors.sports.api_football import APIFootballCollector
 from collectors.esports.liquipedia import LiquipediaCollector
 from collectors.esports.pandascore import PandaScoreCollector
 from collectors.esports.startgg import StartGGCollector
+from formatters.ai_summary import generate_summary
 from formatters.email_formatter import format_email
 from formatters.static_formatter import format_static_page
 from formatters.telegram_formatter import format_telegram
@@ -140,11 +141,14 @@ def main() -> None:
     print()
 
     # 4. Format
+    print("Generating AI summary...")
+    ai_summary = generate_summary(today_events, yesterday_results, upcoming, config)
+
     print("Formatting email...")
-    email_html = format_email(today_events, yesterday_results, upcoming, config)
+    email_html = format_email(today_events, yesterday_results, upcoming, config, ai_summary)
 
     print("Formatting static page...")
-    page_html = format_static_page(today_events, yesterday_results, upcoming, config)
+    page_html = format_static_page(today_events, yesterday_results, upcoming, config, ai_summary)
 
     # 5. Deliver
     if args.dry_run:

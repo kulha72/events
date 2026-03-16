@@ -53,6 +53,14 @@
     <p class="date">{{ today.strftime('%A, %B %-d, %Y') }}</p>
   </div>
 
+  <!-- AI SUMMARY -->
+  {% if ai_summary %}
+  <div class="section" style="background:#fffdf5; border-left: 3px solid #d4a017;">
+    <p class="section-title" style="color:#a07730;">Today's Briefing</p>
+    <p style="font-size:15px; line-height:1.65; color:#3a2e00; margin:0;">{{ ai_summary }}</p>
+  </div>
+  {% endif %}
+
   <!-- TODAY -->
   <div class="section">
     <p class="section-title">Today</p>

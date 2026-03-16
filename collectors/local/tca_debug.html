@@ -1,0 +1,966 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>List Events - Tecumseh Center for the Arts</title>
+    <link href="/Content/uikitcss?v=hX-K5V7ZQjZ3tCLwZyUuLfZAMnZ0uwYxNrBqAmgX0cY1" rel="stylesheet">
+
+    <link href="/Content/plugincss?v=-oIshpYEAa0Qc9bXKQ_FRH_Z7n829bSxR0JmHCFGC1c1" rel="stylesheet">
+
+    
+    <link type="text/css" rel="stylesheet" href="/_assets/fonts/fontawesome/css/all.min.css">
+    
+    
+<style type="text/css" rel="stylesheet">/* Primary color for backgrounds*/
+.TopNavSSL, 
+.TopNavActive,
+.ButtonSubmit,
+.ButtonSubmitMd,
+.SubscriptionAdd,
+.ButtonTickets,
+.ButtonTicketsMd,
+.DonFormLabel,
+.TopNavHome:hover,
+.DonFormLabel:hover,
+.DonFormLabel:active,
+.DonFormLabel.Active,
+.DonRadio:checked + label > span,
+.ButtonCancel:hover,
+.ButtonCancel:active,
+.LinkChangeSeat { background-color: #7f9758; }
+
+/* Primary color for borders*/
+.TopNavTabActive,
+.TopNavTab:hover,
+.TopNavHome:hover,
+.ButtonSubmit,
+.ButtonSubmitMd,
+.SubscriptionAdd,
+.ButtonTickets,
+.DonFormLabel,
+.DonFormLabel:hover,
+.DonFormLabel:active,
+.DonFormLabel.Active,
+.DonRadio + label > span,
+.DonRadio:checked + label,
+.DonRadio:checked + label > span,
+.DonActive,
+.BoxGift,
+.ButtonCancel:hover,
+.ButtonCancel:active,
+.DiscountCodeLabel #Code { border-color: #7f9758; }
+
+/* Primary colors for borders (forced) */
+.EFWActive,
+.BoxHover,
+.__hover:hover,
+.__hover:active { border-color: #7f9758 !important; }
+.BoxHover:focus,
+.__hover:focus,
+.__hover:focus { outline: none; border: 1px solid #7f9758 !important; }
+
+/* Primary color for text */
+.DonRadio:checked + label,
+.DonActive,
+#TopNavText2 .lnr,
+.LayoutTabs a.TabActive,
+A.EventLink:link,
+A.EventLink:visited { color: #7f9758; }
+
+/* Primary hover color for backgrounds and borders */
+a.ButtonSubmit:hover,
+a.ButtonTickets:hover,
+a.ButtonTicketsMd:hover,
+.ButtonSubmit:hover,
+.ButtonSubmit:active,
+.ButtonCancel,
+.ButtonTickets:hover,
+.ButtonSubmitMd:hover,
+.ButtonSubmitMd:active,
+a.LinkChangeSeat:hover { background: #999999; border-color: #999999; }
+
+/* 0 is square, 3px is part rounded, 100em is fully rounded */
+/* Top Bar Item Radius */
+.TopNavDemo,
+.TopNav,
+.TopNavActive { border-radius: 0; } 
+
+/* Buttons Radius */
+.ButtonSubmit,
+.ButtonCancel,
+.ButtonTickets { border-radius: 3px; }
+
+/* Misc */
+.DonRadio + label { color: #333; }
+.Success,
+.ThankYou { background-color: #ccc; color: #333; }
+.ButtonSubmitAltColor { color: #FFF; } 
+.BillNotes,
+.GiftNotes { color: #222; }
+.EFWActive,
+.BoxHover { box-shadow: 0 0 2px #f7f7f7; }
+#TicketButtonWrapper { display: none; } #Body, #Footer {background-color: transparent;} </style>
+    <script type="text/javascript" async="" charset="utf-8" src="https://www.gstatic.com/recaptcha/releases/QvLuXwupqtKMva7GIh5eGl3U/recaptcha__en.js" crossorigin="anonymous" integrity="sha384-jTIhI7HJPFGKjRS0um8GXc5TaoePlQfvy9Bkpdfl6RDdGT8t3YYKN63/UT4yLzmg"></script><script src="/bundles/jquery?v=Q9OorKUt5unudph0RQdsp7a5BV3Vao6dD0NdtTRVB4U1"></script>
+
+    <script src="/bundles/jqueryval?v=WhRmI8vUVF186UwYB1zRP7-DwJzqpKlt0JksOBJvolw1"></script>
+
+    <script src="/bundles/pluginscripts?v=p_Z8MmrC6I0p1I5UANL-kq-b7lb5UzbtVDZi_ixuR_U1"></script>
+
+    <script src="/bundles/uikitjs?v=UOQa2htRTMvQjlZqO9EZ_1FsvLoO1xirdKMuGfvMzD81"></script>
+
+        <script src="https://www.google.com/recaptcha/api.js?render=6LfCVwgfAAAAACp9aUGlUQhfhwpU4tr06DEieBei"></script>
+    <script type="text/javascript">
+    // Populate JS translation object with server-side values.
+    translation.txtValidateOrderErrorMsg = "There was an issue processing your order, and it has been canceled. Please add your items back to the cart and try again.";
+        
+    //initialize javascript values
+    vboNS.orderID = "0";
+    vboNS.orgID = "3766";
+    vboNS.uusid = "f2ad7f73-6b64-4073-8537-2acfef4ee0e9";
+    vboNS.baseUrl = "https://plugin.vbotickets.com";
+    vboNS.pluginUrlOld = "https://plugin.vbotickets.com/v5.0";
+    vboNS.pluginUrl = "https://plugin.vbotickets.com/Plugin";
+
+    //initialize localisation
+    vboLocalisation.localeId = 1033;
+    vboLocalisation.currency = "USD";
+
+    $(function () {
+        // hide preloader
+        window.parent.postMessage(JSON.stringify({type: "preloader"}),"*");
+        
+        //make sure we have the right user session in local storage
+        window.parent.postMessage(
+            JSON.stringify({
+                type: "userSessionID",
+                orgID: "3766",
+                value: "f2ad7f73-6b64-4073-8537-2acfef4ee0e9"
+            }),
+            "*"
+        );
+
+        setInterval(function () { ResizeFrame("notop"); }, 3000);
+
+        // Executes when all elements are loaded including images
+        $(window).on("load", function () {
+            ResizeFrame("top");
+        });
+
+        hideWaitingLayer();
+
+        // Add listener for key press to execute some buttons on enter press
+        $(document).on("keypress", "[executeonenter]", function (event) {
+            if (event.keyCode == 13) {
+                $(this).click();
+            }
+        })                
+    });
+
+    function ReloadPage(param) {
+        var pageUrl = window.location.href;
+        if (param != "") {
+            pageUrl = pageUrl + "&a=" + param
+        }
+        window.location = pageUrl;
+    }
+    </script>
+            <script src="/_assets/js/vbo-validation/i18n/vbo-validation.en-US.js?v=20250209"></script>
+
+    
+</head>
+<body>
+    <div id="Outer1" class="">
+        <div id="Outer2">
+            <div id="Body" class="container body-content" style="max-width: 100%;">
+                <div id="UikitModal" uk-modal="" class="uk-modal">
+                    <div class="uk-modal-dialog">
+                        <button type="button" class="uk-modal-close-default Cursor" aria-label="Close DialogBox" onclick="UIkit.modal('#UikitModal').hide();"><i class="fal fa-times"></i></button>
+                        <div class="uk-modal-header ToggleOff">
+                            <div class="uk-modal-title"></div>
+                        </div>
+                        <div id="UikitModalInfo" class="uk-modal-body"></div>
+                    </div>
+                </div>
+
+
+
+<script>
+    function ShowDropdown() {
+        $(".TopNavDropdown").slideToggle();
+
+        let topNavMobileIcon = $(".TopNavMobileIcon");
+        let isExpanded = topNavMobileIcon.attr("aria-expanded") === "false";
+        topNavMobileIcon.attr("aria-expanded", isExpanded);
+
+        let topNavDropdown = $(".TopNavDropdown");
+        topNavDropdown.attr("aria-hidden", !isExpanded);
+    }
+</script>
+
+<!-- Overlay plugin close button -->
+<div id="TopNavOuter" role="navigation" aria-label="Primary navigation">
+    <div id="TopNavInner" class="clearfix">
+        <!-- desktop nav -->
+        <div id="TopNavText1"><div class="TopNavSSL" uk-tooltip="title:Secure through SSL encyption!" style="background: transparent !important;" title="" aria-expanded="false"><i class="far fa-shield-alt"></i></div></div>
+
+        <div id="TopNavTimer">
+            <span role="timer" id="Timer" aria-live="polite" aria-atomic="true"></span>
+        </div>
+            <!-- desktop nav -->
+            <div class="FloatLeft clearfix hide-on-small">
+                <ul class="TopNavTabs"> 
+                    <li>
+                        <a href="javascript:;" class="Accessible" onclick="JumpToEl();" aria-label="Skip to Content">Skip to Content</a>
+                    </li>
+                        <li>
+                            <a id="TopNavTix" href="https://plugin.vbotickets.com/Plugin/events?ViewType=list&amp;o=3766&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" class="TopNavTab TopNavTix TopNavTabActive"><span>Tickets</span><span class="CustomTxt"></span></a>
+                        </li>
+                                                                                    <li>
+                            <a id="TopNavMer" href="https://plugin.vbotickets.com/Plugin/merchandise/list?o=3766&amp;noRedirect=1&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" class="TopNavTab TopNavMer "><span>Merchandise</span><span class="CustomTxt"></span></a>
+                        </li>
+                                            <li>
+                            <a id="TopNavDon" href="https://plugin.vbotickets.com/Plugin/donations/list?o=3766&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" class="TopNavTab TopNavDon "><span>Donation</span><span class="CustomTxt"></span></a>
+                        </li>
+                </ul>
+            </div>
+            <!-- mobile nav -->
+            <div class="FloatLeft show-on-small">
+                <a aria-label="menu" href="javascript:;" class="TopNavMobileIcon" style="top: -3px;" onclick="ShowDropdown()" role="button" aria-expanded="false"><i class="fal fa-bars"></i></a>
+            </div>
+            <ul class="TopNavDropdown" style="display:none;" aria-hidden="true">
+                <li>
+                    <a href="javascript:;" class="Accessible" onclick="JumpToEl();" aria-label="Skip to Content">Skip to Content</a>
+                </li>
+                    <li>
+                        <a id="TopNavTix" href="https://plugin.vbotickets.com/Plugin/events?ViewType=list&amp;o=3766&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" class="TopNavTab TopNavTix TopNavTabActive" onkeydown="javascript: if(event.keyCode == 27) ShowDropdown();"><span>Tickets</span><span class="CustomTxt"></span></a>
+                    </li>
+                                                                    <li>
+                        <a id="TopNavMer" href="https://plugin.vbotickets.com/Plugin/merchandise/list?o=3766&amp;noRedirect=1&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" class="TopNavTab TopNavMer " onkeydown="javascript: if(event.keyCode == 27) ShowDropdown();"><span>Merchandise</span><span class="CustomTxt"></span></a>
+                    </li>
+                                    <li>
+                        <a id="TopNavDon" href="https://plugin.vbotickets.com/Plugin/donations/list?o=3766&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" class="TopNavTab TopNavDon " onkeydown="javascript: if(event.keyCode == 27) ShowDropdown();"><span>Donation</span><span class="CustomTxt"></span></a>
+                    </li>
+            </ul>
+
+
+        <div id="TopNavText2">
+            <a aria-label="0 items in the cart" id="TopNavCart" href="javascript:;" class="NavCart LinkTopNav" onclick="UikitModal('ajax','https://plugin.vbotickets.com/v5.0/controls/checkout.asp','cart_form&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9','My Cart','500','');">
+                <i class="fal fa-shopping-cart lnr Text18"></i> <span id="CartCount">0</span>
+            </a>
+            <a id="TopNavHelp" href="javascript:;" class="NavHelp LinkTopNav" onclick="UikitModal('ajax','https://plugin.vbotickets.com/Plugin/help','netaction&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9&amp;p=https%3a%2f%2fplugin.vbotickets.com%2fplugin%2fevents%3fs%3df2ad7f73-6b64-4073-8537-2acfef4ee0e9','Help','500','');">
+                <i class="fal fa-comment lnr Text18"></i> <span>Help</span>
+            </a>
+                <a id="TopNavAccount" href="javascript:;" class="LinkTopNav" onclick="UikitModal('ajax','https://plugin.vbotickets.com/Plugin/Login','signin_form_dialogbox&amp;page=popup&amp;mypage=/plugin/loadplugin&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9','Sign In','500','#Body');"><i class="fal fa-user lnr Text18"></i> <span>Sign In</span></a>
+            <a id="TopNavLang" href="javascript:;" class="NavLang LinkTopNav" uk-toggle="target: #LangOptions">
+                <i class="Text18 fal fa-globe-americas"></i>
+                <span>
+                            EN
+                </span>
+            </a>
+            <div id="LangOptions" class="uk-card uk-card-default uk-card-small" hidden="">
+                <div class="uk-card-body">
+                    <ul class="uk-list">
+                        <li class="LangEn">
+                            <a href="javascript:;" onclick="vboNS.ChangeLanguage('1033', 'https://plugin.vbotickets.com/plugin/events?s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9')">English</a>
+                        </li>
+                        <li class="LangDe">
+                            <a href="javascript:;" onclick="vboNS.ChangeLanguage('1031', 'https://plugin.vbotickets.com/plugin/events?s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9')">Deutsch</a>
+                        </li>
+                        <li class="LangEs">
+                            <a href="javascript:;" onclick="vboNS.ChangeLanguage('6154', 'https://plugin.vbotickets.com/plugin/events?s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9')">Spanish</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="CheckoutProgress">
+        <div class="clearfix">
+                <hr>
+        </div>
+    </div>
+</div>
+
+
+                
+
+<script type="text/javascript">
+    var allEvents;
+    var filteredEvents;
+
+    $(function () {
+        //$("#MainTitle", parent.document).html("List Events - Tecumseh Center for the Arts");
+        LoadEvents();
+
+        // event filter
+        $("#FilterEvent").keyup(function () {
+            var SearchTxt = $("#FilterEvent").val();
+            var SearchTxt = SearchTxt.replace(" & ", " ");
+            var SearchTxt = SearchTxt.replace(" &", " ");
+            var SearchTxt = SearchTxt.replace("& ", " ");
+            SearchTxt = SearchTxt.toLowerCase();
+
+            FilterEvents(filteredEvents, "data-event-name", SearchTxt);
+        });
+
+        // share button
+        $(document).on("click", ".EventShareButton", function () { ShareThisForm(this); })
+
+        // track sharing
+        $(".AddThisButtons").click(function (e) {
+            TrackSharing();
+        });
+
+        setTimeout(function() {ResizeFrame("top");},400);
+    })
+
+
+    function FilterEvents(items, filterAttribute, filterText) {
+        filterText = filterText.toLowerCase();
+        var filteredItems = items.filter(function () {
+            if ($(this).attr(filterAttribute) != undefined) {
+                return $(this).attr(filterAttribute).toLowerCase().indexOf(filterText) > -1;
+            }
+
+            return false;
+        });
+
+        // hide all events by default
+        for (e of allEvents) {
+            e.setAttribute("hidden-by-filter", "true");
+        }
+
+        // display filtered events
+        for (e of filteredItems) {
+            e.setAttribute("hidden-by-filter", "false");
+        }
+
+        var filterMsg = "";
+        if (filterText.length > 0) {
+            filterMsg = "There are no events listed with &#39;{FILTER}&#39;.".replace("{FILTER}", filterText);
+        }
+
+        $("#NoFilteredEventsMessage>div").html(filterMsg);
+        $("#NoFilteredEventsMessage").toggle(filteredItems.length == 0);
+
+        return filteredItems;
+    }
+
+    function LoadEvents() {
+        $("#EventsWrapper").html("<div class='ContentBoxInner EPL'><span class='Text32 Spacer Center'><i class='far fa-spinner-third fa-spin'></i></span></div>");
+        // get view type
+        var viewType = "";
+        if ($("#TabList").hasClass("TabActive")) {
+            viewType = "list";
+        }
+        if ($("#TabGrid").hasClass("TabActive")) {
+            viewType = "grid";
+        }
+        if ($("#TabCalendar").hasClass("TabActive")) {
+            viewType = "calendar";
+        }
+        if ($("#TabOnDemand").hasClass("TabActive")) {
+            viewType = "ondemand";
+        }
+
+        // get event type
+        var eventType = "current";
+        if ($("#TabPastEvents").hasClass("TabActive")) {
+            eventType = "past";
+        }
+
+        var url = "https://plugin.vbotickets.com/Plugin/events/showevents?ViewType=" + viewType + "&EventType=" + eventType + "&day=&s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9";
+        $.ajax({
+            url: url,
+            success: function (html) {
+                $("#EventsWrapper").html(html);
+                ResizeFrame('notop');
+            }
+        });
+    }
+
+    // preload event seat maps
+    function PreloadEventMaps() {
+        // base url
+        var mapUrl = "https://vboblobprod.blob.core.windows.net/awsvboticketscom/_images/seatmaps/svgmap_{MAPID}.html";
+
+        // make an ajax call to load a list of all seatmap image file names
+        $.ajax({
+            url: "../plugin/seatmap/getseatmaps?s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9",
+            cache: false,
+            success: function (html) {
+                // this will return a string of comma separated seatmap files i.e. images -> svgmap_53.html?rnd=2
+                if (html != "Error" && html != "") {
+                    mapIDs = html;
+                    var splitMapIDs = mapIDs.split(",");
+
+                    // once list is loaded send each map to be loaded and cached -> split the string and run preloader script
+                    for (let i = 0; i < splitMapIDs.length; i++) {
+                        var seatMapUrl = mapUrl;
+                        var seatMapFile = seatMapUrl.replace("{MAPID}", splitMapIDs[i]);
+
+                        // load map to browser cache
+                        $("#PreCache").append("<object data='" + seatMapFile + "' type='image/svg+xml'></object>");
+                    }
+                }
+            }
+        });
+    }
+
+    function ApplyPluginFilters() {
+        allEvents = $(".__FilterableEvent");
+        filteredEvents = FilterEvents(allEvents, "data-event-name", "");
+        filteredEvents = FilterEvents(filteredEvents, "data-event-category", "");
+        filteredEvents = FilterEvents(filteredEvents, "data-event-subcategory", "");
+    }
+
+    function ToggleView(input) {
+        $(".ViewType").removeClass("TabActive").addClass("TabInActive")
+        switch (input) {
+            case "list":
+                $("#TabList").removeClass("TabInActive").addClass("TabActive").attr("aria-current", "true");
+                $("#TabGrid").attr("aria-current", "false");
+                $("#TabCalendar").attr("aria-current", "false");
+                $("#TabOnDemand").attr("aria-current", "false");
+                break;
+            case "grid":
+                $("#TabGrid").removeClass("TabInActive").addClass("TabActive").attr("aria-current", "true");
+                $("#TabList").attr("aria-current", "false");
+                $("#TabCalendar").attr("aria-current", "false");
+                $("#TabOnDemand").attr("aria-current", "false");
+                break;
+            case "ondemand":
+                $("#TabOnDemand").removeClass("TabInActive").addClass("TabActive").attr("aria-current", "true");
+                $("#TabList").attr("aria-current", "false");
+                $("#TabGrid").attr("aria-current", "false");
+                $("#TabCalendar").attr("aria-current", "false");
+                break;
+            case "calendar":
+                $("#TabCalendar").removeClass("TabInActive").addClass("TabActive").attr("aria-current", "true");
+                $("#TabList").attr("aria-current", "false");
+                $("#TabGrid").attr("aria-current", "false");
+                $("#TabOnDemand").attr("aria-current", "false");
+                break;
+        }
+
+        LoadEvents();
+        ResizeFrame("");
+    }
+
+    // event toggle function
+    function ToggleEvents(input) {
+        // clean this up
+        switch (input) {
+            case "past":
+                $("#TabCurrentEvents").removeClass("TabActive").addClass("TabInActive").removeAttr("aria-current");
+                $("#TabPastEvents").addClass("TabActive").removeClass("TabInActive").attr("aria-current", "page");
+                LoadEvents();
+                break;
+            case "current":
+                $("#TabCurrentEvents").addClass("TabActive").removeClass("TabInActive").attr("aria-current", "page");
+                $("#TabPastEvents").removeClass("TabActive").addClass("TabInActive").removeAttr("aria-current");
+                LoadEvents();
+                break;
+            case "search":
+                $("#TabSearch").hide();
+                $("#TabSearchWrapper").show();
+                $("#FilterEvent").focus();
+                $("#FilterEvent").select();
+                break;
+            case "close":
+                $("#FilterEvent").val("");
+                $("#TabSearch").show();
+                $("#TabSearchWrapper").hide();
+                FilterEvents(filteredEvents, "data-event-name", "");
+                $("#TabSearch").focus();
+                break;
+            default:
+                $("#FilterEvent").val("");
+                $("#TabSearch").show();
+                $("#TabSearchWrapper").hide();
+                var IsCurrentEvent = $("#TabCurrentEvents").hasClass("TabActive");
+                if (IsCurrentEvent == true) {
+                    EventType = "current";
+                } else {
+                    EventType = "past";
+                }
+                //LoadEvents('0', '', EventType);
+                break;
+        }
+
+        ResizeFrame("");
+    }
+
+    function ShareThisForm(el) {
+        var EID = $(el).attr("eid");
+        var EDID = $(el).attr("edid");
+        var ScreenWidth = $("#ContentLeftAlt").width();
+        if (ScreenWidth > 600) {
+            ScreenWidth = ScreenWidth * 0.75;
+        } else {
+            ScreenWidth = ScreenWidth - 20;
+        }
+        UikitModal("ajax", "https://plugin.vbotickets.com/v5.0/controls/sharing.asp", "share_form&eid=" + EID + "&edid=" + EDID + "&s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9", "Share This Event", ScreenWidth, "#EDID" + EDID);
+    }
+
+    function TrackSharing() {
+        $.ajax({
+            url: "https://plugin.vbotickets.com/v5.0/controls/sharing.asp?a=track_sharing&s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9",
+            cache: false,
+            success: function (html) {
+                // do nothing
+            }
+        });
+    }
+
+    //exchange elements html with a spinner
+    function SpinThis(el) {
+        var width = $(el).outerWidth();
+        var height = $(el).outerHeight();
+        $(el).attr("style", "width: " + width + "px; max-height: " + height + "px");
+        $(el).html("<i class='fal fa-spinner-third fa-spin'></i>");
+    }
+
+    // Advanced filters
+    function ToggleFilter() {
+        var chkfilter = document.getElementsByClassName("chkfilter");
+        var chkboxes = 0;
+        var etag = "";
+        var etags = "";
+        for (i = 0; i < chkfilter.length; i++) {
+            if (chkfilter[i].checked) {
+                chkboxes += 1;
+            }
+        }
+        // reset events
+        var eventdivs = document.querySelectorAll(".__filter");
+
+        // get each event tag category
+        var filterfinal = [];
+        var categories = document.getElementsByClassName("filterwrapper");
+        for (i = 0; i < categories.length; i++) {
+            var catid = categories[i].getAttribute("cat");
+
+            // loop through all checkboxes within a category
+            var subcats = [];
+            var filters = document.getElementsByClassName("chkcat" + catid);
+            for (j = 0; j < filters.length; j++) {
+                if (filters[j].checked) {
+                    subcats.push(parseInt(filters[j].value));
+                    etag = "<span class='etag'>" + filters[j].getAttribute("etag") + "&nbsp</span>";
+                    etags = etags + etag;
+                }
+            }
+
+            // build filter array
+            if (subcats.length > 0) {
+                filterfinal.push({ c: catid, s: subcats })
+            }
+        }
+
+        // event tags
+        GetEventTags(etags);
+
+        // apply filter only if we have active filters
+        ApplyFilter(eventdivs, filterfinal);
+    }
+
+    // APPLY FILTERS //
+    function ApplyFilter(eventdivs, activefilter) {
+        eventdivs = Array.from(eventdivs);
+        // hide all events
+        for (let el of eventdivs) el.setAttribute("hidden-by-filter", "true");
+
+        // apply filters
+        if (activefilter.length > 0) {
+            eventdivs = eventdivs.filter(function (eventdiv) {
+                var keep = false;
+                if (eventdiv.dataset.eventcats || eventdiv.dataset.eventcats.length !== 0) {
+                    var cats = JSON.parse(eventdiv.dataset.eventcats); // data-eventcats='{'495':[1267], '499':[1351], '498':[1349], '33':[153], '496':[1289]}'
+                    for (var i = 0; i < activefilter.length; i++) {
+                        var filter = activefilter[i];
+
+                        //check if the current eventdiv belongs to the filter category
+                        if (cats.hasOwnProperty(filter.c)) {
+                            keep = cats[filter.c].some(function (el) {
+                                return filter.s.includes(el);
+                            });
+                        }
+
+                        //in case the filter category is not applicable, don't even check the others
+                        //This achieves AND connectivity between categories
+                        if (!keep) {
+                            break;
+                        }
+                    }
+                }
+                return keep;
+            });
+        }
+
+        // hide / unhide events
+        for (let el of eventdivs) el.setAttribute("hidden-by-filter", "false");
+    }
+
+    function ClearTags() {
+        var chkfilter = document.getElementsByClassName("chkfilter");
+        for (i = 0; i < chkfilter.length; i++) {
+            if (chkfilter[i].checked) {
+                chkfilter[i].checked = false;
+            }
+        }
+        ToggleFilter();
+    }
+
+    function GetEventTags(etags) {
+        var elem = document.getElementById('filtertags');
+        etagclear = "<span class='cleartags' onclick='ClearTags();'><svg viewBox='0 0 320 512' class='icon-clear' style='width:0.8em'><path fill='currentColor' d='M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z'></path></svg></span>";
+        if (etags != "") {
+            elem.innerHTML = etags + etagclear;
+            $(".filtertags").show();
+        } else {
+            elem.innerHTML = "";
+            $(".filtertags").hide();
+        }
+    }
+
+</script>
+
+<!-- PROMOTER INFO TOP -->
+
+<!-- EVENT LIST TABS -->
+<div class="clearfix EventTabs" role="navigation" aria-label="secondary">
+    <div class="EventDateTabs FloatLeft">
+            <div class="ViewTab TabActive" id="TabCurrentEvents" tabindex="0" onclick="ToggleEvents('current');" onkeydown="javascript: if (event.keyCode == 13) ToggleEvents('current')" aria-label="Current Events" role="link" aria-current="page">Current</div>
+            <div class="ViewTab TabInActive" id="TabPastEvents" tabindex="0" onclick="ToggleEvents('past');" onkeydown="javascript: if (event.keyCode == 13) ToggleEvents('past')" aria-label="Past Events" role="link">Past</div>
+
+
+
+    </div>
+
+    <div class="EventViewTabs FloatRight">
+        <div class="ViewTab TabActive ViewType" id="TabList" tabindex="0" onclick="ToggleView('list');" onkeypress="javascript: if(event.keyCode == 13) ToggleView('list');" role="button" aria-label="List View" aria-current="true">
+            <span class="TabIcon"><i class="fas fa-list"></i></span><span class="TabIconText">List</span>
+        </div>
+        <div class="ViewTab TabInActive ViewType" id="TabGrid" tabindex="0" onclick="ToggleView('grid');" onkeypress="javascript: if(event.keyCode == 13) ToggleView('grid');" role="button" aria-label="Grid View" aria-current="false">
+            <span class="TabIcon"><i class="fas fa-th"></i></span><span class="TabIconText">Grid</span>
+        </div>
+        <div class="ViewTab TabInActive ViewType" id="TabCalendar" tabindex="0" onclick="ToggleView('calendar');" onkeypress="javascript: if(event.keyCode == 13) ToggleView('calendar');" role="button" aria-label="Calendar View" aria-current="false">
+            <span class="TabIcon"><i class="far fa-calendar-alt"></i></span><span class="TabIconText">Calendar</span>
+        </div>
+
+    </div>
+</div>
+
+<div id="filtertags" class="clearfix filtertags"></div>
+
+<!-- EVENTS LISTING -->
+<div id="EventsWrapper" class="ContentBoxOuter" role="main">
+
+<script>
+    $(function () {
+        //$("#MainTitle", parent.document).html("List Events - Tecumseh Center for the Arts");
+
+        ApplyPluginFilters();
+    });
+
+    // load video preview
+    function ViewVideoPreview(id, el, title) {
+        var ScreenWidth = $("#ContentLeftAlt").width();
+        if (ScreenWidth > 600) {
+            ScreenWidth = ScreenWidth * 0.75;
+        } else {
+            ScreenWidth = ScreenWidth - 20;
+        }
+        UikitModal("ajax", "https://plugin.vbotickets.com/v5.0/controls/listevents.asp", "view_video_preview&edid=" + id + "&s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9", title, ScreenWidth, el);
+    }
+</script>
+<div class="clearfix gridrow" id="CurrentEvents" role="list">
+        <div id="EDID588808" class="EventListWrapper EventListBgd  clearfix EID167025 EDID588808 __FilterableEvent __filter" data-event-name="CELTIC BAND ON THE LASH" data-event-category="National Touring Season" data-event-subcategory="2025 - 2026" data-eventcats="{}" role="listitem" hidden-by-filter="false">
+
+            <div class="EventListPosterWrapper">
+                <div class="EventListPoster" tabindex="0">
+
+                        <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167025&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Tecumseh Center for the Arts - CELTIC BAND ON THE LASH" tabindex="-1">
+                            <div class="PosterOuter">
+                                <img src="https://vboblobprod-cdn-01-cjcngvarcqfja3gw.a03.azurefd.net/awsvboticketscom/_images/events/167025_event_md_648.png" class="PosterList" alt="Tecumseh Center for the Arts - CELTIC BAND ON THE LASH">
+                            </div>
+                        </a>
+
+                    <div class="EventListPriceWrapper">
+                        <div class="EventListPriceBgd">
+                            <div class="EventListPrice">
+                                $35 | $30 | $15
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="EventListDetails EventListColRight">
+                <div class="EventListText">
+                    <h2 class="HeaderEventName"><a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167025&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Tecumseh Center for the Arts - CELTIC BAND ON THE LASH">CELTIC BAND ON THE LASH</a></h2>
+                    <div class="EventIntroText"><p style="text-align: left;">NATIONAL TOURING PERFORMANCE</p>
+<p style="text-align: left;">
+    ON THE LASH blends the raw spirit of traditional Irish folk with the grit and drive of modern rock. Known for their dynamic stage presence and irresistible rhythms, the band delivers a lively and authentic Celtic experience that’s perfect for audiences of all ages. This performance promises a memorable night of fiddle tunes, pipes, percussion, and crowd-pleasing shenanigans.&nbsp;</p>
+<p style="text-align: left;">Celtic Band ON THE LASH&nbsp;is sponsored in part by Marquee Sponsor A-1 Clean Sweep, Show Sponsor Krieghoff Lenawee and Touring Season Sponsors Bob Fox of Howard Hanna Real Estate Services, Carpet on Wheels, the Elizabeth Ruthruff Wilson Foundation, Tuckey's Big Boy, and The Union Block Collection.</p>
+<p style="text-align: left;">$35 Adult<br>
+<style="text-align: left;"="">$30 Senior/Military<br>
+<style="text-align: left;"="">$15 Youth</style="text-align:></style="text-align:></p></div>
+                    <div class="TextVenue clearfix">
+                        <span class="TextVenueName">Tecumseh Center for the Arts</span><br>
+                        <span class="TextVenueAddress">400 N. Maumee Street, Tecumseh, MI 49286&nbsp;&nbsp;<a href="//maps.google.com/maps?hl=en&amp;q=400 N. Maumee Street+Tecumseh+MI+49286" aria-label="CELTIC BAND ON THE LASH Location" class="LinkMap" target="_blank"><i class="fal fa-map-marker-alt"></i></a></span>
+                    </div>
+                    <div class="More clearfix show-on-small">
+                        <a href="javascript:;" aria-label="Read more about CELTIC BAND ON THE LASH" class="MoreLink FloatRight" onclick="vboNS.Redirect('https://plugin.vbotickets.com/Plugin/event/details/167025')"><span><i class="fal fa-info-circle"></i></span> Read More</a>
+                            <a href="javascript:;" aria-label="Share CELTIC BAND ON THE LASH" class="EventShareButton FloatRight" eid="167025" edid="3/13/2026 7:30:00 PM"><span><i class="fal fa-share-alt"></i></span></a>
+                                            </div>
+                </div>
+
+                <div class="ButtonTicketsWrapperList hide-on-small">
+                        <div class="EventListButtonWrapper clearfix">
+
+                            <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167025&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  CELTIC BAND ON THE LASH" class="ButtonSubmit ButtonListEvent" onclick="SpinThis(this);">
+                                <span class="BtnTxtOriginal">BUY NOW</span>
+                                <span class="BtnTxtNew"></span>
+                                <span class="ShowForSr">Buy tickets for  CELTIC BAND ON THE LASH</span>
+                            </a>
+                        </div>
+                </div>
+
+                <!--Buy button only on mobile-->
+                <div class="show-on-small ButtonTicketsWrapperMobile">
+                        <div class="EventListButtonWrapper clearfix">
+
+                            <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167025&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  CELTIC BAND ON THE LASH" class="ButtonSubmit ButtonListEvent" onclick="SpinThis(this);">
+                                <span class="BtnTxtOriginal">BUY NOW</span>
+                                <span class="BtnTxtNew"></span>
+                                <span class="ShowForSr">Buy tickets for  CELTIC BAND ON THE LASH</span>
+                            </a>
+                        </div>
+                </div>
+
+                <div class="EventListExtraWrapper">
+                    <div class="EventListExtra">
+                        <div class="EventListExtraText clearfix">
+                            <div class="TextEventDate FloatLeft">
+Fri, 3/13/2026 @ 7:30 PM                            </div>
+                            <div class="More FloatRight">
+
+                                    <a href="javascript:;" aria-label="Share CELTIC BAND ON THE LASH" class="EventShareButton" eid="167025" edid="588808"><span><i class="fal fa-share-alt"></i></span> Share</a>
+                                <a href="javascript:;" aria-label="Read more about CELTIC BAND ON THE LASH" class="MoreLink" onclick="vboNS.Redirect('https://plugin.vbotickets.com/Plugin/event/details/167025')"><span><i class="fal fa-info-circle"></i></span> Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+        <div id="EDID662958" class="EventListWrapper EventListBgd  clearfix EID187556 EDID662958 __FilterableEvent __filter" data-event-name="Leadfoot Granny" data-event-category="Rental" data-event-subcategory="Rental" data-eventcats="{}" role="listitem" hidden-by-filter="false">
+
+            <div class="EventListPosterWrapper">
+                <div class="EventListPoster" tabindex="0">
+
+                        <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=187556&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Tecumseh Center for the Arts - Leadfoot Granny" tabindex="-1">
+                            <div class="PosterOuter">
+                                <img src="https://vboblobprod-cdn-01-cjcngvarcqfja3gw.a03.azurefd.net/awsvboticketscom/_images/events/187556_event_md_286.png" class="PosterList" alt="Tecumseh Center for the Arts - Leadfoot Granny">
+                            </div>
+                        </a>
+
+                    <div class="EventListPriceWrapper">
+                        <div class="EventListPriceBgd">
+                            <div class="EventListPrice">
+                                $20 | $15
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="EventListDetails EventListColRight">
+                <div class="EventListText">
+                    <h2 class="HeaderEventName"><a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=187556&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Tecumseh Center for the Arts - Leadfoot Granny">Leadfoot Granny</a></h2>
+                    <div class="EventIntroText"><p>GET AMPED CONCERT SERIES</p>
+<p>The sound of classic rock is alive and roaring as Leadfoot Granny, one of Northwest Ohio’s fastest-rising bands, takes the stage for an electrifying night of live music. Known for their powerhouse vocals, driving guitar riffs, and dynamic stage presence, Leadfoot Granny blends the spirit of rock’s golden era with a fresh, modern edge. Their sound draws inspiration from legendary artists such as The Beatles, Led Zeppelin, Janis Joplin, and Aerosmith, delivering a performance that is both nostalgic and unmistakably current.</p>
+<p>Beer &amp; Wine Available!</p>
+<p>Presented by Vision Performance Group &amp; Technologies of Adrian.</p>
+<p>$20 Adult<br>
+$15 Student / Senior / Military</p></div>
+                    <div class="TextVenue clearfix">
+                        <span class="TextVenueName">Tecumseh Center for the Arts</span><br>
+                        <span class="TextVenueAddress">400 N. Maumee Street, Tecumseh, MI 49286&nbsp;&nbsp;<a href="//maps.google.com/maps?hl=en&amp;q=400 N. Maumee Street+Tecumseh+MI+49286" aria-label="Leadfoot Granny Location" class="LinkMap" target="_blank"><i class="fal fa-map-marker-alt"></i></a></span>
+                    </div>
+                    <div class="More clearfix show-on-small">
+                        <a href="javascript:;" aria-label="Read more about Leadfoot Granny" class="MoreLink FloatRight" onclick="vboNS.Redirect('https://plugin.vbotickets.com/Plugin/event/details/187556')"><span><i class="fal fa-info-circle"></i></span> Read More</a>
+                            <a href="javascript:;" aria-label="Share Leadfoot Granny" class="EventShareButton FloatRight" eid="187556" edid="3/14/2026 7:30:00 PM"><span><i class="fal fa-share-alt"></i></span></a>
+                                            </div>
+                </div>
+
+                <div class="ButtonTicketsWrapperList hide-on-small">
+                        <div class="EventListButtonWrapper clearfix">
+
+                            <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=187556&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Leadfoot Granny" class="ButtonSubmit ButtonListEvent" onclick="SpinThis(this);">
+                                <span class="BtnTxtOriginal">Buy Now</span>
+                                <span class="BtnTxtNew"></span>
+                                <span class="ShowForSr">Buy tickets for  Leadfoot Granny</span>
+                            </a>
+                        </div>
+                </div>
+
+                <!--Buy button only on mobile-->
+                <div class="show-on-small ButtonTicketsWrapperMobile">
+                        <div class="EventListButtonWrapper clearfix">
+
+                            <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=187556&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Leadfoot Granny" class="ButtonSubmit ButtonListEvent" onclick="SpinThis(this);">
+                                <span class="BtnTxtOriginal">Buy Now</span>
+                                <span class="BtnTxtNew"></span>
+                                <span class="ShowForSr">Buy tickets for  Leadfoot Granny</span>
+                            </a>
+                        </div>
+                </div>
+
+                <div class="EventListExtraWrapper">
+                    <div class="EventListExtra">
+                        <div class="EventListExtraText clearfix">
+                            <div class="TextEventDate FloatLeft">
+Sat, 3/14/2026 @ 7:30 PM                            </div>
+                            <div class="More FloatRight">
+
+                                    <a href="javascript:;" aria-label="Share Leadfoot Granny" class="EventShareButton" eid="187556" edid="662958"><span><i class="fal fa-share-alt"></i></span> Share</a>
+                                <a href="javascript:;" aria-label="Read more about Leadfoot Granny" class="MoreLink" onclick="vboNS.Redirect('https://plugin.vbotickets.com/Plugin/event/details/187556')"><span><i class="fal fa-info-circle"></i></span> Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+        <div id="EDID588809" class="EventListWrapper EventListBgd EventListWrapperLast clearfix EID167026 EDID588809 __FilterableEvent __filter" data-event-name="SOULFUL SONGSTRESS LOLA KRISTINE" data-event-category="National Touring Season" data-event-subcategory="2025 - 2026" data-eventcats="{}" role="listitem" hidden-by-filter="false">
+
+            <div class="EventListPosterWrapper">
+                <div class="EventListPoster" tabindex="0">
+
+                        <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167026&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Tecumseh Center for the Arts - SOULFUL SONGSTRESS LOLA KRISTINE" tabindex="-1">
+                            <div class="PosterOuter">
+                                <img src="https://vboblobprod-cdn-01-cjcngvarcqfja3gw.a03.azurefd.net/awsvboticketscom/_images/events/167026_event_md_409.png" class="PosterList" alt="Tecumseh Center for the Arts - SOULFUL SONGSTRESS LOLA KRISTINE">
+                            </div>
+                        </a>
+
+                    <div class="EventListPriceWrapper">
+                        <div class="EventListPriceBgd">
+                            <div class="EventListPrice">
+                                $35 | $30 | $15
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="EventListDetails EventListColRight">
+                <div class="EventListText">
+                    <h2 class="HeaderEventName"><a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167026&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  Tecumseh Center for the Arts - SOULFUL SONGSTRESS LOLA KRISTINE">SOULFUL SONGSTRESS LOLA KRISTINE</a></h2>
+                    <div class="EventIntroText"><p style="text-align: left;">NATIONAL TOURING PERFORMANCE</p><p style="text-align: left;">
+Back by popular demand, LOLA KRISTINE returns to Tecumseh with her signature fusion of soul, blues, jazz, and pop - a sound that is uniquely and unmistakably her own. From sultry, rich low notes to soaring, gospel-infused highs, Lola’s vocal artistry is nothing short of masterful.&nbsp;</p><p style="text-align: left;">Soulful Songstress LOLA KRISTINE&nbsp;is sponsored in part by Marquee Sponsor A-1 Clean Sweep, Show Sponsors Dorin USA and Martin's Home Center,&nbsp;Touring Season Sponsors Bob Fox of Howard Hanna Real Estate Services, Carpet on Wheels, the Elizabeth Ruthruff Wilson Foundation, Tuckey's Big Boy, and The Union Block Collection.</p><p style="text-align: left;">$35 Adult<br>
+<style="text-align: left;"="">$30 Senior/Military<br>
+<style="text-align: left;"="">$15 Youth</style="text-align:></style="text-align:><br></p></div>
+                    <div class="TextVenue clearfix">
+                        <span class="TextVenueName">Tecumseh Center for the Arts</span><br>
+                        <span class="TextVenueAddress">400 N. Maumee Street, Tecumseh, MI 49286&nbsp;&nbsp;<a href="//maps.google.com/maps?hl=en&amp;q=400 N. Maumee Street+Tecumseh+MI+49286" aria-label="SOULFUL SONGSTRESS LOLA KRISTINE Location" class="LinkMap" target="_blank"><i class="fal fa-map-marker-alt"></i></a></span>
+                    </div>
+                    <div class="More clearfix show-on-small">
+                        <a href="javascript:;" aria-label="Read more about SOULFUL SONGSTRESS LOLA KRISTINE" class="MoreLink FloatRight" onclick="vboNS.Redirect('https://plugin.vbotickets.com/Plugin/event/details/167026')"><span><i class="fal fa-info-circle"></i></span> Read More</a>
+                            <a href="javascript:;" aria-label="Share SOULFUL SONGSTRESS LOLA KRISTINE" class="EventShareButton FloatRight" eid="167026" edid="4/11/2026 7:30:00 PM"><span><i class="fal fa-share-alt"></i></span></a>
+                                            </div>
+                </div>
+
+                <div class="ButtonTicketsWrapperList hide-on-small">
+                        <div class="EventListButtonWrapper clearfix">
+
+                            <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167026&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  SOULFUL SONGSTRESS LOLA KRISTINE" class="ButtonSubmit ButtonListEvent" onclick="SpinThis(this);">
+                                <span class="BtnTxtOriginal">BUY NOW</span>
+                                <span class="BtnTxtNew"></span>
+                                <span class="ShowForSr">Buy tickets for  SOULFUL SONGSTRESS LOLA KRISTINE</span>
+                            </a>
+                        </div>
+                </div>
+
+                <!--Buy button only on mobile-->
+                <div class="show-on-small ButtonTicketsWrapperMobile">
+                        <div class="EventListButtonWrapper clearfix">
+
+                            <a href="https://plugin.vbotickets.com/v5.0/event.asp?eid=167026&amp;s=f2ad7f73-6b64-4073-8537-2acfef4ee0e9" aria-label="Buy tickets for  SOULFUL SONGSTRESS LOLA KRISTINE" class="ButtonSubmit ButtonListEvent" onclick="SpinThis(this);">
+                                <span class="BtnTxtOriginal">BUY NOW</span>
+                                <span class="BtnTxtNew"></span>
+                                <span class="ShowForSr">Buy tickets for  SOULFUL SONGSTRESS LOLA KRISTINE</span>
+                            </a>
+                        </div>
+                </div>
+
+                <div class="EventListExtraWrapper">
+                    <div class="EventListExtra">
+                        <div class="EventListExtraText clearfix">
+                            <div class="TextEventDate FloatLeft">
+Sat, 4/11/2026 @ 7:30 PM                            </div>
+                            <div class="More FloatRight">
+
+                                    <a href="javascript:;" aria-label="Share SOULFUL SONGSTRESS LOLA KRISTINE" class="EventShareButton" eid="167026" edid="588809"><span><i class="fal fa-share-alt"></i></span> Share</a>
+                                <a href="javascript:;" aria-label="Read more about SOULFUL SONGSTRESS LOLA KRISTINE" class="MoreLink" onclick="vboNS.Redirect('https://plugin.vbotickets.com/Plugin/event/details/167026')"><span><i class="fal fa-info-circle"></i></span> Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+
+    <!-- Container for message when no events match filter -->
+    <div id="NoFilteredEventsMessage" class="ContentBoxInner EventListBgd ToggleOff" style="display: none;">
+        <div class="Oops"></div>
+    </div>
+</div>
+
+
+
+</div>
+
+<!-- PROMOTER INFO TOP -->
+
+<script>
+    $(function() { PreloadEventMaps(); })
+</script>
+<div class="PreCacheWrapper">
+    <div id="PreCache"><object data="https://vboblobprod.blob.core.windows.net/awsvboticketscom/_images/seatmaps/svgmap_572.html" type="image/svg+xml"></object></div>
+</div>
+
+
+
+            </div>
+
+            <!-- LOAD FOOTER -->
+                <div id="Footer">
+                    <div class="FooterInfo">
+                    </div>
+                    <div id="FooterCurrencyCode" class="FooterCurrency">
+                        All Prices In USD 
+                            <span>OrderID: #0</span>
+                    </div>
+
+                        <div class="FooterCurrency">
+                            This site is protected by reCAPTCHA and the Google
+                            <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+                            <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+                        </div>
+                </div>
+        </div>
+    </div>
+
+    
+        
+
+<div><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; display: block; transition: right 0.3s; position: fixed; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe title="reCAPTCHA" width="256" height="60" role="presentation" name="a-xbwiixt783vc" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LfCVwgfAAAAACp9aUGlUQhfhwpU4tr06DEieBei&amp;co=aHR0cHM6Ly9wbHVnaW4udmJvdGlja2V0cy5jb206NDQz&amp;hl=en&amp;v=QvLuXwupqtKMva7GIh5eGl3U&amp;size=invisible&amp;anchor-ms=20000&amp;execute-ms=30000&amp;cb=hv2ugx85r4ua"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div></div></body></html>

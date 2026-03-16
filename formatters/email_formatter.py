@@ -69,6 +69,7 @@ def format_email(
     yesterday_results: list[Event],
     upcoming: list[Event],
     config: dict,
+    ai_summary: str = "",
 ) -> str:
     """Render and return the HTML email body string."""
     tz = ZoneInfo(config.get("timezone", "America/Detroit"))
@@ -99,4 +100,5 @@ def format_email(
         config=config,
         EventPriority=EventPriority,
         EventCategory=EventCategory,
+        ai_summary=ai_summary,
     )
