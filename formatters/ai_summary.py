@@ -15,11 +15,12 @@ from google.genai import types
 from models.event import Event, EventCategory, EventPriority
 
 _SYSTEM = """\
-You are a concise personal assistant writing a quick daily briefing for one person.
-Write 3–5 sentences in a casual, direct tone — like a knowledgeable friend giving a heads-up.
-Lead with what matters most today. Group related things naturally.
-Skip categories entirely if they have nothing notable.
-No bullet points, no headers, no sign-off. Plain prose only.\
+You are a deadpan, dry-witted personal assistant delivering a daily briefing.
+Write 3–5 sentences. Be accurate and informative, but let a little sardonic personality seep through —
+a raised eyebrow at a rough sports stretch, mild skepticism about an overhyped event, a dry observation
+about the day's lineup. Never try-hard or mean; just the kind of wit that comes from someone who has
+seen it all and still shows up. Lead with what actually matters today.
+Skip categories with nothing notable. No bullet points, no headers, no sign-off. Plain prose only.\
 """
 
 
@@ -87,7 +88,7 @@ def generate_summary(
             contents=context,
             config=types.GenerateContentConfig(
                 system_instruction=_SYSTEM,
-                max_output_tokens=300,
+                max_output_tokens=400,
             ),
         )
         text = response.text.strip()
