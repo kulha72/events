@@ -14,6 +14,8 @@
     --sports-bg: #e3f2fd;
     --esports-color: #6a1b9a;
     --esports-bg: #f3e5f5;
+    --playoffs-color: #b71c1c;
+    --playoffs-bg: #fce8e8;
     --high-color: #e65100;
     --text: #1a1a1a;
     --muted: #666;
@@ -68,6 +70,7 @@
   .filter-btn[data-cat="local"].active         { background: var(--local-color); }
   .filter-btn[data-cat="estate_sales"].active  { background: var(--estate-color); }
   .filter-btn[data-cat="sports"].active        { background: var(--sports-color); }
+  .filter-btn[data-cat="playoffs"].active      { background: var(--playoffs-color); }
   .filter-btn[data-cat="esports"].active       { background: var(--esports-color); }
   .pref-toggle { margin-left: auto; border: 2px solid var(--border); background: #fff;
                  border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600;
@@ -95,8 +98,9 @@
   .pref-chip.checked .chip-dot { background: rgba(255,255,255,.6); }
   .pref-chip[data-pref="local"].checked    { background: var(--local-color); }
   .pref-chip[data-pref="estate_sales"].checked { background: var(--estate-color); }
-  .pref-chip[data-pref="sports"].checked   { background: var(--sports-color); }
-  .pref-chip[data-pref="esports"].checked  { background: var(--esports-color); }
+  .pref-chip[data-pref="sports"].checked    { background: var(--sports-color); }
+  .pref-chip[data-pref="playoffs"].checked  { background: var(--playoffs-color); }
+  .pref-chip[data-pref="esports"].checked   { background: var(--esports-color); }
 
   /* Layout */
   .content { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
@@ -139,6 +143,12 @@
   .result-w { background: #e6f4ea; color: #1b5e20; }
   .result-l { background: #fce8e8; color: #b71c1c; }
   .result-d { background: #fff8e1; color: #e65100; }
+
+  /* Playoffs section */
+  .playoffs-section h2 { border-bottom-color: var(--playoffs-color); color: var(--playoffs-color); }
+  .league-label { font-size: 11px; font-weight: 700; letter-spacing: 1px;
+                  text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+  .league-label:first-child { margin-top: 0; }
 
   /* No events */
   .no-events { color: var(--muted); font-size: 14px; font-style: italic;
@@ -196,6 +206,7 @@
   <button class="filter-btn" data-cat="local">Local</button>
   <button class="filter-btn" data-cat="estate_sales">Estate Sales</button>
   <button class="filter-btn" data-cat="sports">Sports</button>
+  <button class="filter-btn" data-cat="playoffs">Playoffs</button>
   <button class="filter-btn" data-cat="esports">Esports</button>
   <button class="pref-toggle" id="prefToggleBtn" aria-expanded="false" title="Filter categories from the All feed">
     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -223,6 +234,11 @@
       <input type="checkbox" value="sports" checked>
       <span class="chip-dot"></span>
       Sports
+    </label>
+    <label class="pref-chip" data-pref="playoffs">
+      <input type="checkbox" value="playoffs" checked>
+      <span class="chip-dot"></span>
+      Playoffs
     </label>
     <label class="pref-chip" data-pref="esports">
       <input type="checkbox" value="esports" checked>
@@ -289,6 +305,37 @@
   </section>
   {% endif %}
 
+  {# ── PLAYOFFS ── #}
+  {% if playoffs_by_date %}
+  <section class="digest-section playoffs-section">
+    <h2>&#127944; Playoffs</h2>
+    {% for day_date, league_groups in playoffs_by_date %}
+      <div class="date-group">
+        <p class="date-label">
+          {% if day_date == today %}Today — {{ today.strftime('%A, %B %-d') }}
+          {% else %}{{ day_date.strftime('%A, %B %-d') }}{% endif %}
+        </p>
+        {% for league_label, pg_events in league_groups %}
+          <p class="league-label">{{ league_label }}</p>
+          {% for event in pg_events %}
+            {% set ev = event_display(event, tz) %}
+            <div class="event-card high-priority" data-cat="playoffs">
+              <p class="event-title">
+                {% if ev.url %}<a href="{{ ev.url }}" target="_blank" rel="noopener">{{ ev.title }}</a>
+                {% else %}{{ ev.title }}{% endif %}
+              </p>
+              <p class="event-meta">
+                <span class="time">{{ ev.time }}</span>
+                {% if ev.subtitle %}&nbsp;&middot;&nbsp;<em>{{ ev.subtitle }}</em>{% endif %}
+              </p>
+            </div>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
   {# ── COMING UP ── #}
   <section class="digest-section">
     <h2>Coming Up &mdash; Next {{ config.lookahead_days }} Days</h2>
@@ -334,7 +381,7 @@
 <script>
   (function () {
     const STORAGE_KEY = 'digest_hidden_cats';
-    const ALL_CATS = ['local', 'estate_sales', 'sports', 'esports'];
+    const ALL_CATS = ['local', 'estate_sales', 'sports', 'playoffs', 'esports'];
 
     // ── Preferences ────────────────────────────────────────────────────────
     function loadHidden() {

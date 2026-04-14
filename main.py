@@ -93,13 +93,14 @@ def main() -> None:
     print()
 
     # 1. Collect from all sources
+    espn_collector = ESPNCollector(config)
     collectors = [
         TecumsehCollector(config),
         AnnArborCollector(config),
         AdrianCollector(config),
         TCACollector(config),
         EstateSalesCollector(config),
-        ESPNCollector(config),
+        espn_collector,
         FootballDataCollector(config),
         APIFootballCollector(config),
         LiquipediaCollector(config),
@@ -128,9 +129,20 @@ def main() -> None:
 
     print(f"\nTotal collected: {len(all_events)} events")
 
+    # 1b. Collect playoffs separately (all NHL/NBA playoff games, not just user's teams)
+    print("Collecting: playoffs (nba/nhl)...")
+    try:
+        playoff_events = espn_collector.collect_playoffs(today, lookahead)
+        print(f"  -> {len(playoff_events)} playoff events")
+    except Exception as e:
+        print(f"  Warning: playoffs collection failed: {e}")
+        playoff_events = []
+
     # 2. Compute flags and sort
     compute_flags(all_events, today, tz)
     all_events.sort(key=lambda e: (e.start, e.priority.value))
+    compute_flags(playoff_events, today, tz)
+    playoff_events.sort(key=lambda e: e.start)
 
     # 3. Partition
     today_events = [e for e in all_events if e.is_today]
@@ -145,10 +157,10 @@ def main() -> None:
     ai_summary = generate_summary(today_events, yesterday_results, upcoming, config)
 
     print("Formatting email...")
-    email_html = format_email(today_events, yesterday_results, upcoming, config, ai_summary)
+    email_html = format_email(today_events, yesterday_results, upcoming, config, ai_summary, playoff_events)
 
     print("Formatting static page...")
-    page_html = format_static_page(today_events, yesterday_results, upcoming, config, ai_summary)
+    page_html = format_static_page(today_events, yesterday_results, upcoming, config, ai_summary, playoff_events)
 
     # 5. Deliver
     if args.dry_run:

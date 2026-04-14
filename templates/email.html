@@ -33,6 +33,11 @@
   .result-w { background: #e6f4ea; color: #1e7e34; }
   .result-l { background: #fce8e8; color: #c62828; }
   .result-d { background: #fff3e0; color: #e65100; }
+  .playoffs-title { font-size: 13px; font-weight: 700; letter-spacing: .5px;
+                    color: #b71c1c; margin: 0 0 4px; }
+  .league-sub { font-size: 10px; font-weight: 700; letter-spacing: 1px;
+                text-transform: uppercase; color: #aaa; margin: 14px 0 6px; }
+  .league-sub:first-child { margin-top: 0; }
   .no-events { color: #aaa; font-size: 14px; font-style: italic; }
   .date-group { margin-bottom: 20px; }
   .date-group:last-child { margin-bottom: 0; }
@@ -104,6 +109,36 @@
         {% if ev.subtitle %}
           <p class="event-meta"><em>{{ ev.subtitle }}</em></p>
         {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- PLAYOFFS -->
+  {% if playoffs_by_date %}
+  <div class="section" style="border-left: 3px solid #b71c1c;">
+    <p class="section-title" style="color:#b71c1c;">&#127944; Playoffs</p>
+    {% for day_date, league_groups in playoffs_by_date %}
+      <div class="date-group">
+        <p class="date-group-label">
+          {% if day_date == today %}Today — {{ today.strftime('%a %-m/%-d') }}
+          {% else %}{{ day_date.strftime('%a %-m/%-d') }}{% endif %}
+        </p>
+        {% for league_label, pg_events in league_groups %}
+          <p class="league-sub">{{ league_label }}</p>
+          {% for event in pg_events %}
+            {% set ev = event_display(event, tz) %}
+            <div class="event">
+              <p class="event-title">
+                {% if ev.url %}<a href="{{ ev.url }}">{{ ev.title }}</a>{% else %}{{ ev.title }}{% endif %}
+              </p>
+              <p class="event-meta">
+                <span class="time">{{ ev.time }}</span>
+                {% if ev.subtitle %} &middot; <em>{{ ev.subtitle }}</em>{% endif %}
+              </p>
+            </div>
+          {% endfor %}
+        {% endfor %}
       </div>
     {% endfor %}
   </div>
