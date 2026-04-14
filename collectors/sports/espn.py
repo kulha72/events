@@ -171,6 +171,69 @@ def _apply_priority(event: Event, config: dict) -> None:
             return
 
 
+def _parse_playoff_game(raw_event: dict, league: str) -> dict | None:
+    """
+    Parse a single playoff game from the scoreboard API.
+    Returns display-ready fields, or None if unparseable.
+    Score info is folded into the subtitle (no W/L perspective).
+    """
+    competitions = raw_event.get("competitions", [])
+    if not competitions:
+        return None
+    comp = competitions[0]
+
+    date_str = comp.get("date") or raw_event.get("date") or ""
+    try:
+        start_utc = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+    status_type = comp.get("status", {}).get("type", {})
+    completed = status_type.get("completed", False)
+
+    competitors = comp.get("competitors", [])
+    if len(competitors) < 2:
+        return None
+
+    home_comp = next((c for c in competitors if c.get("homeAway") == "home"), competitors[0])
+    away_comp = next((c for c in competitors if c.get("homeAway") == "away"), competitors[1])
+    home_name = home_comp.get("team", {}).get("displayName", "Home")
+    away_name = away_comp.get("team", {}).get("displayName", "Away")
+    title = f"{away_name} @ {home_name}"
+
+    notes = comp.get("notes", [])
+    series_note = notes[0].get("headline", "") if notes else ""
+
+    venue = comp.get("venue", {})
+    venue_name = venue.get("fullName", "")
+
+    subtitle_parts = []
+    if series_note:
+        subtitle_parts.append(series_note)
+    if completed:
+        home_score_raw = home_comp.get("score", "0")
+        away_score_raw = away_comp.get("score", "0")
+        home_score = home_score_raw.get("displayValue", "0") if isinstance(home_score_raw, dict) else str(home_score_raw)
+        away_score = away_score_raw.get("displayValue", "0") if isinstance(away_score_raw, dict) else str(away_score_raw)
+        subtitle_parts.append(f"Final: {away_score}–{home_score}")
+    if venue_name:
+        subtitle_parts.append(venue_name)
+
+    links = comp.get("links", [])
+    event_url = next((lk["href"] for lk in links if "gamecast" in lk.get("rel", [])), None)
+    if not event_url:
+        event_url = next((lk.get("href") for lk in links if lk.get("href")), None)
+
+    return {
+        "start_utc": start_utc,
+        "title": title,
+        "subtitle": " · ".join(subtitle_parts) if subtitle_parts else None,
+        "venue": venue_name,
+        "completed": completed,
+        "event_url": event_url,
+    }
+
+
 class ESPNCollector(BaseCollector):
     """Collects schedule + results for all ESPN-sourced teams and tours from config."""
 
@@ -242,6 +305,78 @@ class ESPNCollector(BaseCollector):
                 )
                 _apply_priority(event, self.config)
                 events.append(event)
+
+        return events
+
+    def collect_playoffs(self, today: date, lookahead_days: int = 7) -> list[Event]:
+        """
+        Fetch all postseason games for leagues listed under sports.playoffs in config.
+        Queries the ESPN scoreboard day-by-day and keeps only events where the
+        league reports season type 3 (postseason).  Returns [] outside of playoff season.
+        """
+        playoff_configs = self.config.get("sports", {}).get("playoffs", [])
+        if not playoff_configs:
+            return []
+
+        cutoff = today + timedelta(days=lookahead_days)
+        yesterday = today - timedelta(days=1)
+        events: list[Event] = []
+
+        for playoff_cfg in playoff_configs:
+            league = playoff_cfg.get("league", "")
+            if league not in LEAGUE_MAP:
+                print(f"  [espn] Warning: unknown playoff league '{league}', skipping")
+                continue
+
+            emoji = SPORT_EMOJI.get(league, "")
+            url = _scoreboard_url(league)
+            seen_ids: set[str] = set()
+
+            current = yesterday
+            while current <= cutoff:
+                date_str = current.strftime("%Y%m%d")
+                try:
+                    data = _fetch_json(url, params={"dates": date_str})
+                except Exception as e:
+                    print(f"  [espn] Warning: {league} playoffs fetch failed for {date_str}: {e}")
+                    current += timedelta(days=1)
+                    continue
+
+                # Skip if not postseason
+                season_type = data.get("season", {}).get("type")
+                if season_type != 3:
+                    current += timedelta(days=1)
+                    continue
+
+                for raw in data.get("events", []):
+                    event_id = raw.get("id", "")
+                    if event_id in seen_ids:
+                        continue
+                    seen_ids.add(event_id)
+
+                    parsed = _parse_playoff_game(raw, league)
+                    if not parsed:
+                        continue
+
+                    event_date = parsed["start_utc"].astimezone(LOCAL_TZ).date()
+                    if event_date < yesterday or event_date > cutoff:
+                        continue
+
+                    event = Event(
+                        id=f"espn:playoffs:{league}:{event_id}",
+                        title=f"{emoji} {parsed['title']}" if emoji else parsed["title"],
+                        category=EventCategory.SPORTS,
+                        start=parsed["start_utc"],
+                        location=parsed["venue"] or None,
+                        source="espn",
+                        url=parsed.get("event_url"),
+                        subtitle=parsed["subtitle"],
+                        priority=EventPriority.HIGH,
+                        tags=[league, "playoffs", "sports"],
+                    )
+                    events.append(event)
+
+                current += timedelta(days=1)
 
         return events
 
