@@ -342,7 +342,9 @@ class ESPNCollector(BaseCollector):
                     current += timedelta(days=1)
                     continue
 
-                # Skip if not postseason — normalize to int to handle ESPN returning "3" or 3
+                # Skip only if ESPN positively confirms this is not postseason.
+                # When the response omits season.type (e.g. no games that day),
+                # still process any events returned since we requested seasontype=3.
                 season_type_raw = data.get("season", {}).get("type")
                 if season_type_raw is None:
                     leagues = data.get("leagues", [])
@@ -351,7 +353,7 @@ class ESPNCollector(BaseCollector):
                     season_type = int(season_type_raw)
                 except (TypeError, ValueError):
                     season_type = None
-                if season_type != 3:
+                if season_type is not None and season_type != 3:
                     current += timedelta(days=1)
                     continue
 
