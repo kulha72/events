@@ -336,14 +336,21 @@ class ESPNCollector(BaseCollector):
             while current <= cutoff:
                 date_str = current.strftime("%Y%m%d")
                 try:
-                    data = _fetch_json(url, params={"dates": date_str})
+                    data = _fetch_json(url, params={"dates": date_str, "seasontype": "3"})
                 except Exception as e:
                     print(f"  [espn] Warning: {league} playoffs fetch failed for {date_str}: {e}")
                     current += timedelta(days=1)
                     continue
 
-                # Skip if not postseason
-                season_type = data.get("season", {}).get("type")
+                # Skip if not postseason — normalize to int to handle ESPN returning "3" or 3
+                season_type_raw = data.get("season", {}).get("type")
+                if season_type_raw is None:
+                    leagues = data.get("leagues", [])
+                    season_type_raw = leagues[0].get("season", {}).get("type") if leagues else None
+                try:
+                    season_type = int(season_type_raw)
+                except (TypeError, ValueError):
+                    season_type = None
                 if season_type != 3:
                     current += timedelta(days=1)
                     continue
