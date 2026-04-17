@@ -133,7 +133,7 @@ def _parse_competition(comp: dict, our_team_id: str, league: str, team_name: str
     note_text = notes[0].get("headline", "") if notes else ""
 
     links = comp.get("links", [])
-    event_url = next((lk["href"] for lk in links if "gamecast" in lk.get("rel", [])), None)
+    event_url = next((lk["href"] for lk in links if "summary" in lk.get("rel", [])), None)
     if not event_url:
         event_url = next((lk.get("href") for lk in links if lk.get("href")), None)
     if not event_url:
@@ -219,8 +219,8 @@ def _parse_playoff_game(raw_event: dict, league: str) -> dict | None:
     if venue_name:
         subtitle_parts.append(venue_name)
 
-    links = comp.get("links", [])
-    event_url = next((lk["href"] for lk in links if "gamecast" in lk.get("rel", [])), None)
+    links = raw_event.get("links", [])
+    event_url = next((lk["href"] for lk in links if "summary" in lk.get("rel", [])), None)
     if not event_url:
         event_url = next((lk.get("href") for lk in links if lk.get("href")), None)
 
