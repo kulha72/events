@@ -374,14 +374,14 @@ class ESPNCollector(BaseCollector):
                     event = Event(
                         id=f"espn:playoffs:{league}:{event_id}",
                         title=f"{emoji} {parsed['title']}" if emoji else parsed["title"],
-                        category=EventCategory.SPORTS,
+                        category=EventCategory.PLAYOFFS,
                         start=parsed["start_utc"],
                         location=parsed["venue"] or None,
                         source="espn",
                         url=parsed.get("event_url"),
                         subtitle=parsed["subtitle"],
                         priority=EventPriority.HIGH,
-                        tags=[league, "playoffs", "sports"],
+                        tags=[league, "playoffs"],
                     )
                     events.append(event)
 

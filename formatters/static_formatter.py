@@ -20,7 +20,6 @@ from formatters.email_formatter import (
     _event_display,
     _group_by_category,
     _group_by_date,
-    _group_playoffs_by_date,
 )
 
 _TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
@@ -55,7 +54,6 @@ def format_static_page(
     upcoming: list[Event],
     config: dict,
     ai_summary: str = "",
-    playoff_events: list[Event] | None = None,
 ) -> str:
     """Render and return the static HTML page string."""
     tz = ZoneInfo(config.get("timezone", "America/Detroit"))
@@ -75,7 +73,6 @@ def format_static_page(
         (d, _group_by_category(evts))
         for d, evts in _group_by_date(upcoming, tz)
     ]
-    playoffs_by_date = _group_playoffs_by_date(playoff_events or [], tz)
 
     html = tmpl.render(
         today=today,
@@ -93,7 +90,6 @@ def format_static_page(
         quick_links=config.get("quick_links", []),
         npr_headlines=npr_headlines,
         ai_summary=ai_summary,
-        playoffs_by_date=playoffs_by_date,
     )
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
