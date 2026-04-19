@@ -8,6 +8,7 @@ class EventCategory(Enum):
     LOCAL = "local"
     ESTATE_SALES = "estate_sales"
     SPORTS = "sports"
+    PLAYOFFS = "playoffs"
     ESPORTS = "esports"
 
 

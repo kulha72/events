@@ -125,10 +125,11 @@
   /* Category badge */
   .cat-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .8px;
                text-transform: uppercase; padding: 2px 7px; border-radius: 4px; margin-bottom: 6px; }
-  .cat-badge.local         { background: var(--local-bg);   color: var(--local-color); }
-  .cat-badge.estate_sales  { background: var(--estate-bg);  color: var(--estate-color); }
-  .cat-badge.sports        { background: var(--sports-bg);  color: var(--sports-color); }
-  .cat-badge.esports       { background: var(--esports-bg); color: var(--esports-color); }
+  .cat-badge.local         { background: var(--local-bg);    color: var(--local-color); }
+  .cat-badge.estate_sales  { background: var(--estate-bg);   color: var(--estate-color); }
+  .cat-badge.sports        { background: var(--sports-bg);   color: var(--sports-color); }
+  .cat-badge.playoffs      { background: var(--playoffs-bg); color: var(--playoffs-color); }
+  .cat-badge.esports       { background: var(--esports-bg);  color: var(--esports-color); }
 
   .event-title { font-size: 16px; font-weight: 600; margin: 0 0 4px; line-height: 1.3; }
   .event-title a { color: var(--text); text-decoration: none; }
@@ -143,12 +144,6 @@
   .result-w { background: #e6f4ea; color: #1b5e20; }
   .result-l { background: #fce8e8; color: #b71c1c; }
   .result-d { background: #fff8e1; color: #e65100; }
-
-  /* Playoffs section */
-  .playoffs-section h2 { border-bottom-color: var(--playoffs-color); color: var(--playoffs-color); }
-  .league-label { font-size: 11px; font-weight: 700; letter-spacing: 1px;
-                  text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
-  .league-label:first-child { margin-top: 0; }
 
   /* No events */
   .no-events { color: var(--muted); font-size: 14px; font-style: italic;
@@ -300,37 +295,6 @@
         {% if ev.subtitle %}
           <p class="event-meta"><em>{{ ev.subtitle }}</em></p>
         {% endif %}
-      </div>
-    {% endfor %}
-  </section>
-  {% endif %}
-
-  {# ── PLAYOFFS ── #}
-  {% if playoffs_by_date %}
-  <section class="digest-section playoffs-section">
-    <h2>&#127944; Playoffs</h2>
-    {% for day_date, league_groups in playoffs_by_date %}
-      <div class="date-group">
-        <p class="date-label">
-          {% if day_date == today %}Today — {{ today.strftime('%A, %B %-d') }}
-          {% else %}{{ day_date.strftime('%A, %B %-d') }}{% endif %}
-        </p>
-        {% for league_label, pg_events in league_groups %}
-          <p class="league-label">{{ league_label }}</p>
-          {% for event in pg_events %}
-            {% set ev = event_display(event, tz) %}
-            <div class="event-card high-priority" data-cat="playoffs">
-              <p class="event-title">
-                {% if ev.url %}<a href="{{ ev.url }}" target="_blank" rel="noopener">{{ ev.title }}</a>
-                {% else %}{{ ev.title }}{% endif %}
-              </p>
-              <p class="event-meta">
-                <span class="time">{{ ev.time }}</span>
-                {% if ev.subtitle %}&nbsp;&middot;&nbsp;<em>{{ ev.subtitle }}</em>{% endif %}
-              </p>
-            </div>
-          {% endfor %}
-        {% endfor %}
       </div>
     {% endfor %}
   </section>
