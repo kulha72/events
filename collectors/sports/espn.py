@@ -210,12 +210,14 @@ def _parse_playoff_game(raw_event: dict, league: str) -> dict | None:
     subtitle_parts = []
     if series_note:
         subtitle_parts.append(series_note)
+    result = None
     if completed:
         home_score_raw = home_comp.get("score", "0")
         away_score_raw = away_comp.get("score", "0")
         home_score = home_score_raw.get("displayValue", "0") if isinstance(home_score_raw, dict) else str(home_score_raw)
         away_score = away_score_raw.get("displayValue", "0") if isinstance(away_score_raw, dict) else str(away_score_raw)
-        subtitle_parts.append(f"Final: {away_score}–{home_score}")
+        result = f"Final: {away_score}–{home_score}"
+        subtitle_parts.append(result)
     if venue_name:
         subtitle_parts.append(venue_name)
 
@@ -230,6 +232,7 @@ def _parse_playoff_game(raw_event: dict, league: str) -> dict | None:
         "subtitle": " · ".join(subtitle_parts) if subtitle_parts else None,
         "venue": venue_name,
         "completed": completed,
+        "result": result,
         "event_url": event_url,
     }
 
@@ -380,6 +383,7 @@ class ESPNCollector(BaseCollector):
                         source="espn",
                         url=parsed.get("event_url"),
                         subtitle=parsed["subtitle"],
+                        result=parsed.get("result"),
                         priority=EventPriority.HIGH,
                         tags=[league, "playoffs"],
                     )
