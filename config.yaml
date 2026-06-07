@@ -65,6 +65,10 @@ sports:
     - name: "PGA Tour"
       league: "pga"
       source: "espn"
+  tournaments:
+    - name: "World Cup"
+      league: "fifa.world"
+      source: "espn"
 
 esports:
   games:
@@ -118,6 +122,7 @@ priority_rules:
     - "playoff"
     - "postseason"
     - "world series"
+    - "world cup"
     - "super bowl"
     - "march madness"
     - "ncaa tournament"

@@ -38,6 +38,7 @@ LEAGUE_MAP = {
     "uefa.champions":            ("soccer", "uefa.champions"),
     "uefa.europa":               ("soccer", "uefa.europa"),
     "uefa.europa.conference":    ("soccer", "uefa.europa.conference"),
+    "fifa.world":                ("soccer", "fifa.world"),
     "pga":                       ("golf",   "pga"),
 }
 
@@ -60,6 +61,7 @@ SPORT_EMOJI = {
     "uefa.champions":         "⚽",
     "uefa.europa":            "⚽",
     "uefa.europa.conference": "⚽",
+    "fifa.world":             "🏆",
     "pga":                    "⛳",
 }
 
@@ -250,6 +252,10 @@ class ESPNCollector(BaseCollector):
             t for t in config.get("sports", {}).get("tours", [])
             if t.get("source") == "espn" and t.get("league") in LEAGUE_MAP
         ]
+        self.tournaments = [
+            t for t in config.get("sports", {}).get("tournaments", [])
+            if t.get("source") == "espn" and t.get("league") in LEAGUE_MAP
+        ]
 
     @property
     def source_name(self) -> str:
@@ -307,6 +313,58 @@ class ESPNCollector(BaseCollector):
                     tags=[league, tour_name.lower().replace(" ", "_"), "sports", "golf"],
                 )
                 _apply_priority(event, self.config)
+                events.append(event)
+
+        return events
+
+    def _collect_tournaments(self, today: date, lookahead_days: int) -> list[Event]:
+        """Collect every match for configured neutral-site soccer tournaments
+        (e.g. the FIFA World Cup), regardless of which teams are playing."""
+        cutoff = today + timedelta(days=lookahead_days)
+        yesterday = today - timedelta(days=1)
+        events: list[Event] = []
+
+        for tourney_cfg in self.tournaments:
+            league = tourney_cfg["league"]
+            tourney_name = tourney_cfg["name"]
+            emoji = SPORT_EMOJI.get(league, "")
+
+            date_from = yesterday.strftime("%Y%m%d")
+            date_to = cutoff.strftime("%Y%m%d")
+            url = _scoreboard_url(league)
+            try:
+                data = _fetch_json(url, params={"dates": f"{date_from}-{date_to}"})
+            except Exception as e:
+                print(f"  [espn] Warning: {tourney_name} scoreboard fetch failed: {e}")
+                continue
+
+            for raw in data.get("events", []):
+                event_id = raw.get("id", "")
+                parsed = _parse_playoff_game(raw, league)
+                if not parsed:
+                    continue
+
+                event_date = parsed["start_utc"].astimezone(LOCAL_TZ).date()
+                if event_date < yesterday or event_date > cutoff:
+                    continue
+
+                subtitle = tourney_name
+                if parsed["subtitle"]:
+                    subtitle = f"{tourney_name} · {parsed['subtitle']}"
+
+                event = Event(
+                    id=f"espn:tournament:{league}:{event_id}",
+                    title=f"{emoji} {parsed['title']}" if emoji else parsed["title"],
+                    category=EventCategory.SPORTS,
+                    start=parsed["start_utc"],
+                    location=parsed["venue"] or None,
+                    source="espn",
+                    url=parsed.get("event_url"),
+                    subtitle=subtitle,
+                    result=parsed.get("result"),
+                    priority=EventPriority.HIGH,
+                    tags=[league, tourney_name.lower().replace(" ", "_"), "soccer", "sports"],
+                )
                 events.append(event)
 
         return events
@@ -497,4 +555,5 @@ class ESPNCollector(BaseCollector):
                     events.append(event)
 
         events.extend(self._collect_tours(today, lookahead_days))
+        events.extend(self._collect_tournaments(today, lookahead_days))
         return events
