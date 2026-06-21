@@ -65,6 +65,8 @@ class PandaScoreCollector(BaseCollector):
             if not game_slug:
                 continue
 
+            leagues_filter = [l.lower() for l in game_cfg.get("leagues", [])]
+
             params = {
                 "range[scheduled_at]": f"{today.isoformat()},{cutoff.isoformat()}",
                 "sort": "begin_at",
@@ -108,6 +110,9 @@ class PandaScoreCollector(BaseCollector):
                 serie = match.get("serie", {}).get("full_name", "")
                 tournament_name = match.get("tournament", {}).get("name", "")
                 match_type = match.get("match_type", "")
+
+                if leagues_filter and not any(lf in league.lower() for lf in leagues_filter):
+                    continue
 
                 subtitle_parts = filter(None, [league, serie or tournament_name, match_type])
                 subtitle = " · ".join(subtitle_parts) or None

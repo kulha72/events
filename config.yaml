@@ -83,9 +83,10 @@ esports:
     # - name: "VALORANT"
     #   source: "pandascore"
     #   min_tier: "major"
-    # - name: "CS2"
-    #   source: "pandascore"
-    #   min_tier: "major"
+    - name: "CS2"
+      source: "pandascore"
+      min_tier: "major"
+      leagues: ["BLAST", "ESL Pro League"]
     # - name: "Dota 2"
     #   source: "pandascore"
     #   min_tier: "major"
