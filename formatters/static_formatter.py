@@ -54,6 +54,7 @@ def format_static_page(
     upcoming: list[Event],
     config: dict,
     ai_summary: str = "",
+    standings: list[dict] | None = None,
 ) -> str:
     """Render and return the static HTML page string."""
     tz = ZoneInfo(config.get("timezone", "America/Detroit"))
@@ -90,6 +91,7 @@ def format_static_page(
         quick_links=config.get("quick_links", []),
         npr_headlines=npr_headlines,
         ai_summary=ai_summary,
+        standings=standings or [],
     )
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
