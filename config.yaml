@@ -23,6 +23,13 @@ local:
       enabled: true
 
 sports:
+  standings:
+    - league: "mlb"
+    - league: "nhl"
+    - league: "nfl"
+    - league: "cfb"
+      conference_group: 5   # Big Ten (ESPN conference id)
+    - league: "epl"
   playoffs:
     - league: "nba"
     - league: "nhl"

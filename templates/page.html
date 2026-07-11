@@ -145,6 +145,36 @@
   .result-l { background: #fce8e8; color: #b71c1c; }
   .result-d { background: #fff8e1; color: #e65100; }
 
+  /* Standings */
+  .standings-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .standings-tab { border: 2px solid var(--border); background: #fff; border-radius: 20px;
+                   padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+                   transition: all .15s; color: var(--muted); }
+  .standings-tab.active { color: #fff; border-color: transparent; background: var(--sports-color); }
+  .standings-league { display: none; }
+  .standings-league.active { display: block; }
+  .standings-group { background: var(--card-bg); border: 1px solid var(--border);
+                     border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  .standings-group-name { font-size: 11px; font-weight: 700; letter-spacing: 1px;
+                          text-transform: uppercase; color: var(--sports-color);
+                          background: var(--sports-bg); margin: 0; padding: 8px 14px; }
+  .standings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .standings-table th { font-size: 10px; font-weight: 700; letter-spacing: .8px;
+                        text-transform: uppercase; color: var(--muted); text-align: right;
+                        padding: 8px 10px 4px; border-bottom: 1px solid var(--border); }
+  .standings-table th.team-col { text-align: left; padding-left: 14px; }
+  .standings-table td { padding: 6px 10px; border-bottom: 1px solid #f0f0f2;
+                        text-align: right; white-space: nowrap; color: #444; }
+  .standings-table tr:last-child td { border-bottom: none; }
+  .standings-table td.team-cell { text-align: left; padding-left: 14px; font-weight: 600;
+                                  color: var(--text); white-space: normal; width: 100%; }
+  .standings-table .team-inner { display: flex; align-items: center; gap: 8px; }
+  .standings-table .team-logo { width: 20px; height: 20px; flex-shrink: 0; }
+  .standings-table .team-rank { color: var(--muted); font-weight: 700; font-size: 12px;
+                                min-width: 18px; text-align: right; flex-shrink: 0; }
+  .standings-table .note-dot { width: 7px; height: 7px; border-radius: 50%;
+                               display: inline-block; flex-shrink: 0; }
+
   /* No events */
   .no-events { color: var(--muted); font-size: 14px; font-style: italic;
                padding: 12px 0; }
@@ -300,6 +330,55 @@
   </section>
   {% endif %}
 
+  {# ── STANDINGS ── #}
+  {% if standings %}
+  <section class="digest-section" id="standingsSection">
+    <h2>Standings</h2>
+    <div class="standings-tabs">
+      {% for lg in standings %}
+        <button class="standings-tab{% if loop.first %} active{% endif %}" data-league="{{ lg.key }}">
+          {{ lg.emoji }} {{ lg.label }}
+        </button>
+      {% endfor %}
+    </div>
+    {% for lg in standings %}
+      <div class="standings-league{% if loop.first %} active{% endif %}" data-league="{{ lg.key }}">
+        {% for group in lg.groups %}
+          <div class="standings-group">
+            {% if group.name %}<p class="standings-group-name">{{ group.name }}</p>{% endif %}
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  {% for col in group.columns %}<th>{{ col }}</th>{% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in group.rows %}
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        {% if row.rank %}<span class="team-rank">{{ row.rank }}</span>{% endif %}
+                        {% if row.logo %}<img class="team-logo" src="{{ row.logo }}" alt="" loading="lazy">{% endif %}
+                        <span>{{ row.team }}</span>
+                        {% if row.note_color %}
+                          <span class="note-dot" style="background: {{ row.note_color }};"
+                                {% if row.note_desc %}title="{{ row.note_desc }}"{% endif %}></span>
+                        {% endif %}
+                      </span>
+                    </td>
+                    {% for cell in row.cells %}<td>{{ cell }}</td>{% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
   {# ── COMING UP ── #}
   <section class="digest-section">
     <h2>Coming Up &mdash; Next {{ config.lookahead_days }} Days</h2>
@@ -434,6 +513,37 @@
 
     // Apply preferences on initial load
     applyFilter('all');
+
+    // ── Standings tabs ─────────────────────────────────────────────────────
+    const LEAGUE_KEY = 'digest_standings_league';
+    const stTabs    = document.querySelectorAll('.standings-tab');
+    const stLeagues = document.querySelectorAll('.standings-league');
+
+    function showLeague(league) {
+      let found = false;
+      stLeagues.forEach(el => {
+        const match = el.dataset.league === league;
+        el.classList.toggle('active', match);
+        if (match) found = true;
+      });
+      stTabs.forEach(t => t.classList.toggle('active', t.dataset.league === league));
+      return found;
+    }
+
+    stTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        showLeague(tab.dataset.league);
+        try { localStorage.setItem(LEAGUE_KEY, tab.dataset.league); } catch (_) {}
+      });
+    });
+
+    // Restore last-viewed league
+    if (stTabs.length) {
+      try {
+        const saved = localStorage.getItem(LEAGUE_KEY);
+        if (saved && !showLeague(saved)) showLeague(stTabs[0].dataset.league);
+      } catch (_) {}
+    }
   })();
 </script>
 </body>

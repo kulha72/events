@@ -34,6 +34,7 @@ from collectors.local.adrian import AdrianCollector
 from collectors.local.tca import TCACollector
 from collectors.local.estatesales import EstateSalesCollector
 from collectors.sports.espn import ESPNCollector
+from collectors.sports.standings import collect_standings
 from collectors.sports.football_data import FootballDataCollector
 from collectors.sports.api_football import APIFootballCollector
 from collectors.esports.liquipedia import LiquipediaCollector
@@ -138,6 +139,15 @@ def main() -> None:
     except Exception as e:
         print(f"  Warning: playoffs collection failed: {e}")
 
+    # 1c. Collect standings (rendered as their own section, not events)
+    print("Collecting: standings...")
+    standings = []
+    try:
+        standings = collect_standings(config)
+        print(f"  -> {len(standings)} leagues")
+    except Exception as e:
+        print(f"  Warning: standings collection failed: {e}")
+
     # 2. Compute flags and sort
     compute_flags(all_events, today, tz)
     all_events.sort(key=lambda e: (e.start, e.priority.value))
@@ -158,7 +168,7 @@ def main() -> None:
     email_html = format_email(today_events, yesterday_results, upcoming, config, ai_summary)
 
     print("Formatting static page...")
-    page_html = format_static_page(today_events, yesterday_results, upcoming, config, ai_summary)
+    page_html = format_static_page(today_events, yesterday_results, upcoming, config, ai_summary, standings)
 
     # 5. Deliver
     if args.dry_run:
