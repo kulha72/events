@@ -28,5 +28,10 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Probe ESPN
+      # Run both orderings. If the same header set wins each time, the headers
+      # are the cause; if whichever set goes first wins, it is rate limiting.
+      - name: Probe ESPN (forward order)
         run: python scripts/espn_probe.py
+
+      - name: Probe ESPN (reverse order)
+        run: python scripts/espn_probe.py reverse
