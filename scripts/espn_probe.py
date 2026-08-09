@@ -3,16 +3,18 @@
 Diagnostic: which ESPN requests get through from a GitHub Actions runner?
 
 Every ESPN endpoint started returning 403 on 2026-08-05, emptying the sports,
-playoff and standings feeds. Two candidate causes:
+playoff and standings feeds. This tries the same URLs under several header sets
+to work out what the block keys on.
 
-  1. ESPN rejects the bot-style User-Agent the digest used to send.
-  2. ESPN blocks GitHub Actions' datacenter IP ranges outright.
+Result on 2026-08-09, identical in both orderings with 5s between requests:
+only the set that sends no User-Agent override got through (3/3 endpoints);
+every set claiming to be Mozilla got 403, including a genuine Chrome UA. The
+block is on the User-Agent, and pretending to be a browser makes it worse.
 
-This tries the same URLs under several header sets. If the browser headers
-succeed, it is (1) and the header change is the fix. If everything 403s
-regardless of headers, it is (2) and we need a different data source.
+Keep this around — if ESPN changes its mind again, re-run it rather than
+guessing, because the intuitive fix was the wrong one.
 
-Run: python scripts/espn_probe.py
+Run: python scripts/espn_probe.py [reverse]
 """
 
 import sys

@@ -6,12 +6,6 @@ name: ESPN Probe
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - claude/events-not-showing-7y0tu5
-    paths:
-      - scripts/espn_probe.py
-      - .github/workflows/espn-probe.yml
 
 jobs:
   probe:
