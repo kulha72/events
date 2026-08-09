@@ -23,6 +23,8 @@ from bs4 import BeautifulSoup
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 
 GAME_SLUGS = {
@@ -191,7 +193,7 @@ class LiquipediaCollector(BaseCollector):
                     cached_matches = _parse_matches(html, game_name, min_tier)
                     cache.set(cache_key, cached_matches)
                 except Exception as e:
-                    print(f"  [liquipedia] Warning: {game_name} scrape failed: {e}")
+                    errors.record("liquipedia", f"{game_name} scrape failed: {e}")
                     cached_matches = []
 
             for match in cached_matches:

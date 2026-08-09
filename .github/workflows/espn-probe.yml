@@ -1,0 +1,26 @@
+name: ESPN Probe
+
+# Manual-only diagnostic. Hits a few ESPN endpoints with different header sets
+# from a GitHub Actions runner and prints the status codes, so we can tell a
+# User-Agent block apart from an IP-range block. Sends nothing, deploys nothing.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Probe ESPN
+        run: python scripts/espn_probe.py

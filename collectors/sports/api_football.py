@@ -16,6 +16,8 @@ import requests
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 API_BASE = "https://api-football-v1.p.rapidapi.com/v3"
 API_HOST = "api-football-v1.p.rapidapi.com"
@@ -58,7 +60,7 @@ class APIFootballCollector(BaseCollector):
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
         if not self.api_key:
-            print("  [api_football] No API key set — skipping.")
+            errors.record("api_football", "no API key set — source skipped")
             return []
 
         cutoff = today + timedelta(days=lookahead_days)
@@ -94,7 +96,7 @@ class APIFootballCollector(BaseCollector):
                     data = resp.json()
                     fixtures.extend(data.get("response", []))
                 except Exception as e:
-                    print(f"  [api_football] Warning: {team_name} fetch failed: {e}")
+                    errors.record("api_football", f"{team_name} fetch failed: {e}")
 
             seen_ids: set[int] = set()
             for fixture_wrap in fixtures:

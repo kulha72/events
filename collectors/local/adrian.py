@@ -14,6 +14,8 @@ from dateutil import parser as dateparser
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 BASE_URL = "https://www.visitlenawee.com/events/"
 
@@ -38,7 +40,7 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
     try:
         soup = _fetch_page(url)
     except Exception as e:
-        print(f"  [adrian] Warning: could not fetch {url}: {e}")
+        errors.record("adrian", f"could not fetch {url}: {e}")
         return []
 
     items = (

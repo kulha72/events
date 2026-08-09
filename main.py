@@ -49,6 +49,8 @@ from delivery.ghpages import deploy_page
 from delivery.telegram import send_telegram
 from models.event import Event, EventPriority
 
+import errors
+
 
 def load_config(path: str = "config.yaml") -> dict:
     config_path = os.path.join(_HERE, path)
@@ -123,9 +125,11 @@ def main() -> None:
         try:
             events = collector.collect(today, lookahead)
             print(f"  -> {len(events)} events")
+            errors.note_count(collector.source_name, len(events))
             all_events.extend(events)
         except Exception as e:
-            print(f"  Warning: {collector.source_name} failed: {e}")
+            errors.record(collector.source_name, f"collector raised: {e}")
+            errors.note_count(collector.source_name, 0)
             # Continue — one failed source should not break the whole digest
 
     print(f"\nTotal collected: {len(all_events)} events")
@@ -135,9 +139,11 @@ def main() -> None:
     try:
         playoff_events = espn_collector.collect_playoffs(today, lookahead)
         print(f"  -> {len(playoff_events)} playoff events")
+        errors.note_count("playoffs", len(playoff_events))
         all_events.extend(playoff_events)
     except Exception as e:
-        print(f"  Warning: playoffs collection failed: {e}")
+        errors.record("playoffs", f"collection failed: {e}")
+        errors.note_count("playoffs", 0)
 
     # 1c. Collect standings (rendered as their own section, not events)
     print("Collecting: standings...")
@@ -145,8 +151,10 @@ def main() -> None:
     try:
         standings = collect_standings(config)
         print(f"  -> {len(standings)} leagues")
+        errors.note_count("standings", len(standings))
     except Exception as e:
-        print(f"  Warning: standings collection failed: {e}")
+        errors.record("standings", f"collection failed: {e}")
+        errors.note_count("standings", 0)
 
     # 2. Compute flags and sort
     compute_flags(all_events, today, tz)
@@ -158,6 +166,7 @@ def main() -> None:
     upcoming = [e for e in all_events if not e.is_today and not e.is_past]
 
     print(f"Today: {len(today_events)} | Results: {len(yesterday_results)} | Upcoming: {len(upcoming)}")
+
     print()
 
     # 4. Format
@@ -169,6 +178,19 @@ def main() -> None:
 
     print("Formatting static page...")
     page_html = format_static_page(today_events, yesterday_results, upcoming, config, ai_summary, standings)
+
+    # Printed after formatting so late failures (AI summary, NPR) are included.
+    # The same data is rendered into the page, email and Telegram message.
+    health = errors.summary()
+    print()
+    print("Source health:")
+    for f in health["failures"]:
+        suffix = f" (x{f['count']})" if f["count"] > 1 else ""
+        print(f"  FAIL {f['source']}{suffix}: {f['first']}")
+    if health["empty_sources"]:
+        print(f"  EMPTY (fetched, but returned nothing): {', '.join(health['empty_sources'])}")
+    if not health["failures"] and not health["empty_sources"]:
+        print("  All sources healthy.")
 
     # 5. Deliver
     if args.dry_run:

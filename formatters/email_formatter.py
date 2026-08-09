@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 from jinja2 import Environment, FileSystemLoader
 
+import errors
 from models.event import Event, EventCategory, EventPriority
 
 _TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
@@ -77,6 +78,7 @@ def format_email(
     upcoming: list[Event],
     config: dict,
     ai_summary: str = "",
+    health: dict | None = None,
 ) -> str:
     """Render and return the HTML email body string."""
     tz = ZoneInfo(config.get("timezone", "America/Detroit"))
@@ -108,4 +110,5 @@ def format_email(
         EventPriority=EventPriority,
         EventCategory=EventCategory,
         ai_summary=ai_summary,
+        health=health if health is not None else errors.summary(),
     )

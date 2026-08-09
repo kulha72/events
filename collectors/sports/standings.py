@@ -32,6 +32,9 @@ Leagues are configured under sports.standings in config.yaml, e.g.:
 
 import requests
 
+import errors
+from collectors.sports.espn_session import make_session
+
 ESPN_STANDINGS_BASE = "https://site.api.espn.com/apis/v2/sports"
 CFB_RANKINGS_URL = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/rankings"
 
@@ -132,8 +135,7 @@ LEAGUE_COLUMNS = {
 LEAGUE_COLUMNS["ncaaf"] = LEAGUE_COLUMNS["cfb"]
 LEAGUE_COLUMNS["ncaamb"] = LEAGUE_COLUMNS["cfb"]
 
-_session = requests.Session()
-_session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; daily-digest-espn/1.0)"})
+_session = make_session()
 
 
 def _fetch_json(url: str, params: dict | None = None) -> dict:
@@ -262,7 +264,7 @@ def collect_standings(config: dict) -> list[dict]:
     for cfg in standings_cfgs:
         league = cfg.get("league", "")
         if league not in STANDINGS_LEAGUE_MAP:
-            print(f"  [standings] Warning: unknown league '{league}', skipping")
+            errors.record("standings", f"unknown league '{league}', skipping")
             continue
 
         groups: list[dict] = []
@@ -274,12 +276,12 @@ def collect_standings(config: dict) -> list[dict]:
                 if top25:
                     groups.append(top25)
             except Exception as e:
-                print(f"  [standings] Warning: CFB rankings fetch failed: {e}")
+                errors.record("standings", f"CFB rankings fetch failed: {e}")
 
         try:
             groups.extend(_collect_league_standings(league, cfg.get("conference_group")))
         except Exception as e:
-            print(f"  [standings] Warning: {league} standings fetch failed: {e}")
+            errors.record("standings", f"{league} standings fetch failed: {e}")
 
         if groups:
             leagues.append({

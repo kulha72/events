@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 from jinja2 import Environment, FileSystemLoader
 
+import errors
 from models.event import Event, EventCategory, EventPriority
 from formatters.email_formatter import (
     CATEGORY_LABEL,
@@ -44,7 +45,7 @@ def _fetch_npr_headlines(n: int = 5) -> list[dict]:
             if item.findtext("title")
         ]
     except Exception as exc:
-        print(f"  [npr] Failed to fetch headlines: {exc}")
+        errors.record("npr", f"headline fetch failed: {exc}")
         return []
 
 
@@ -55,6 +56,7 @@ def format_static_page(
     config: dict,
     ai_summary: str = "",
     standings: list[dict] | None = None,
+    health: dict | None = None,
 ) -> str:
     """Render and return the static HTML page string."""
     tz = ZoneInfo(config.get("timezone", "America/Detroit"))
@@ -92,6 +94,7 @@ def format_static_page(
         npr_headlines=npr_headlines,
         ai_summary=ai_summary,
         standings=standings or [],
+        health=health if health is not None else errors.summary(),
     )
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)

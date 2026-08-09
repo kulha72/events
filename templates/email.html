@@ -53,6 +53,21 @@
     <p class="date">{{ today.strftime('%A, %B %-d, %Y') }}</p>
   </div>
 
+  <!-- FEED HEALTH -->
+  {% if health.failures or health.empty_sources %}
+  <div class="section" style="background:#fff5f5; border-left: 3px solid #b3261e;">
+    <p class="section-title" style="color:#b3261e;">&#9888; Feed problems</p>
+    <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.6; color:#6b2320;">
+      {% for f in health.failures %}
+        <li><strong>{{ f.source }}</strong>{% if f.count > 1 %} &times;{{ f.count }}{% endif %} &mdash; {{ f.first }}</li>
+      {% endfor %}
+      {% if health.empty_sources %}
+        <li style="color:#8a5a2b;"><strong>No events returned:</strong> {{ health.empty_sources | join(', ') }}</li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endif %}
+
   <!-- AI SUMMARY -->
   {% if ai_summary %}
   <div class="section" style="background:#fffdf5; border-left: 3px solid #d4a017;">

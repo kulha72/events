@@ -14,6 +14,8 @@ from dateutil import parser as dateparser
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 BASE_URL = "https://www.visitannarbor.org/events/"
 
@@ -40,7 +42,7 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
     try:
         soup = _fetch_page(url)
     except Exception as e:
-        print(f"  [annarbor] Warning: could not fetch {url}: {e}")
+        errors.record("annarbor", f"could not fetch {url}: {e}")
         return []
 
     # visitannarbor.org uses .tribe-event-list items or similar
