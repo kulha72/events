@@ -58,6 +58,17 @@
                        text-transform: uppercase; color: #a07730; margin: 0 0 5px; }
   .ai-summary-text { font-size: 14px; line-height: 1.6; color: #3a2e00; margin: 0; }
 
+  /* Feed health — surfaces collector failures so an outage is not silent */
+  .feed-health { background: #fff5f5; border-bottom: 1px solid #f3d0d0;
+                 padding: 14px 24px; }
+  .feed-health-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+                       text-transform: uppercase; color: #b3261e; margin: 0 0 8px; }
+  .feed-health-list { margin: 0; padding-left: 18px; }
+  .feed-health-list li { font-size: 13px; line-height: 1.6; color: #6b2320;
+                         word-break: break-word; }
+  .feed-health-count { font-weight: 700; }
+  .feed-health-empty { color: #8a5a2b; }
+
   /* Filter bar */
   .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
                 padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
@@ -220,15 +231,39 @@
   <h3>NPR Top Headlines</h3>
   <ul class="headlines-list">
     
+      <li><a href="https://www.npr.org/2026/08/10/nx-s1-5910791/disabilities-people-work-requirements-medicaid-income-caps-buy-in" target="_blank" rel="noopener">Some disabled people want to advance their careers. They say Medicaid rules stop them</a></li>
+    
+      <li><a href="https://www.npr.org/2026/08/10/nx-s1-5924901/michigan-students-jeffrey-epstein-sexual-abuse-interlochen-center-arts" target="_blank" rel="noopener">An arts school where Epstein allegedly preyed on students reveals decades of abuse</a></li>
+    
       <li><a href="https://www.npr.org/2026/08/10/nx-s1-5920312/proportional-representation-poll" target="_blank" rel="noopener">Voters are sick of the two-party system. A new poll shows they&#39;re open to big changes</a></li>
     
       <li><a href="https://www.npr.org/2026/08/10/nx-s1-5925349/maine-senate-race-susan-collins-troy-jackson-women-voters" target="_blank" rel="noopener">In a competitive Maine Senate race, women voters could be the deciders</a></li>
     
-      <li><a href="https://www.npr.org/2026/08/10/nx-s1-5872752/airspace-reboot-alaska-airlines-flyways" target="_blank" rel="noopener">The FAA wants to reboot the nation&#39;s airspace. This airline shows how it might work</a></li>
-    
       <li><a href="https://www.npr.org/2026/08/10/nx-s1-5925152/lindell-minnesota-primary-elections-trump" target="_blank" rel="noopener">Mike Lindell touts Trump ties in race for governor of Minnesota, where Trump has lost</a></li>
     
-      <li><a href="https://www.npr.org/2026/08/10/nx-s1-5924901/michigan-students-jeffrey-epstein-sexual-abuse-interlochen-center-arts" target="_blank" rel="noopener">An arts school where Epstein allegedly preyed on students reveals decades of abuse</a></li>
+  </ul>
+</div>
+
+
+
+<div class="feed-health">
+  <p class="feed-health-title">&#9888; Feed problems</p>
+  <ul class="feed-health-list">
+    
+      <li>
+        <strong>espn</strong>
+        &mdash; Arsenal (uefa.europa.conference) scoreboard fetch failed: 400 Client Error: Bad Request for url: https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conference/scoreboard?dates=20260809-20260817
+      </li>
+    
+      <li>
+        <strong>api_football</strong>
+        &mdash; no API key set — source skipped
+      </li>
+    
+    
+      <li class="feed-health-empty">
+        <strong>No events returned:</strong> adrian, annarbor, football_data, liquipedia, pandascore, playoffs, startgg, tca, tecumseh
+      </li>
     
   </ul>
 </div>
@@ -239,7 +274,7 @@
   <span class="ai-summary-icon">&#10024;</span>
   <div class="ai-summary-body">
     <p class="ai-summary-label">Today's Briefing</p>
-    <p class="ai-summary-text">It&#39;s Monday, August 10th, and the highlight of your day appears to be… nothing. Absolutely nothing. Perhaps the universe is suggesting a brisk walk, or maybe just staring at a wall. For those with a penchant for other people&#39;s belongings, there are several estate sales scheduled throughout the week, kicking off with a rather ambitious &#34;Huge Longaberger Collection&#34; on Wednesday.</p>
+    <p class="ai-summary-text">The Tigers managed a win yesterday, so that&#39;s something. Today&#39;s main event appears to be a football match between Millonarios and Independiente Medellín, scheduled for 7 PM. The rest of the week is predictably full of baseball and estate sales, with a golf tournament thrown in for good measure on Thursday.</p>
   </div>
 </div>
 
@@ -298,20 +333,2374 @@
     <h2>Today &mdash; Monday, August 10</h2>
 
     
-      <p class="no-events">Nothing on the calendar today.</p>
+      
+        
+      
+        
+      
+        
+      
+        
+          
+          
+            
+            <div class="event-card"
+                 data-cat="sports">
+              <span class="cat-badge sports">SPORTS</span>
+              <p class="event-title">
+                <a href="https://duckduckgo.com/?q=Millonarios+%40+Independiente+Medell%C3%ADn+liga_betplay" target="_blank" rel="noopener">⚽ Millonarios @ Independiente Medellín</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">7 PM ET</span>
+                &nbsp;&middot;&nbsp;Atanasio Girardot
+                &nbsp;&middot;&nbsp;<em>Atanasio Girardot</em>
+              </p>
+            </div>
+          
+        
+      
+        
+      
     
   </section>
 
   
   
+  <section class="digest-section">
+    <h2>Yesterday's Results</h2>
+    
+      
+      <div class="event-card" data-cat="sports">
+        <span class="cat-badge sports">SPORTS</span>
+        <p class="event-title">
+          <a href="https://duckduckgo.com/?q=Tigers+%40+San+Francisco+Giants+mlb" target="_blank" rel="noopener">⚾ Tigers @ San Francisco Giants</a>
+          
+          
+            <span class="result-badge result-w">W 3–1</span>
+          
+        </p>
+        
+          <p class="event-meta"><em>Oracle Park</em></p>
+        
+      </div>
+    
+  </section>
+  
 
   
+  
+  <section class="digest-section" id="standingsSection">
+    <h2>Standings</h2>
+    <div class="standings-tabs">
+      
+        <button class="standings-tab active" data-league="mlb">
+          ⚾ MLB
+        </button>
+      
+        <button class="standings-tab" data-league="nhl">
+          🏒 NHL
+        </button>
+      
+        <button class="standings-tab" data-league="nfl">
+          🏈 NFL
+        </button>
+      
+        <button class="standings-tab" data-league="cfb">
+          🏈 CFB
+        </button>
+      
+        <button class="standings-tab" data-league="epl">
+          ⚽ Premier League
+        </button>
+      
+    </div>
+    
+      <div class="standings-league active" data-league="mlb">
+        
+          <div class="standings-group">
+            <p class="standings-group-name">American League East</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>PCT</th><th>GB</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/tb.png" alt="" loading="lazy">
+                        <span>Tampa Bay Rays</span>
+                        
+                      </span>
+                    </td>
+                    <td>71</td><td>46</td><td>.607</td><td>-</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" alt="" loading="lazy">
+                        <span>New York Yankees</span>
+                        
+                      </span>
+                    </td>
+                    <td>66</td><td>52</td><td>.559</td><td>5.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/bos.png" alt="" loading="lazy">
+                        <span>Boston Red Sox</span>
+                        
+                      </span>
+                    </td>
+                    <td>64</td><td>53</td><td>.547</td><td>7</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/bal.png" alt="" loading="lazy">
+                        <span>Baltimore Orioles</span>
+                        
+                      </span>
+                    </td>
+                    <td>57</td><td>61</td><td>.483</td><td>14.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/tor.png" alt="" loading="lazy">
+                        <span>Toronto Blue Jays</span>
+                        
+                      </span>
+                    </td>
+                    <td>56</td><td>63</td><td>.471</td><td>16</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">American League Central</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>PCT</th><th>GB</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/chw.png" alt="" loading="lazy">
+                        <span>Chicago White Sox</span>
+                        
+                      </span>
+                    </td>
+                    <td>61</td><td>56</td><td>.521</td><td>-</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" loading="lazy">
+                        <span>Detroit Tigers</span>
+                        
+                      </span>
+                    </td>
+                    <td>58</td><td>60</td><td>.492</td><td>3.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/min.png" alt="" loading="lazy">
+                        <span>Minnesota Twins</span>
+                        
+                      </span>
+                    </td>
+                    <td>58</td><td>61</td><td>.487</td><td>4</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/cle.png" alt="" loading="lazy">
+                        <span>Cleveland Guardians</span>
+                        
+                      </span>
+                    </td>
+                    <td>58</td><td>61</td><td>.487</td><td>4</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/kc.png" alt="" loading="lazy">
+                        <span>Kansas City Royals</span>
+                        
+                      </span>
+                    </td>
+                    <td>49</td><td>70</td><td>.412</td><td>13</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">American League West</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>PCT</th><th>GB</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/hou.png" alt="" loading="lazy">
+                        <span>Houston Astros</span>
+                        
+                      </span>
+                    </td>
+                    <td>60</td><td>59</td><td>.504</td><td>-</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/tex.png" alt="" loading="lazy">
+                        <span>Texas Rangers</span>
+                        
+                      </span>
+                    </td>
+                    <td>59</td><td>59</td><td>.500</td><td>0.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" loading="lazy">
+                        <span>Seattle Mariners</span>
+                        
+                      </span>
+                    </td>
+                    <td>56</td><td>63</td><td>.471</td><td>4</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/ath.png" alt="" loading="lazy">
+                        <span>Athletics</span>
+                        
+                      </span>
+                    </td>
+                    <td>47</td><td>71</td><td>.398</td><td>12.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/laa.png" alt="" loading="lazy">
+                        <span>Los Angeles Angels</span>
+                        
+                      </span>
+                    </td>
+                    <td>45</td><td>73</td><td>.381</td><td>14.5</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">National League East</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>PCT</th><th>GB</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="" loading="lazy">
+                        <span>Atlanta Braves</span>
+                        
+                      </span>
+                    </td>
+                    <td>71</td><td>47</td><td>.602</td><td>-</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="" loading="lazy">
+                        <span>Philadelphia Phillies</span>
+                        
+                      </span>
+                    </td>
+                    <td>63</td><td>56</td><td>.529</td><td>8.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/mia.png" alt="" loading="lazy">
+                        <span>Miami Marlins</span>
+                        
+                      </span>
+                    </td>
+                    <td>60</td><td>59</td><td>.504</td><td>11.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png" alt="" loading="lazy">
+                        <span>Washington Nationals</span>
+                        
+                      </span>
+                    </td>
+                    <td>59</td><td>61</td><td>.492</td><td>13</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/nym.png" alt="" loading="lazy">
+                        <span>New York Mets</span>
+                        
+                      </span>
+                    </td>
+                    <td>52</td><td>67</td><td>.437</td><td>19.5</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">National League Central</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>PCT</th><th>GB</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/mil.png" alt="" loading="lazy">
+                        <span>Milwaukee Brewers</span>
+                        
+                      </span>
+                    </td>
+                    <td>74</td><td>44</td><td>.627</td><td>-</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="" loading="lazy">
+                        <span>Chicago Cubs</span>
+                        
+                      </span>
+                    </td>
+                    <td>69</td><td>50</td><td>.580</td><td>5.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/stl.png" alt="" loading="lazy">
+                        <span>St. Louis Cardinals</span>
+                        
+                      </span>
+                    </td>
+                    <td>59</td><td>59</td><td>.500</td><td>15</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/pit.png" alt="" loading="lazy">
+                        <span>Pittsburgh Pirates</span>
+                        
+                      </span>
+                    </td>
+                    <td>58</td><td>62</td><td>.483</td><td>17</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/cin.png" alt="" loading="lazy">
+                        <span>Cincinnati Reds</span>
+                        
+                      </span>
+                    </td>
+                    <td>56</td><td>61</td><td>.479</td><td>17.5</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">National League West</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>PCT</th><th>GB</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/lad.png" alt="" loading="lazy">
+                        <span>Los Angeles Dodgers</span>
+                        
+                      </span>
+                    </td>
+                    <td>70</td><td>48</td><td>.593</td><td>-</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/ari.png" alt="" loading="lazy">
+                        <span>Arizona Diamondbacks</span>
+                        
+                      </span>
+                    </td>
+                    <td>63</td><td>56</td><td>.529</td><td>7.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/sd.png" alt="" loading="lazy">
+                        <span>San Diego Padres</span>
+                        
+                      </span>
+                    </td>
+                    <td>62</td><td>57</td><td>.521</td><td>8.5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/sf.png" alt="" loading="lazy">
+                        <span>San Francisco Giants</span>
+                        
+                      </span>
+                    </td>
+                    <td>49</td><td>69</td><td>.415</td><td>21</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/col.png" alt="" loading="lazy">
+                        <span>Colorado Rockies</span>
+                        
+                      </span>
+                    </td>
+                    <td>46</td><td>72</td><td>.390</td><td>24</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+    
+      <div class="standings-league" data-league="nhl">
+        
+          <div class="standings-group">
+            <p class="standings-group-name">Atlantic Division</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>GP</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/buf.png" alt="" loading="lazy">
+                        <span>Buffalo Sabres</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>50</td><td>23</td><td>9</td><td>109</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/tb.png" alt="" loading="lazy">
+                        <span>Tampa Bay Lightning</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>50</td><td>26</td><td>6</td><td>106</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/mtl.png" alt="" loading="lazy">
+                        <span>Montreal Canadiens</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>48</td><td>24</td><td>10</td><td>106</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/bos.png" alt="" loading="lazy">
+                        <span>Boston Bruins</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>45</td><td>27</td><td>10</td><td>100</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/ott.png" alt="" loading="lazy">
+                        <span>Ottawa Senators</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>44</td><td>27</td><td>11</td><td>99</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/det.png" alt="" loading="lazy">
+                        <span>Detroit Red Wings</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>41</td><td>31</td><td>10</td><td>92</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/fla.png" alt="" loading="lazy">
+                        <span>Florida Panthers</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>40</td><td>38</td><td>4</td><td>84</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/tor.png" alt="" loading="lazy">
+                        <span>Toronto Maple Leafs</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>32</td><td>36</td><td>14</td><td>78</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">Metropolitan Division</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>GP</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/car.png" alt="" loading="lazy">
+                        <span>Carolina Hurricanes</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>53</td><td>22</td><td>7</td><td>113</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/pit.png" alt="" loading="lazy">
+                        <span>Pittsburgh Penguins</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>41</td><td>25</td><td>16</td><td>98</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/phi.png" alt="" loading="lazy">
+                        <span>Philadelphia Flyers</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>43</td><td>27</td><td>12</td><td>98</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/wsh.png" alt="" loading="lazy">
+                        <span>Washington Capitals</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>43</td><td>30</td><td>9</td><td>95</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/cbj.png" alt="" loading="lazy">
+                        <span>Columbus Blue Jackets</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>40</td><td>30</td><td>12</td><td>92</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/nyi.png" alt="" loading="lazy">
+                        <span>New York Islanders</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>43</td><td>34</td><td>5</td><td>91</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/nj.png" alt="" loading="lazy">
+                        <span>New Jersey Devils</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>42</td><td>37</td><td>3</td><td>87</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/nyr.png" alt="" loading="lazy">
+                        <span>New York Rangers</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>34</td><td>39</td><td>9</td><td>77</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">Central Division</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>GP</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/dal.png" alt="" loading="lazy">
+                        <span>Dallas Stars</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>50</td><td>20</td><td>12</td><td>112</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/min.png" alt="" loading="lazy">
+                        <span>Minnesota Wild</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>46</td><td>24</td><td>12</td><td>104</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/uta.png" alt="" loading="lazy">
+                        <span>Utah Mammoth</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>43</td><td>33</td><td>6</td><td>92</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/stl.png" alt="" loading="lazy">
+                        <span>St. Louis Blues</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>37</td><td>33</td><td>12</td><td>86</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/nsh.png" alt="" loading="lazy">
+                        <span>Nashville Predators</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>38</td><td>34</td><td>10</td><td>86</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/wpg.png" alt="" loading="lazy">
+                        <span>Winnipeg Jets</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>35</td><td>35</td><td>12</td><td>82</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/chi.png" alt="" loading="lazy">
+                        <span>Chicago Blackhawks</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>29</td><td>39</td><td>14</td><td>72</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/col.png" alt="" loading="lazy">
+                        <span>Colorado Avalanche</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>55</td><td>16</td><td>11</td><td>121</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">Pacific Division</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>GP</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/vgk.png" alt="" loading="lazy">
+                        <span>Vegas Golden Knights</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>39</td><td>26</td><td>17</td><td>95</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/edm.png" alt="" loading="lazy">
+                        <span>Edmonton Oilers</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>41</td><td>30</td><td>11</td><td>93</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/ana.png" alt="" loading="lazy">
+                        <span>Anaheim Ducks</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>43</td><td>33</td><td>6</td><td>92</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/la.png" alt="" loading="lazy">
+                        <span>Los Angeles Kings</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>35</td><td>27</td><td>20</td><td>90</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/sj.png" alt="" loading="lazy">
+                        <span>San Jose Sharks</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>39</td><td>35</td><td>8</td><td>86</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/sea.png" alt="" loading="lazy">
+                        <span>Seattle Kraken</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>34</td><td>37</td><td>11</td><td>79</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/cgy.png" alt="" loading="lazy">
+                        <span>Calgary Flames</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>34</td><td>39</td><td>9</td><td>77</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/van.png" alt="" loading="lazy">
+                        <span>Vancouver Canucks</span>
+                        
+                      </span>
+                    </td>
+                    <td>82</td><td>25</td><td>49</td><td>8</td><td>58</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+    
+      <div class="standings-league" data-league="nfl">
+        
+          <div class="standings-group">
+            <p class="standings-group-name">AFC East</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/buf.png" alt="" loading="lazy">
+                        <span>Buffalo Bills</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/mia.png" alt="" loading="lazy">
+                        <span>Miami Dolphins</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/ne.png" alt="" loading="lazy">
+                        <span>New England Patriots</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png" alt="" loading="lazy">
+                        <span>New York Jets</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">AFC North</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/cin.png" alt="" loading="lazy">
+                        <span>Cincinnati Bengals</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/cle.png" alt="" loading="lazy">
+                        <span>Cleveland Browns</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/pit.png" alt="" loading="lazy">
+                        <span>Pittsburgh Steelers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/bal.png" alt="" loading="lazy">
+                        <span>Baltimore Ravens</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">AFC South</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/ten.png" alt="" loading="lazy">
+                        <span>Tennessee Titans</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/ind.png" alt="" loading="lazy">
+                        <span>Indianapolis Colts</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/jax.png" alt="" loading="lazy">
+                        <span>Jacksonville Jaguars</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/hou.png" alt="" loading="lazy">
+                        <span>Houston Texans</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">AFC West</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/den.png" alt="" loading="lazy">
+                        <span>Denver Broncos</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/kc.png" alt="" loading="lazy">
+                        <span>Kansas City Chiefs</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/lv.png" alt="" loading="lazy">
+                        <span>Las Vegas Raiders</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/lac.png" alt="" loading="lazy">
+                        <span>Los Angeles Chargers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">NFC East</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/dal.png" alt="" loading="lazy">
+                        <span>Dallas Cowboys</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png" alt="" loading="lazy">
+                        <span>New York Giants</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/phi.png" alt="" loading="lazy">
+                        <span>Philadelphia Eagles</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/wsh.png" alt="" loading="lazy">
+                        <span>Washington Commanders</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">NFC North</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/chi.png" alt="" loading="lazy">
+                        <span>Chicago Bears</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/det.png" alt="" loading="lazy">
+                        <span>Detroit Lions</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/gb.png" alt="" loading="lazy">
+                        <span>Green Bay Packers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/min.png" alt="" loading="lazy">
+                        <span>Minnesota Vikings</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">NFC South</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/car.png" alt="" loading="lazy">
+                        <span>Carolina Panthers</span>
+                        
+                      </span>
+                    </td>
+                    <td>1</td><td>0</td><td>0</td><td>1.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/atl.png" alt="" loading="lazy">
+                        <span>Atlanta Falcons</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/no.png" alt="" loading="lazy">
+                        <span>New Orleans Saints</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/tb.png" alt="" loading="lazy">
+                        <span>Tampa Bay Buccaneers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">NFC West</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>W</th><th>L</th><th>T</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/lar.png" alt="" loading="lazy">
+                        <span>Los Angeles Rams</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/sf.png" alt="" loading="lazy">
+                        <span>San Francisco 49ers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/sea.png" alt="" loading="lazy">
+                        <span>Seattle Seahawks</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/ari.png" alt="" loading="lazy">
+                        <span>Arizona Cardinals</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>1</td><td>0</td><td>.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+    
+      <div class="standings-league" data-league="cfb">
+        
+          <div class="standings-group">
+            <p class="standings-group-name">AFCA Coaches Poll</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>REC</th><th>TREND</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">1</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/194.png" alt="" loading="lazy">
+                        <span>Ohio State</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-1</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">2</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png" alt="" loading="lazy">
+                        <span>Oregon</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-2</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">3</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/61.png" alt="" loading="lazy">
+                        <span>Georgia</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-3</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">4</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/251.png" alt="" loading="lazy">
+                        <span>Texas</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-4</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">5</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/87.png" alt="" loading="lazy">
+                        <span>Notre Dame</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">6</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/84.png" alt="" loading="lazy">
+                        <span>Indiana</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-6</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">7</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png" alt="" loading="lazy">
+                        <span>Miami</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-7</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">8</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/245.png" alt="" loading="lazy">
+                        <span>Texas A&amp;M</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-8</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">9</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/201.png" alt="" loading="lazy">
+                        <span>Oklahoma</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-9</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">10</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/145.png" alt="" loading="lazy">
+                        <span>Ole Miss</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-10</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">11</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/333.png" alt="" loading="lazy">
+                        <span>Alabama</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-11</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">12</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png" alt="" loading="lazy">
+                        <span>Texas Tech</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-12</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">13</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/99.png" alt="" loading="lazy">
+                        <span>LSU</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-13</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">14</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/30.png" alt="" loading="lazy">
+                        <span>USC</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-14</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">15</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/252.png" alt="" loading="lazy">
+                        <span>BYU</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-15</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">16</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/130.png" alt="" loading="lazy">
+                        <span>Michigan</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-16</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">17</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/213.png" alt="" loading="lazy">
+                        <span>Penn State</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-17</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">18</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png" alt="" loading="lazy">
+                        <span>Tennessee</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-18</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">19</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/264.png" alt="" loading="lazy">
+                        <span>Washington</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-19</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">20</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png" alt="" loading="lazy">
+                        <span>SMU</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-20</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">21</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/254.png" alt="" loading="lazy">
+                        <span>Utah</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-21</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">22</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png" alt="" loading="lazy">
+                        <span>Iowa</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-22</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">23</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/228.png" alt="" loading="lazy">
+                        <span>Clemson</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-23</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">24</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/248.png" alt="" loading="lazy">
+                        <span>Houston</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-24</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        <span class="team-rank">25</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/142.png" alt="" loading="lazy">
+                        <span>Missouri</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>-25</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+          <div class="standings-group">
+            <p class="standings-group-name">Big Ten Conference</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>CONF</th><th>W</th><th>L</th><th>PCT</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/26.png" alt="" loading="lazy">
+                        <span>UCLA Bruins</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/30.png" alt="" loading="lazy">
+                        <span>USC Trojans</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/77.png" alt="" loading="lazy">
+                        <span>Northwestern Wildcats</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/84.png" alt="" loading="lazy">
+                        <span>Indiana Hoosiers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/120.png" alt="" loading="lazy">
+                        <span>Maryland Terrapins</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/127.png" alt="" loading="lazy">
+                        <span>Michigan State Spartans</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/130.png" alt="" loading="lazy">
+                        <span>Michigan Wolverines</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/135.png" alt="" loading="lazy">
+                        <span>Minnesota Golden Gophers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/158.png" alt="" loading="lazy">
+                        <span>Nebraska Cornhuskers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/164.png" alt="" loading="lazy">
+                        <span>Rutgers Scarlet Knights</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/194.png" alt="" loading="lazy">
+                        <span>Ohio State Buckeyes</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/213.png" alt="" loading="lazy">
+                        <span>Penn State Nittany Lions</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/264.png" alt="" loading="lazy">
+                        <span>Washington Huskies</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/275.png" alt="" loading="lazy">
+                        <span>Wisconsin Badgers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/356.png" alt="" loading="lazy">
+                        <span>Illinois Fighting Illini</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png" alt="" loading="lazy">
+                        <span>Iowa Hawkeyes</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png" alt="" loading="lazy">
+                        <span>Oregon Ducks</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/ncaa/500/2509.png" alt="" loading="lazy">
+                        <span>Purdue Boilermakers</span>
+                        
+                      </span>
+                    </td>
+                    <td>0-0</td><td>0</td><td>–</td><td>0.000</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+    
+      <div class="standings-league" data-league="epl">
+        
+          <div class="standings-group">
+            <p class="standings-group-name">2026-27 English Premier League</p>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="team-col">Team</th>
+                  <th>GP</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>PTS</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/349.png" alt="" loading="lazy">
+                        <span>AFC Bournemouth</span>
+                        
+                          <span class="note-dot" style="background: #81D6AC;"
+                                title="Champions League"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/359.png" alt="" loading="lazy">
+                        <span>Arsenal</span>
+                        
+                          <span class="note-dot" style="background: #81D6AC;"
+                                title="Champions League"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/362.png" alt="" loading="lazy">
+                        <span>Aston Villa</span>
+                        
+                          <span class="note-dot" style="background: #81D6AC;"
+                                title="Champions League"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/337.png" alt="" loading="lazy">
+                        <span>Brentford</span>
+                        
+                          <span class="note-dot" style="background: #81D6AC;"
+                                title="Champions League"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/331.png" alt="" loading="lazy">
+                        <span>Brighton &amp; Hove Albion</span>
+                        
+                          <span class="note-dot" style="background: ##B5E7CE;"
+                                title="Europa League"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/363.png" alt="" loading="lazy">
+                        <span>Chelsea</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/388.png" alt="" loading="lazy">
+                        <span>Coventry City</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/384.png" alt="" loading="lazy">
+                        <span>Crystal Palace</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/368.png" alt="" loading="lazy">
+                        <span>Everton</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/370.png" alt="" loading="lazy">
+                        <span>Fulham</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/306.png" alt="" loading="lazy">
+                        <span>Hull City</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/373.png" alt="" loading="lazy">
+                        <span>Ipswich Town</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/357.png" alt="" loading="lazy">
+                        <span>Leeds United</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/364.png" alt="" loading="lazy">
+                        <span>Liverpool</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/382.png" alt="" loading="lazy">
+                        <span>Manchester City</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/360.png" alt="" loading="lazy">
+                        <span>Manchester United</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/361.png" alt="" loading="lazy">
+                        <span>Newcastle United</span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/393.png" alt="" loading="lazy">
+                        <span>Nottingham Forest</span>
+                        
+                          <span class="note-dot" style="background: #FF7F84;"
+                                title="Relegation"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/366.png" alt="" loading="lazy">
+                        <span>Sunderland</span>
+                        
+                          <span class="note-dot" style="background: #FF7F84;"
+                                title="Relegation"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/soccer/500/367.png" alt="" loading="lazy">
+                        <span>Tottenham Hotspur</span>
+                        
+                          <span class="note-dot" style="background: #FF7F84;"
+                                title="Relegation"></span>
+                        
+                      </span>
+                    </td>
+                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+    
+  </section>
   
 
   
   <section class="digest-section">
     <h2>Coming Up &mdash; Next 7 Days</h2>
     
+      
+        <div class="date-group">
+          <p class="date-label">Tuesday, August 11</p>
+          
+            
+          
+            
+          
+            
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+vs+Cleveland+Guardians+mlb" target="_blank" rel="noopener">⚾ Tigers vs Cleveland Guardians</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">6:40 PM ET</span>
+                    &nbsp;&middot;&nbsp;Comerica Park
+                    &nbsp;&middot;&nbsp;<em>Comerica Park</em>
+                  </p>
+                </div>
+              
+            
+          
+            
+          
+        </div>
       
         <div class="date-group">
           <p class="date-label">Wednesday, August 12</p>
@@ -341,6 +2730,25 @@
           
             
           
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+vs+Cleveland+Guardians+mlb" target="_blank" rel="noopener">⚾ Tigers vs Cleveland Guardians</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">6:40 PM ET</span>
+                    &nbsp;&middot;&nbsp;Comerica Park
+                    &nbsp;&middot;&nbsp;<em>Comerica Park</em>
+                  </p>
+                </div>
+              
             
           
             
@@ -375,6 +2783,57 @@
           
             
           
+            
+              
+              
+                
+                <div class="event-card high-priority"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=PGA+Tour+FedEx+St.+Jude+Championship" target="_blank" rel="noopener">⛳ FedEx St. Jude Championship</a>
+                    
+                    <span class="high-star" title="High priority">&#9733;</span>
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">3 AM ET</span>
+                    
+                    &nbsp;&middot;&nbsp;<em>PGA Tour · Aug 13–16</em>
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+vs+Cleveland+Guardians+mlb" target="_blank" rel="noopener">⚾ Tigers vs Cleveland Guardians</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">1:10 PM ET</span>
+                    &nbsp;&middot;&nbsp;Comerica Park
+                    &nbsp;&middot;&nbsp;<em>Comerica Park</em>
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Packers+%40+Pittsburgh+Steelers+nfl" target="_blank" rel="noopener">🏈 Packers @ Pittsburgh Steelers</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">7 PM ET</span>
+                    &nbsp;&middot;&nbsp;Acrisure Stadium
+                    &nbsp;&middot;&nbsp;<em>Week 2 · Acrisure Stadium</em>
+                  </p>
+                </div>
+              
             
           
             
@@ -458,6 +2917,143 @@
             
           
             
+              
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+vs+Chicago+White+Sox+mlb" target="_blank" rel="noopener">⚾ Tigers vs Chicago White Sox</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">6:40 PM ET</span>
+                    &nbsp;&middot;&nbsp;Comerica Park
+                    &nbsp;&middot;&nbsp;<em>Comerica Park</em>
+                  </p>
+                </div>
+              
+            
+          
+            
+          
+        </div>
+      
+        <div class="date-group">
+          <p class="date-label">Saturday, August 15</p>
+          
+            
+          
+            
+          
+            
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+vs+Chicago+White+Sox+mlb" target="_blank" rel="noopener">⚾ Tigers vs Chicago White Sox</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">1:10 PM ET</span>
+                    &nbsp;&middot;&nbsp;Comerica Park
+                    &nbsp;&middot;&nbsp;<em>Comerica Park</em>
+                  </p>
+                </div>
+              
+            
+          
+            
+          
+        </div>
+      
+        <div class="date-group">
+          <p class="date-label">Sunday, August 16</p>
+          
+            
+          
+            
+          
+            
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+vs+Chicago+White+Sox+mlb" target="_blank" rel="noopener">⚾ Tigers vs Chicago White Sox</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">1:40 PM ET</span>
+                    &nbsp;&middot;&nbsp;Comerica Park
+                    &nbsp;&middot;&nbsp;<em>Comerica Park</em>
+                  </p>
+                </div>
+              
+            
+          
+            
+          
+        </div>
+      
+        <div class="date-group">
+          <p class="date-label">Monday, August 17</p>
+          
+            
+          
+            
+          
+            
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Tigers+%40+Pittsburgh+Pirates+mlb" target="_blank" rel="noopener">⚾ Tigers @ Pittsburgh Pirates</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">7 PM ET</span>
+                    &nbsp;&middot;&nbsp;PNC Park
+                    &nbsp;&middot;&nbsp;<em>PNC Park</em>
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="sports">
+                  <span class="cat-badge sports">SPORTS</span>
+                  <p class="event-title">
+                    <a href="https://duckduckgo.com/?q=Millonarios+vs+Deportivo+Cali+liga_betplay" target="_blank" rel="noopener">⚽ Millonarios vs Deportivo Cali</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">7:10 PM ET</span>
+                    &nbsp;&middot;&nbsp;Estadio Nemesio Camacho El Campín
+                    &nbsp;&middot;&nbsp;<em>Estadio Nemesio Camacho El Campín</em>
+                  </p>
+                </div>
+              
+            
           
             
           
@@ -469,7 +3065,7 @@
 </main>
 
 <footer class="site-footer">
-  &#9733; = high priority &nbsp;&middot;&nbsp; Updated August 10, 2026 at 5:21 AM ET
+  &#9733; = high priority &nbsp;&middot;&nbsp; Updated August 10, 2026 at 7:11 AM ET
 </footer>
 
 <script>
