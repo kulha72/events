@@ -20,6 +20,8 @@ import requests
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 GQL_URL = "https://api.start.gg/gql/alpha"
 
@@ -90,7 +92,7 @@ class StartGGCollector(BaseCollector):
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
         if not self.api_key:
-            print("  [startgg] No API key set — skipping.")
+            errors.record("startgg", "no API key set — source skipped")
             return []
 
         if not self.smash_cfg:
@@ -123,7 +125,7 @@ class StartGGCollector(BaseCollector):
                 "perPage": 30,
             })
         except Exception as e:
-            print(f"  [startgg] Warning: query failed: {e}")
+            errors.record("startgg", f"query failed: {e}")
             return []
 
         nodes = result.get("data", {}).get("tournaments", {}).get("nodes", []) or []

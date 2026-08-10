@@ -16,6 +16,8 @@ import requests
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 API_BASE = "https://api.pandascore.co"
 
@@ -48,7 +50,7 @@ class PandaScoreCollector(BaseCollector):
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
         if not self.api_key:
-            print("  [pandascore] No API key set — skipping.")
+            errors.record("pandascore", "no API key set — source skipped")
             return []
 
         if not self.games:
@@ -83,7 +85,7 @@ class PandaScoreCollector(BaseCollector):
                 resp.raise_for_status()
                 matches = resp.json()
             except Exception as e:
-                print(f"  [pandascore] Warning: {game_name} fetch failed: {e}")
+                errors.record("pandascore", f"{game_name} fetch failed: {e}")
                 continue
 
             for match in matches:

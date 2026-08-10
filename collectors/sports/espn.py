@@ -15,6 +15,9 @@ import requests
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+from collectors.sports.espn_session import make_session
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports"
 
@@ -65,8 +68,9 @@ SPORT_EMOJI = {
     "pga":                    "⛳",
 }
 
-_session = requests.Session()
-_session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; daily-digest-espn/1.0)"})
+# ESPN began returning 403 to the old bot-style UA on 2026-08-05; the shared
+# session presents browser headers instead.
+_session = make_session()
 
 
 def _team_schedule_url(league: str, team_id: int) -> str:
@@ -276,7 +280,7 @@ class ESPNCollector(BaseCollector):
             try:
                 data = _fetch_json(url)
             except Exception as e:
-                print(f"  [espn] Warning: {tour_name} scoreboard fetch failed: {e}")
+                errors.record("espn", f"{tour_name} scoreboard fetch failed: {e}")
                 continue
 
             calendar = data.get("leagues", [{}])[0].get("calendar", [])
@@ -335,7 +339,7 @@ class ESPNCollector(BaseCollector):
             try:
                 data = _fetch_json(url, params={"dates": f"{date_from}-{date_to}"})
             except Exception as e:
-                print(f"  [espn] Warning: {tourney_name} scoreboard fetch failed: {e}")
+                errors.record("espn", f"{tourney_name} scoreboard fetch failed: {e}")
                 continue
 
             for raw in data.get("events", []):
@@ -386,7 +390,7 @@ class ESPNCollector(BaseCollector):
         for playoff_cfg in playoff_configs:
             league = playoff_cfg.get("league", "")
             if league not in LEAGUE_MAP:
-                print(f"  [espn] Warning: unknown playoff league '{league}', skipping")
+                errors.record("espn", f"unknown playoff league '{league}', skipping")
                 continue
 
             emoji = SPORT_EMOJI.get(league, "")
@@ -399,7 +403,7 @@ class ESPNCollector(BaseCollector):
                 try:
                     data = _fetch_json(url, params={"dates": date_str, "seasontype": "3"})
                 except Exception as e:
-                    print(f"  [espn] Warning: {league} playoffs fetch failed for {date_str}: {e}")
+                    errors.record("espn", f"{league} playoffs fetch failed for {date_str}: {e}")
                     current += timedelta(days=1)
                     continue
 
@@ -463,7 +467,7 @@ class ESPNCollector(BaseCollector):
 
             for league in leagues_to_check:
                 if league not in LEAGUE_MAP:
-                    print(f"  [espn] Warning: unknown league '{league}' for {team_name}, skipping")
+                    errors.record("espn", f"unknown league '{league}' for {team_name}, skipping")
                     continue
 
                 emoji = SPORT_EMOJI.get(league, "")
@@ -479,7 +483,7 @@ class ESPNCollector(BaseCollector):
                     try:
                         data = _fetch_json(sb_url, params={"dates": f"{date_from}-{date_to}"})
                     except Exception as e:
-                        print(f"  [espn] Warning: {team_name} ({league}) scoreboard fetch failed: {e}")
+                        errors.record("espn", f"{team_name} ({league}) scoreboard fetch failed: {e}")
                         continue
                     # Filter to only events involving this team
                     all_sb_events = data.get("events", [])
@@ -496,7 +500,7 @@ class ESPNCollector(BaseCollector):
                     try:
                         data = _fetch_json(url)
                     except Exception as e:
-                        print(f"  [espn] Warning: {team_name} ({league}) schedule fetch failed: {e}")
+                        errors.record("espn", f"{team_name} ({league}) schedule fetch failed: {e}")
                         continue
 
                     raw_events = data.get("events", [])

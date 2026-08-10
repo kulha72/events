@@ -14,6 +14,8 @@ from google.genai import types
 
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 _SYSTEM = """\
 You are a deadpan, dry-witted personal assistant delivering a daily briefing.
 Write 3–5 sentences. Be accurate and informative, but let a little sardonic personality seep through —
@@ -95,5 +97,5 @@ def generate_summary(
         print(f"  [ai_summary] Generated ({response.usage_metadata.candidates_token_count} tokens)")
         return text
     except Exception as exc:
-        print(f"  [ai_summary] Failed: {exc}")
+        errors.record("ai_summary", f"summary generation failed: {exc}")
         return ""

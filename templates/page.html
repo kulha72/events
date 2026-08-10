@@ -58,6 +58,17 @@
                        text-transform: uppercase; color: #a07730; margin: 0 0 5px; }
   .ai-summary-text { font-size: 14px; line-height: 1.6; color: #3a2e00; margin: 0; }
 
+  /* Feed health — surfaces collector failures so an outage is not silent */
+  .feed-health { background: #fff5f5; border-bottom: 1px solid #f3d0d0;
+                 padding: 14px 24px; }
+  .feed-health-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+                       text-transform: uppercase; color: #b3261e; margin: 0 0 8px; }
+  .feed-health-list { margin: 0; padding-left: 18px; }
+  .feed-health-list li { font-size: 13px; line-height: 1.6; color: #6b2320;
+                         word-break: break-word; }
+  .feed-health-count { font-weight: 700; }
+  .feed-health-empty { color: #8a5a2b; }
+
   /* Filter bar */
   .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
                 padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
@@ -212,6 +223,26 @@
     {% for h in npr_headlines %}
       <li><a href="{{ h.url }}" target="_blank" rel="noopener">{{ h.title }}</a></li>
     {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if health.failures or health.empty_sources %}
+<div class="feed-health">
+  <p class="feed-health-title">&#9888; Feed problems</p>
+  <ul class="feed-health-list">
+    {% for f in health.failures %}
+      <li>
+        <strong>{{ f.source }}</strong>
+        {%- if f.count > 1 %} <span class="feed-health-count">&times;{{ f.count }}</span>{% endif %}
+        &mdash; {{ f.first }}
+      </li>
+    {% endfor %}
+    {% if health.empty_sources %}
+      <li class="feed-health-empty">
+        <strong>No events returned:</strong> {{ health.empty_sources | join(', ') }}
+      </li>
+    {% endif %}
   </ul>
 </div>
 {% endif %}

@@ -18,6 +18,8 @@ from dateutil import parser as dateparser
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 
 EVENTS_URL = "https://tecumsehcenterforthearts.vbotickets.com/events"
@@ -33,7 +35,7 @@ def _scrape_with_playwright() -> list[dict]:
     try:
         from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
     except ImportError:
-        print("  [tca] Warning: playwright not installed. Run: pip install playwright && playwright install chromium")
+        errors.record("tca", "playwright not installed. Run: pip install playwright && playwright install chromium")
         return []
 
     raw_events = []
@@ -47,7 +49,7 @@ def _scrape_with_playwright() -> list[dict]:
             # Events live inside an iframe (#MyEventWrapper) pointing to plugin.vbotickets.com
             page.wait_for_selector("#MyEventWrapper", timeout=_RENDER_TIMEOUT)
         except PWTimeout:
-            print(f"  [tca] Warning: iframe did not appear within {_RENDER_TIMEOUT}ms")
+            errors.record("tca", f"iframe did not appear within {_RENDER_TIMEOUT}ms")
             browser.close()
             return []
 
@@ -61,7 +63,7 @@ def _scrape_with_playwright() -> list[dict]:
                     break
 
         if frame is None:
-            print("  [tca] Warning: could not locate VBO iframe")
+            errors.record("tca", "could not locate VBO iframe")
             browser.close()
             return []
 
@@ -69,7 +71,7 @@ def _scrape_with_playwright() -> list[dict]:
         try:
             frame.wait_for_selector(".EventListWrapper", timeout=_RENDER_TIMEOUT)
         except PWTimeout:
-            print(f"  [tca] Warning: events did not finish loading within {_RENDER_TIMEOUT}ms")
+            errors.record("tca", f"events did not finish loading within {_RENDER_TIMEOUT}ms")
 
         # Parse iframe content with BeautifulSoup
         from bs4 import BeautifulSoup

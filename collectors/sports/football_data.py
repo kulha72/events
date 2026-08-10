@@ -15,6 +15,8 @@ import requests
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 API_BASE = "https://api.football-data.org/v4"
 
@@ -56,7 +58,7 @@ class FootballDataCollector(BaseCollector):
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
         if not self.api_key:
-            print("  [football_data] No API key set — skipping.")
+            errors.record("football_data", "no API key set — source skipped")
             return []
 
         cutoff = today + timedelta(days=lookahead_days)
@@ -82,7 +84,7 @@ class FootballDataCollector(BaseCollector):
                 resp.raise_for_status()
                 data = resp.json()
             except Exception as e:
-                print(f"  [football_data] Warning: {team_name} fetch failed: {e}")
+                errors.record("football_data", f"{team_name} fetch failed: {e}")
                 continue
 
             for match in data.get("matches", []):
