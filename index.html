@@ -68,6 +68,13 @@
                          word-break: break-word; }
   .feed-health-count { font-weight: 700; }
   .feed-health-empty { color: #8a5a2b; }
+  /* Explained empties: real information, but nothing to act on, so they sit
+     outside the red box and stay visually quiet. */
+  .feed-health-quiet { font-size: 12px; line-height: 1.55; color: var(--muted);
+                       background: #fafafa; border-bottom: 1px solid var(--border);
+                       padding: 10px 24px; margin: 0; }
+  .feed-health-quiet strong { font-weight: 600; color: #666; }
+  .feed-health-quiet-label { font-weight: 700; letter-spacing: .4px; color: #777; }
 
   /* Filter bar */
   .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
@@ -231,15 +238,15 @@
   <h3>NPR Top Headlines</h3>
   <ul class="headlines-list">
     
+      <li><a href="https://www.npr.org/2026/08/15/nx-s1-5928322/ice-detained-a-venezuelan-soccer-pro-his-case-shows-the-immigration-backlog-crisis" target="_blank" rel="noopener">ICE detained a Venezuelan soccer pro. His case shows the immigration backlog crisis</a></li>
+    
+      <li><a href="https://www.npr.org/2026/08/15/nx-s1-5930423/strength-exercises-to-relieve-prevent-pregnancy-pain" target="_blank" rel="noopener">5 exercises that can prevent (and relieve!) pregnancy pain</a></li>
+    
+      <li><a href="https://www.npr.org/2026/08/15/nx-s1-5897606/afghanistan-visa-green-card-deport" target="_blank" rel="noopener">They fought for the U.S. in Afghanistan. Now they worry about losing their green cards</a></li>
+    
+      <li><a href="https://www.npr.org/2026/08/15/nx-s1-5932405/earthquake-indonesia" target="_blank" rel="noopener">Magnitude 7.7 earthquake strikes off Indonesia&#39;s coast, killing at least 38</a></li>
+    
       <li><a href="https://www.npr.org/2026/08/14/nx-s1-5928227/how-americans-deceive-ourselves-about-slavery" target="_blank" rel="noopener">How Americans deceive ourselves about slavery</a></li>
-    
-      <li><a href="https://www.npr.org/2026/08/14/nx-s1-5927506/speed-cameras-ticket-backlash" target="_blank" rel="noopener">As speed cameras spread to more states, so does the backlash from drivers</a></li>
-    
-      <li><a href="https://www.npr.org/2026/08/14/nx-s1-5927115/summer-vaccine-covid-19-surge" target="_blank" rel="noopener">Is there a summer COVID-19 surge this year? Yep, it&#39;s ramping up again</a></li>
-    
-      <li><a href="https://www.npr.org/2026/08/14/nx-s1-5930700/mangione-federal-charges-guilty-plea" target="_blank" rel="noopener">Mangione pleads guilty in federal court, leaving fate of state trial uncertain</a></li>
-    
-      <li><a href="https://www.npr.org/2026/08/14/nx-s1-5929422/inflation-spending-economy-groceries-gas" target="_blank" rel="noopener">We learned 5 important things about the economy this week</a></li>
     
   </ul>
 </div>
@@ -250,19 +257,26 @@
   <p class="feed-health-title">&#9888; Feed problems</p>
   <ul class="feed-health-list">
     
+    
       <li>
-        <strong>espn</strong>
-        &mdash; Arsenal (uefa.europa.conference) scoreboard fetch failed: 400 Client Error: Bad Request for url: https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conference/scoreboard?dates=20260814-20260822
+        <strong>adrian</strong> &mdash; fetched but parsed nothing: fetched 1845 chars of text from visitlenawee.com but no tribe-events item matched — layout changed, or the calendar is now client-rendered and needs Playwright
       </li>
     
       <li>
-        <strong>api_football</strong>
-        &mdash; no API key set — source skipped
+        <strong>annarbor</strong> &mdash; fetched but parsed nothing: fetched 2431 chars of text from visitannarbor.org but no tribe-events item matched — layout changed, or the calendar is now client-rendered and needs Playwright
+      </li>
+    
+      <li>
+        <strong>pandascore</strong> &mdash; fetched but parsed nothing: CS2: API returned 50 upcoming matches but the leagues filter [&#39;BLAST&#39;, &#39;ESL Pro League&#39;] matched none of them (saw: BetBoom Storm, CCT Europe, CCT South America, ESEA)
+      </li>
+    
+      <li>
+        <strong>tecumseh</strong> &mdash; fetched but parsed nothing: downtowntecumseh.com rendered 6038 bytes but no div.event matched — the events page markup has probably changed
       </li>
     
     
       <li class="feed-health-empty">
-        <strong>No events returned:</strong> adrian, annarbor, football_data, liquipedia, pandascore, playoffs, tca, tecumseh
+        <strong>No events returned:</strong> tca
       </li>
     
   </ul>
@@ -270,11 +284,18 @@
 
 
 
+<p class="feed-health-quiet">
+  <span class="feed-health-quiet-label">Nothing expected from:</span>
+  <strong>playoffs</strong> (18 daily nba/nhl scoreboard fetches succeeded; no postseason games scheduled in this window (out of season)) &middot; <strong>api_football</strong> (no team in config sets source: api_football) &middot; <strong>football_data</strong> (no team in config sets source: football_data) &middot; <strong>liquipedia</strong> (no esports game in config sets source: liquipedia)
+</p>
+
+
+
 <div class="ai-summary">
   <span class="ai-summary-icon">&#10024;</span>
   <div class="ai-summary-body">
     <p class="ai-summary-label">Today's Briefing</p>
-    <p class="ai-summary-text">Your Saturday, August 15, 2026, is best spent rummaging through other people&#39;s belongings. Several estate sales are kicking off at 9 AM, with options ranging from &#34;NICE ADRIAN&#34; to &#34;Stunning Home,&#34; should you feel ambitious enough to drive more than 20 miles. For those with more niche interests, there&#39;s an &#34;Estate Sale for Glass.Lovers&#34; or a &#34;Fine Furnishings&#34; sale featuring a clock that sounds rather... specific. The Tigers are back at it against the White Sox this afternoon, and I&#39;m sure their 5-9 loss yesterday has absolutely no bearing on today&#39;s outcome.</p>
+    <p class="ai-summary-text">Apparently, your Saturday is best spent sifting through the remnants of other people&#39;s lives at one of the many estate sales scattered about.  The Tigers lost yesterday, which may or may not be relevant to your plans, and there&#39;s a rather niche e-sports event happening in Nagoya today, should you find yourself with a sudden urge to observe digital competition across international time zones. Later this afternoon, the Tigers will attempt to redeem themselves against the White Sox, a feat I won&#39;t hold my breath over.</p>
   </div>
 </div>
 
@@ -3215,7 +3236,7 @@
 </main>
 
 <footer class="site-footer">
-  &#9733; = high priority &nbsp;&middot;&nbsp; Updated August 15, 2026 at 4:28 AM ET
+  &#9733; = high priority &nbsp;&middot;&nbsp; Updated August 15, 2026 at 11:14 AM ET
 </footer>
 
 <script>
