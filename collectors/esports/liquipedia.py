@@ -174,6 +174,15 @@ class LiquipediaCollector(BaseCollector):
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
         import cache
 
+        # CS2 is served by PandaScore and Smash by start.gg, so no game in
+        # config routes here. Nothing is fetched and nothing can be returned —
+        # that is a dormant source, not a broken one.
+        if not self.games:
+            errors.note_not_configured(
+                "liquipedia", "no esports game in config sets source: liquipedia"
+            )
+            return []
+
         cutoff = today + timedelta(days=lookahead_days)
         events: list[Event] = []
 
@@ -191,6 +200,12 @@ class LiquipediaCollector(BaseCollector):
                 try:
                     html = _fetch_upcoming_html(game_slug)
                     cached_matches = _parse_matches(html, game_name, min_tier)
+                    if html and not cached_matches:
+                        errors.note_suspect(
+                            "liquipedia",
+                            f"{game_name}: fetched {len(html)} bytes but parsed 0 matches "
+                            f"(wikitable layout or '{min_tier}' tier keywords may have changed)",
+                        )
                     cache.set(cache_key, cached_matches)
                 except Exception as e:
                     errors.record("liquipedia", f"{game_name} scrape failed: {e}")

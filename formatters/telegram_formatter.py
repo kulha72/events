@@ -55,11 +55,17 @@ def format_telegram(
     sections: list[str] = [header]
 
     health = health if health is not None else errors.summary()
-    if health.get("failures") or health.get("empty_sources"):
+    # Explained empties (dormant, out of season) are deliberately left out of
+    # the push message — it should only fire on something worth looking at.
+    if health.get("failures") or health.get("suspect") or health.get("empty_sources"):
         sections.append("\n⚠️ <b>Feed problems</b>")
         for f in health.get("failures", []):
             times = f" ×{f['count']}" if f["count"] > 1 else ""
             sections.append(f"• <b>{_esc(f['source'])}</b>{times} — {_esc(f['first'])}")
+        for s in health.get("suspect", []):
+            sections.append(
+                f"• <b>{_esc(s['source'])}</b> — fetched but parsed nothing: {_esc(s['reason'])}"
+            )
         if health.get("empty_sources"):
             sections.append(f"• <i>No events: {_esc(', '.join(health['empty_sources']))}</i>")
 

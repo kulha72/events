@@ -68,6 +68,13 @@
                          word-break: break-word; }
   .feed-health-count { font-weight: 700; }
   .feed-health-empty { color: #8a5a2b; }
+  /* Explained empties: real information, but nothing to act on, so they sit
+     outside the red box and stay visually quiet. */
+  .feed-health-quiet { font-size: 12px; line-height: 1.55; color: var(--muted);
+                       background: #fafafa; border-bottom: 1px solid var(--border);
+                       padding: 10px 24px; margin: 0; }
+  .feed-health-quiet strong { font-weight: 600; color: #666; }
+  .feed-health-quiet-label { font-weight: 700; letter-spacing: .4px; color: #777; }
 
   /* Filter bar */
   .filter-bar { background: #fff; border-bottom: 1px solid var(--border);
@@ -227,7 +234,7 @@
 </div>
 {% endif %}
 
-{% if health.failures or health.empty_sources %}
+{% if health.failures or health.suspect or health.empty_sources %}
 <div class="feed-health">
   <p class="feed-health-title">&#9888; Feed problems</p>
   <ul class="feed-health-list">
@@ -238,6 +245,11 @@
         &mdash; {{ f.first }}
       </li>
     {% endfor %}
+    {% for s in health.suspect %}
+      <li>
+        <strong>{{ s.source }}</strong> &mdash; fetched but parsed nothing: {{ s.reason }}
+      </li>
+    {% endfor %}
     {% if health.empty_sources %}
       <li class="feed-health-empty">
         <strong>No events returned:</strong> {{ health.empty_sources | join(', ') }}
@@ -245,6 +257,15 @@
     {% endif %}
   </ul>
 </div>
+{% endif %}
+
+{% if health.idle or health.not_configured %}
+<p class="feed-health-quiet">
+  <span class="feed-health-quiet-label">Nothing expected from:</span>
+  {% for s in health.idle + health.not_configured -%}
+    <strong>{{ s.source }}</strong> ({{ s.reason }}){% if not loop.last %} &middot; {% endif %}
+  {%- endfor %}
+</p>
 {% endif %}
 
 {% if ai_summary %}

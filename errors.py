@@ -33,6 +33,17 @@ _SECRET_PARAM_RE = re.compile(
 _errors: list[dict] = []
 _counts: dict[str, int] = {}
 
+# Why a source returned nothing, when the source itself already knows.
+# An empty result is ambiguous on its own: "quiet day", "wired to nothing" and
+# "the scraper broke" all look identical from the outside. Collectors that can
+# tell the difference say so here, so the report can stop crying wolf over the
+# first two and start pointing at the third.
+_SUSPECT = "suspect"
+_IDLE = "idle"
+_NOT_CONFIGURED = "not_configured"
+
+_status: dict[str, dict] = {}
+
 
 def redact(text: str) -> str:
     """Strip credentials out of a message before it is displayed."""
@@ -74,6 +85,44 @@ def note_count(source: str, count: int) -> None:
     _counts[source] = _counts.get(source, 0) + count
 
 
+def _set_status(source: str, kind: str, reason: str) -> None:
+    # A source that fetched several endpoints can report more than once. Keep
+    # the most alarming verdict: suspect outranks idle outranks not-configured.
+    rank = {_NOT_CONFIGURED: 0, _IDLE: 1, _SUSPECT: 2}
+    existing = _status.get(source)
+    if existing and rank[existing["kind"]] >= rank[kind]:
+        return
+    _status[source] = {"source": source, "kind": kind, "reason": _condense(redact(reason))}
+
+
+def note_not_configured(source: str, reason: str) -> None:
+    """Nothing in config routes to this source, so it cannot produce events.
+
+    A dormant source is not a broken one. Reporting it as a daily failure
+    trains the reader to ignore the whole health block.
+    """
+    _set_status(source, _NOT_CONFIGURED, reason)
+
+
+def note_idle(source: str, reason: str) -> None:
+    """Fetches succeeded; there is genuinely nothing scheduled.
+
+    The off-season case — an NBA playoff feed in August is working perfectly.
+    """
+    _set_status(source, _IDLE, reason)
+
+
+def note_suspect(source: str, message: str) -> None:
+    """Fetched real content but parsed nothing out of it.
+
+    This is the case worth waking up for: no exception was raised, so the run
+    stays green, but the source has almost certainly changed its markup.
+    """
+    clean = _condense(redact(message))
+    print(f"  [{source}] Suspect: {clean}")
+    _set_status(source, _SUSPECT, clean)
+
+
 def all_errors() -> list[dict]:
     return list(_errors)
 
@@ -83,10 +132,15 @@ def counts() -> dict[str, int]:
 
 
 def summary() -> dict:
-    """Report payload: failures, plus which sources came back empty.
+    """Report payload, split by how much each empty source should worry you.
 
     Errors are grouped by source so an outage that trips 30 endpoints renders
     as one line with a count rather than 30 near-identical rows.
+
+    An empty source is only interesting when nobody can explain it. Sources
+    that explained themselves — nothing configured, nothing in season, markup
+    stopped matching — are reported under that explanation instead of being
+    swept into one undifferentiated "no events" list.
     """
     grouped: dict[str, dict] = {}
     for err in _errors:
@@ -95,13 +149,23 @@ def summary() -> dict:
         )
         entry["count"] += 1
 
+    def _of_kind(kind: str) -> list[dict]:
+        return sorted(
+            (s for s in _status.values() if s["kind"] == kind and s["source"] not in grouped),
+            key=lambda s: s["source"],
+        )
+
     # A source that already reported a failure is obviously empty; listing it
     # again adds nothing. What matters here is the source that fetched fine and
     # still parsed nothing — the silent-breakage case.
     return {
         "failures": sorted(grouped.values(), key=lambda e: -e["count"]),
+        "suspect": _of_kind(_SUSPECT),
+        "idle": _of_kind(_IDLE),
+        "not_configured": _of_kind(_NOT_CONFIGURED),
         "empty_sources": sorted(
-            s for s, n in _counts.items() if n == 0 and s not in grouped
+            s for s, n in _counts.items()
+            if n == 0 and s not in grouped and s not in _status
         ),
         "total": len(_errors),
     }
@@ -110,3 +174,4 @@ def summary() -> dict:
 def clear() -> None:
     _errors.clear()
     _counts.clear()
+    _status.clear()

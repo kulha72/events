@@ -54,18 +54,31 @@
   </div>
 
   <!-- FEED HEALTH -->
-  {% if health.failures or health.empty_sources %}
+  {% if health.failures or health.suspect or health.empty_sources %}
   <div class="section" style="background:#fff5f5; border-left: 3px solid #b3261e;">
     <p class="section-title" style="color:#b3261e;">&#9888; Feed problems</p>
     <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.6; color:#6b2320;">
       {% for f in health.failures %}
         <li><strong>{{ f.source }}</strong>{% if f.count > 1 %} &times;{{ f.count }}{% endif %} &mdash; {{ f.first }}</li>
       {% endfor %}
+      {% for s in health.suspect %}
+        <li><strong>{{ s.source }}</strong> &mdash; fetched but parsed nothing: {{ s.reason }}</li>
+      {% endfor %}
       {% if health.empty_sources %}
         <li style="color:#8a5a2b;"><strong>No events returned:</strong> {{ health.empty_sources | join(', ') }}</li>
       {% endif %}
     </ul>
   </div>
+  {% endif %}
+
+  <!-- Explained empties — informational, deliberately outside the red box -->
+  {% if health.idle or health.not_configured %}
+  <p style="font-size:12px; line-height:1.55; color:#888; margin:0 0 12px; padding:0 4px;">
+    <strong style="color:#777;">Nothing expected from:</strong>
+    {% for s in health.idle + health.not_configured -%}
+      <strong style="color:#666;">{{ s.source }}</strong> ({{ s.reason }}){% if not loop.last %} &middot; {% endif %}
+    {%- endfor %}
+  </p>
   {% endif %}
 
   <!-- AI SUMMARY -->

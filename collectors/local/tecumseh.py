@@ -24,6 +24,8 @@ sys.path.insert(0, _ROOT)
 from collectors.base import BaseCollector
 from models.event import Event, EventCategory, EventPriority
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 
 DOWNTOWN_URL = "https://www.downtowntecumseh.com/events/"
@@ -183,7 +185,19 @@ def _parse_downtown_when(when_text: str) -> list[dict]:
 def _scrape_downtown() -> list[dict]:
     events = []
     soup = _fetch_with_playwright(DOWNTOWN_URL)
-    for event_div in soup.find_all("div", class_="event"):
+
+    # Rendering the page and matching nothing is the failure mode this scraper
+    # cannot otherwise report: no exception is raised, so the run stays green
+    # and the section just disappears. Say so explicitly.
+    event_divs = soup.find_all("div", class_="event")
+    if not event_divs:
+        errors.note_suspect(
+            "tecumseh",
+            f"downtowntecumseh.com rendered {len(str(soup))} bytes but no div.event "
+            "matched — the events page markup has probably changed",
+        )
+
+    for event_div in event_divs:
         title_tag = event_div.select_one(".event__title h3") or event_div.select_one(".event__title")
         title = title_tag.get_text(strip=True) if title_tag else ""
         if not title:
@@ -237,13 +251,18 @@ def _scrape_herald(months_ahead: int = 3) -> list[dict]:
     events = []
     seen_paths: set[str] = set()
     today = date.today()
+    months_failed = 0
 
     for i in range(months_ahead + 1):
         month_date = today + relativedelta(months=i)
         cal_url = f"{HERALD_BASE}{HERALD_CALENDAR_PATH}/{month_date.strftime('%Y-%m')}"
         try:
             soup = _fetch(cal_url)
-        except Exception:
+        except Exception as e:
+            # Previously swallowed outright: the Herald could be down for
+            # every month of the window and the digest would say nothing.
+            months_failed += 1
+            errors.record("tecumseh", f"herald calendar {month_date:%Y-%m} fetch failed: {e}")
             continue
 
         for a in soup.find_all("a", href=True):
@@ -253,6 +272,13 @@ def _scrape_herald(months_ahead: int = 3) -> list[dict]:
                 event = _parse_herald_event_page(HERALD_BASE + path)
                 if event:
                     events.append(event)
+
+    if not events and not months_failed:
+        errors.note_suspect(
+            "tecumseh",
+            f"herald calendar fetched for {months_ahead + 1} months but yielded 0 events "
+            f"({len(seen_paths)} /content/ links seen) — calendar markup may have changed",
+        )
     return events
 
 
@@ -352,7 +378,16 @@ class TecumsehCollector(BaseCollector):
         cutoff = today + timedelta(days=lookahead_days)
         events: list[Event] = []
 
-        for raw in _scrape_downtown():
+        # The two halves are independent sites. Letting a Playwright failure on
+        # the downtown page propagate would take the Herald listings down with
+        # it and report the whole source as dead.
+        try:
+            downtown_raw = _scrape_downtown()
+        except Exception as e:
+            errors.record("tecumseh", f"downtown scrape failed: {e}")
+            downtown_raw = []
+
+        for raw in downtown_raw:
             sd = raw["start_date"]
             if sd < today - timedelta(days=1) or sd > cutoff:
                 continue
@@ -381,7 +416,13 @@ class TecumsehCollector(BaseCollector):
                 tags=["local", "tecumseh"],
             ))
 
-        for raw in _scrape_herald(months_ahead=3):
+        try:
+            herald_raw = _scrape_herald(months_ahead=3)
+        except Exception as e:
+            errors.record("tecumseh", f"herald scrape failed: {e}")
+            herald_raw = []
+
+        for raw in herald_raw:
             dt = raw["start_dt"]
             sd = dt if isinstance(dt, date) and not isinstance(dt, datetime) else dt.date()
             if sd < today - timedelta(days=1) or sd > cutoff:

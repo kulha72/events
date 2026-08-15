@@ -40,7 +40,11 @@ LEAGUE_MAP = {
     "conmebol.sudamericana":     ("soccer", "conmebol.sudamericana"),
     "uefa.champions":            ("soccer", "uefa.champions"),
     "uefa.europa":               ("soccer", "uefa.europa"),
-    "uefa.europa.conference":    ("soccer", "uefa.europa.conference"),
+    # ESPN's slug is "uefa.europa.conf", not the spelled-out "…conference"
+    # the config uses; the long form 400s. UEFA dropped "Europa" from the name
+    # in 2024 but ESPN kept the old path, so do not "fix" this to
+    # uefa.conference either. See espn.com/soccer/league/_/name/uefa.europa.conf
+    "uefa.europa.conference":    ("soccer", "uefa.europa.conf"),
     "fifa.world":                ("soccer", "fifa.world"),
     "pga":                       ("golf",   "pga"),
 }
@@ -386,6 +390,8 @@ class ESPNCollector(BaseCollector):
         cutoff = today + timedelta(days=lookahead_days)
         yesterday = today - timedelta(days=1)
         events: list[Event] = []
+        days_fetched = 0
+        days_failed = 0
 
         for playoff_cfg in playoff_configs:
             league = playoff_cfg.get("league", "")
@@ -404,8 +410,10 @@ class ESPNCollector(BaseCollector):
                     data = _fetch_json(url, params={"dates": date_str, "seasontype": "3"})
                 except Exception as e:
                     errors.record("espn", f"{league} playoffs fetch failed for {date_str}: {e}")
+                    days_failed += 1
                     current += timedelta(days=1)
                     continue
+                days_fetched += 1
 
                 # Skip only if ESPN positively confirms this is not postseason.
                 # When the response omits season.type (e.g. no games that day),
@@ -452,6 +460,17 @@ class ESPNCollector(BaseCollector):
                     events.append(event)
 
                 current += timedelta(days=1)
+
+        # Both configured leagues are postseason-only feeds, so they are empty
+        # for most of the year by design. Only say something is wrong when a
+        # fetch actually failed — an empty August is the NBA working correctly.
+        if not events and days_fetched and not days_failed:
+            leagues = "/".join(p.get("league", "?") for p in playoff_configs)
+            errors.note_idle(
+                "playoffs",
+                f"{days_fetched} daily {leagues} scoreboard fetches succeeded; "
+                "no postseason games scheduled in this window (out of season)",
+            )
 
         return events
 

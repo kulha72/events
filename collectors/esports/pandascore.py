@@ -49,11 +49,16 @@ class PandaScoreCollector(BaseCollector):
         return "pandascore"
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
-        if not self.api_key:
-            errors.record("pandascore", "no API key set — source skipped")
+        # Check for work before checking for credentials, so a source nothing
+        # routes to never reports a missing key as a failure.
+        if not self.games:
+            errors.note_not_configured(
+                "pandascore", "no esports game in config sets source: pandascore"
+            )
             return []
 
-        if not self.games:
+        if not self.api_key:
+            errors.record("pandascore", "no API key set — source skipped")
             return []
 
         cutoff = today + timedelta(days=lookahead_days)
@@ -88,6 +93,12 @@ class PandaScoreCollector(BaseCollector):
                 errors.record("pandascore", f"{game_name} fetch failed: {e}")
                 continue
 
+            # The league filter runs client-side over a single capped page, so
+            # "0 events" can mean either "nothing upcoming" or "the page was
+            # full of other leagues". Count both so the report can say which.
+            kept = 0
+            dropped_by_league: set[str] = set()
+
             for match in matches:
                 begin_at = match.get("scheduled_at") or match.get("begin_at", "")
                 if not begin_at:
@@ -114,7 +125,10 @@ class PandaScoreCollector(BaseCollector):
                 match_type = match.get("match_type", "")
 
                 if leagues_filter and not any(lf in league.lower() for lf in leagues_filter):
+                    if league:
+                        dropped_by_league.add(league)
                     continue
+                kept += 1
 
                 subtitle_parts = filter(None, [league, serie or tournament_name, match_type])
                 subtitle = " · ".join(subtitle_parts) or None
@@ -135,5 +149,20 @@ class PandaScoreCollector(BaseCollector):
                     tags=["esports", game_tag],
                 )
                 events.append(event)
+
+            if not kept:
+                if dropped_by_league:
+                    shown = ", ".join(sorted(dropped_by_league)[:4])
+                    errors.note_suspect(
+                        "pandascore",
+                        f"{game_name}: API returned {len(matches)} upcoming matches but the "
+                        f"leagues filter {game_cfg.get('leagues')} matched none of them "
+                        f"(saw: {shown})",
+                    )
+                elif not matches:
+                    errors.note_idle(
+                        "pandascore",
+                        f"{game_name}: API reachable, 0 matches scheduled in the window",
+                    )
 
         return events

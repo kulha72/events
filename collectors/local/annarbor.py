@@ -55,6 +55,20 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
         soup.select(".tribe-events-loop .tribe-event-schedule-details")
     )
 
+    # Fetching a page and selecting nothing out of it is indistinguishable from
+    # a quiet week unless the scraper says which happened. All five selectors
+    # assume The Events Calendar markup; a theme change or a switch to a
+    # JS-rendered calendar empties this silently.
+    if not items:
+        errors.note_suspect(
+            "annarbor",
+            f"fetched {len(soup.get_text(strip=True))} chars of text from visitannarbor.org "
+            "but no tribe-events item matched — layout changed, or the calendar is "
+            "now client-rendered and needs Playwright",
+        )
+        return []
+
+    parsed_dates = 0
     for item in items:
         # Title
         title_el = item.select_one("h2 a, h3 a, .tribe-event-url")
@@ -84,6 +98,7 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
 
         if not start_dt:
             continue
+        parsed_dates += 1
 
         # Location
         loc_el = item.select_one(".tribe-venue, .tribe-events-venue-details")
@@ -96,6 +111,13 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
             "location": location,
             "url": url_val,
         })
+
+    if items and not parsed_dates:
+        errors.note_suspect(
+            "annarbor",
+            f"matched {len(items)} event items on visitannarbor.org but could not read a "
+            "date from any of them — date markup changed",
+        )
 
     return events
 
