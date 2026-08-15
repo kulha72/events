@@ -59,6 +59,16 @@ class APIFootballCollector(BaseCollector):
         return "api_football"
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
+        # Check for work before checking for credentials. Millonarios moved to
+        # the ESPN source, so nothing routes here any more; reporting a missing
+        # key as a failure every morning is noise about a source that would
+        # return nothing even if the key were set.
+        if not self.teams:
+            errors.note_not_configured(
+                "api_football", "no team in config sets source: api_football"
+            )
+            return []
+
         if not self.api_key:
             errors.record("api_football", "no API key set — source skipped")
             return []
@@ -76,6 +86,10 @@ class APIFootballCollector(BaseCollector):
             team_name = team_cfg["name"]
             team_id = team_cfg.get("api_football_team_id")
             if not team_id:
+                errors.note_suspect(
+                    "api_football",
+                    f"{team_name} is routed here but has no api_football_team_id in config",
+                )
                 continue
 
             # Fetch upcoming fixtures

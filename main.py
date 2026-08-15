@@ -187,9 +187,17 @@ def main() -> None:
     for f in health["failures"]:
         suffix = f" (x{f['count']})" if f["count"] > 1 else ""
         print(f"  FAIL {f['source']}{suffix}: {f['first']}")
+    for s in health["suspect"]:
+        print(f"  SUSPECT {s['source']}: {s['reason']}")
     if health["empty_sources"]:
         print(f"  EMPTY (fetched, but returned nothing): {', '.join(health['empty_sources'])}")
-    if not health["failures"] and not health["empty_sources"]:
+    # Explained empties are printed last and unflagged — they are the expected
+    # state of a dormant or out-of-season source, not something to act on.
+    for s in health["idle"]:
+        print(f"  idle {s['source']}: {s['reason']}")
+    for s in health["not_configured"]:
+        print(f"  not configured {s['source']}: {s['reason']}")
+    if not health["failures"] and not health["suspect"] and not health["empty_sources"]:
         print("  All sources healthy.")
 
     # 5. Deliver

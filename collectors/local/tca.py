@@ -79,7 +79,15 @@ def _scrape_with_playwright() -> list[dict]:
         browser.close()
 
     # VBO renders one div.EventListWrapper per event
-    for card in soup.select(".EventListWrapper"):
+    cards = soup.select(".EventListWrapper")
+    if not cards:
+        errors.note_suspect(
+            "tca",
+            f"VBO iframe rendered {len(str(soup))} bytes but no .EventListWrapper card "
+            "matched — either the box office has nothing on sale or VBO changed its markup",
+        )
+
+    for card in cards:
         # Title
         title_el = card.select_one("h2.HeaderEventName a")
         title = title_el.get_text(strip=True) if title_el else ""

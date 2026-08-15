@@ -57,6 +57,16 @@ class FootballDataCollector(BaseCollector):
         return "football_data"
 
     def collect(self, today: date, lookahead_days: int = 7) -> list[Event]:
+        # Check for work before checking for credentials. Every team in config
+        # is currently served by ESPN, so this collector has nothing to do —
+        # complaining about a missing key would be a daily false alarm for a
+        # source that would return nothing even with one.
+        if not self.teams:
+            errors.note_not_configured(
+                "football_data", "no team in config sets source: football_data"
+            )
+            return []
+
         if not self.api_key:
             errors.record("football_data", "no API key set — source skipped")
             return []
@@ -71,6 +81,10 @@ class FootballDataCollector(BaseCollector):
             team_name = team_cfg["name"]
             team_id = team_cfg.get("football_data_team_id")
             if not team_id:
+                errors.note_suspect(
+                    "football_data",
+                    f"{team_name} is routed here but has no football_data_team_id in config",
+                )
                 continue
 
             date_from = yesterday.strftime("%Y-%m-%d")
