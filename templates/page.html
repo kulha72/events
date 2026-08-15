@@ -259,6 +259,15 @@
 </div>
 {% endif %}
 
+{% if health.degraded %}
+<p class="feed-health-quiet">
+  <span class="feed-health-quiet-label">Working, but on a fallback:</span>
+  {% for s in health.degraded -%}
+    <strong>{{ s.source }}</strong> ({{ s.reason }}){% if not loop.last %} &middot; {% endif %}
+  {%- endfor %}
+</p>
+{% endif %}
+
 {% if health.idle or health.not_configured %}
 <p class="feed-health-quiet">
   <span class="feed-health-quiet-label">Nothing expected from:</span>

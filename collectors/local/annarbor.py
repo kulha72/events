@@ -1,125 +1,62 @@
 """
 Ann Arbor local events collector.
 Scrapes visitannarbor.org events calendar.
+
+The scraper no longer assumes The Events Calendar's markup. It walks the
+layers in collectors/local/eventpage.py — REST API, JSON-LD, microdata, then
+CSS selectors, re-trying the page-level layers against a rendered DOM — so a
+re-theme or a switch to client-side rendering downgrades the scrape instead of
+emptying it.
 """
 
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timezone
 from zoneinfo import ZoneInfo
 
 import requests
-from bs4 import BeautifulSoup
-from dateutil import parser as dateparser
 
 from collectors.base import BaseCollector
-from models.event import Event, EventCategory, EventPriority
-
-import errors
+from collectors.local import eventpage
+from models.event import Event, EventCategory
 
 LOCAL_TZ = ZoneInfo("America/Detroit")
 BASE_URL = "https://www.visitannarbor.org/events/"
+DEFAULT_LOCATION = "Ann Arbor, MI"
+
+# Selectors the calendar is known to have used, plus the generic shapes from
+# eventpage. Tried only after the structured layers come up empty.
+ITEM_SELECTORS = (
+    ".tribe-events-calendar article",
+    ".tribe-event-list-item",
+    ".wp-block-tribe-event-list .tribe-event",
+    "article.type-tribe_events",
+) + eventpage.DEFAULT_ITEM_SELECTORS
+
+# What to wait for when rendering: any of these means the calendar has drawn.
+WAIT_SELECTORS = (
+    ".tribe-events-calendar article",
+    "article.type-tribe_events",
+    "[class*='event-item']",
+    "script[type='application/ld+json']",
+)
 
 _session = requests.Session()
 _session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; daily-digest-annarbor/1.0)"})
 
 
-def _fetch_page(url: str) -> BeautifulSoup:
-    resp = _session.get(url, timeout=15)
-    resp.raise_for_status()
-    return BeautifulSoup(resp.text, "html.parser")
-
-
 def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
-    """Scrape visitannarbor.org/events for upcoming events."""
-    cutoff = today + timedelta(days=lookahead_days)
-    events = []
-
-    # The visitor bureau calendar paginates by date range via query params
-    start_str = today.strftime("%Y-%m-%d")
-    end_str = cutoff.strftime("%Y-%m-%d")
-    url = f"{BASE_URL}?startdate={start_str}&enddate={end_str}"
-
-    try:
-        soup = _fetch_page(url)
-    except Exception as e:
-        errors.record("annarbor", f"could not fetch {url}: {e}")
-        return []
-
-    # visitannarbor.org uses .tribe-event-list items or similar
-    # Try multiple known selectors for event listing pages
-    items = (
-        soup.select(".tribe-events-calendar article") or
-        soup.select(".tribe-event-list-item") or
-        soup.select(".wp-block-tribe-event-list .tribe-event") or
-        soup.select("article.type-tribe_events") or
-        soup.select(".tribe-events-loop .tribe-event-schedule-details")
+    return eventpage.scrape_calendar(
+        source="annarbor",
+        session=_session,
+        page_url=BASE_URL,
+        today=today,
+        lookahead_days=lookahead_days,
+        tz=LOCAL_TZ,
+        default_location=DEFAULT_LOCATION,
+        site_label="visitannarbor.org",
+        item_selectors=ITEM_SELECTORS,
+        wait_selectors=WAIT_SELECTORS,
     )
-
-    # Fetching a page and selecting nothing out of it is indistinguishable from
-    # a quiet week unless the scraper says which happened. All five selectors
-    # assume The Events Calendar markup; a theme change or a switch to a
-    # JS-rendered calendar empties this silently.
-    if not items:
-        errors.note_suspect(
-            "annarbor",
-            f"fetched {len(soup.get_text(strip=True))} chars of text from visitannarbor.org "
-            "but no tribe-events item matched — layout changed, or the calendar is "
-            "now client-rendered and needs Playwright",
-        )
-        return []
-
-    parsed_dates = 0
-    for item in items:
-        # Title
-        title_el = item.select_one("h2 a, h3 a, .tribe-event-url")
-        if not title_el:
-            continue
-        title = title_el.get_text(strip=True)
-        url_val = title_el.get("href", BASE_URL)
-
-        # Date/time — look for datetime attrs or text
-        time_el = item.select_one("time[datetime], abbr[title]")
-        start_dt = end_dt = None
-        if time_el:
-            dt_str = time_el.get("datetime") or time_el.get("title", "")
-            try:
-                start_dt = dateparser.parse(dt_str).replace(tzinfo=LOCAL_TZ)
-            except Exception:
-                pass
-
-        if not start_dt:
-            # Fall back to visible date text
-            date_el = item.select_one(".tribe-event-schedule-details, .tribe-events-schedule")
-            if date_el:
-                try:
-                    start_dt = dateparser.parse(date_el.get_text(strip=True), fuzzy=True).replace(tzinfo=LOCAL_TZ)
-                except Exception:
-                    pass
-
-        if not start_dt:
-            continue
-        parsed_dates += 1
-
-        # Location
-        loc_el = item.select_one(".tribe-venue, .tribe-events-venue-details")
-        location = loc_el.get_text(strip=True) if loc_el else "Ann Arbor, MI"
-
-        events.append({
-            "title": title,
-            "start_dt": start_dt,
-            "end_dt": end_dt,
-            "location": location,
-            "url": url_val,
-        })
-
-    if items and not parsed_dates:
-        errors.note_suspect(
-            "annarbor",
-            f"matched {len(items)} event items on visitannarbor.org but could not read a "
-            "date from any of them — date markup changed",
-        )
-
-    return events
 
 
 class AnnArborCollector(BaseCollector):
@@ -151,10 +88,10 @@ class AnnArborCollector(BaseCollector):
                 category=EventCategory.LOCAL,
                 start=start_utc,
                 end=end_utc,
-                location=raw.get("location") or "Ann Arbor, MI",
+                location=raw.get("location") or DEFAULT_LOCATION,
                 source="annarbor",
-                url=raw.get("url"),
+                url=raw.get("url") or BASE_URL,
                 tags=["local", "ann-arbor"],
             ))
 
-        return events
+        return eventpage.within_window(events, today, lookahead_days, LOCAL_TZ, "annarbor")

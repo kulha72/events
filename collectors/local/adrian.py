@@ -1,116 +1,62 @@
 """
 Adrian / Lenawee County local events collector.
 Scrapes visitlenawee.com events calendar.
+
+The scraper no longer assumes The Events Calendar's markup. It walks the
+layers in collectors/local/eventpage.py — REST API, JSON-LD, microdata, then
+CSS selectors, re-trying the page-level layers against a rendered DOM — so a
+re-theme or a switch to client-side rendering downgrades the scrape instead of
+emptying it.
 """
 
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timezone
 from zoneinfo import ZoneInfo
 
 import requests
-from bs4 import BeautifulSoup
-from dateutil import parser as dateparser
 
 from collectors.base import BaseCollector
+from collectors.local import eventpage
 from models.event import Event, EventCategory
-
-import errors
 
 LOCAL_TZ = ZoneInfo("America/Detroit")
 BASE_URL = "https://www.visitlenawee.com/events/"
+DEFAULT_LOCATION = "Adrian, MI"
+
+# Selectors the calendar is known to have used, plus the generic shapes from
+# eventpage. Tried only after the structured layers come up empty.
+ITEM_SELECTORS = (
+    "article.type-tribe_events",
+    ".tribe-events-loop .tribe-events-calendar-list__event",
+    ".tribe-event-list-item",
+    ".tribe-events-loop article",
+) + eventpage.DEFAULT_ITEM_SELECTORS
+
+# What to wait for when rendering: any of these means the calendar has drawn.
+WAIT_SELECTORS = (
+    "article.type-tribe_events",
+    ".tribe-events-calendar-list__event",
+    "[class*='event-item']",
+    "script[type='application/ld+json']",
+)
 
 _session = requests.Session()
 _session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; daily-digest-adrian/1.0)"})
 
 
-def _fetch_page(url: str) -> BeautifulSoup:
-    resp = _session.get(url, timeout=15)
-    resp.raise_for_status()
-    return BeautifulSoup(resp.text, "html.parser")
-
-
 def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
-    cutoff = today + timedelta(days=lookahead_days)
-    events = []
-
-    start_str = today.strftime("%Y-%m-%d")
-    end_str = cutoff.strftime("%Y-%m-%d")
-    url = f"{BASE_URL}?startdate={start_str}&enddate={end_str}"
-
-    try:
-        soup = _fetch_page(url)
-    except Exception as e:
-        errors.record("adrian", f"could not fetch {url}: {e}")
-        return []
-
-    items = (
-        soup.select("article.type-tribe_events") or
-        soup.select(".tribe-events-loop .tribe-events-calendar-list__event") or
-        soup.select(".tribe-event-list-item") or
-        soup.select(".tribe-events-loop article")
+    return eventpage.scrape_calendar(
+        source="adrian",
+        session=_session,
+        page_url=BASE_URL,
+        today=today,
+        lookahead_days=lookahead_days,
+        tz=LOCAL_TZ,
+        default_location=DEFAULT_LOCATION,
+        site_label="visitlenawee.com",
+        item_selectors=ITEM_SELECTORS,
+        wait_selectors=WAIT_SELECTORS,
     )
-
-    # Fetching a page and selecting nothing out of it is indistinguishable from
-    # a quiet week unless the scraper says which happened. All four selectors
-    # assume The Events Calendar markup; a theme change or a switch to a
-    # JS-rendered calendar empties this silently.
-    if not items:
-        errors.note_suspect(
-            "adrian",
-            f"fetched {len(soup.get_text(strip=True))} chars of text from visitlenawee.com "
-            "but no tribe-events item matched — layout changed, or the calendar is "
-            "now client-rendered and needs Playwright",
-        )
-        return []
-
-    parsed_dates = 0
-    for item in items:
-        title_el = item.select_one("h2 a, h3 a, .tribe-event-url")
-        if not title_el:
-            continue
-        title = title_el.get_text(strip=True)
-        url_val = title_el.get("href", BASE_URL)
-
-        time_el = item.select_one("time[datetime], abbr[title]")
-        start_dt = None
-        if time_el:
-            dt_str = time_el.get("datetime") or time_el.get("title", "")
-            try:
-                start_dt = dateparser.parse(dt_str).replace(tzinfo=LOCAL_TZ)
-            except Exception:
-                pass
-
-        if not start_dt:
-            date_el = item.select_one(".tribe-event-schedule-details, .tribe-events-schedule")
-            if date_el:
-                try:
-                    start_dt = dateparser.parse(date_el.get_text(strip=True), fuzzy=True).replace(tzinfo=LOCAL_TZ)
-                except Exception:
-                    pass
-
-        if not start_dt:
-            continue
-        parsed_dates += 1
-
-        loc_el = item.select_one(".tribe-venue, .tribe-events-venue-details")
-        location = loc_el.get_text(strip=True) if loc_el else "Adrian, MI"
-
-        events.append({
-            "title": title,
-            "start_dt": start_dt,
-            "end_dt": None,
-            "location": location,
-            "url": url_val,
-        })
-
-    if items and not parsed_dates:
-        errors.note_suspect(
-            "adrian",
-            f"matched {len(items)} event items on visitlenawee.com but could not read a "
-            "date from any of them — date markup changed",
-        )
-
-    return events
 
 
 class AdrianCollector(BaseCollector):
@@ -134,17 +80,18 @@ class AdrianCollector(BaseCollector):
 
         for raw in raw_events:
             start_utc = raw["start_dt"].astimezone(timezone.utc)
+            end_utc = raw["end_dt"].astimezone(timezone.utc) if raw.get("end_dt") else None
 
             events.append(Event(
                 id=f"adrian:{uuid.uuid5(uuid.NAMESPACE_URL, raw['url'] + str(raw['start_dt']))}",
                 title=raw["title"],
                 category=EventCategory.LOCAL,
                 start=start_utc,
-                end=None,
-                location=raw.get("location") or "Adrian, MI",
+                end=end_utc,
+                location=raw.get("location") or DEFAULT_LOCATION,
                 source="adrian",
-                url=raw.get("url"),
+                url=raw.get("url") or BASE_URL,
                 tags=["local", "adrian", "lenawee"],
             ))
 
-        return events
+        return eventpage.within_window(events, today, lookahead_days, LOCAL_TZ, "adrian")

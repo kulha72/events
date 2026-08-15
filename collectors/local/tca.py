@@ -10,12 +10,13 @@ Requires: playwright (install with `pip install playwright && playwright install
 """
 
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timezone
 from zoneinfo import ZoneInfo
 
 from dateutil import parser as dateparser
 
 from collectors.base import BaseCollector
+from collectors.local import eventpage
 from models.event import Event, EventCategory
 
 import errors
@@ -81,10 +82,28 @@ def _scrape_with_playwright() -> list[dict]:
     # VBO renders one div.EventListWrapper per event
     cards = soup.select(".EventListWrapper")
     if not cards:
+        # Before blaming VBO's markup, try the layout-independent layers — the
+        # widget emits schema.org data for its own SEO.
+        fallback, how = eventpage.extract_all(
+            soup, LOCAL_TZ, DEFAULT_LOCATION, eventpage.DEFAULT_ITEM_SELECTORS, TICKETS_URL
+        )
+        if fallback:
+            errors.note_strategy(
+                "tca",
+                f"{len(fallback)} events from {how} — .EventListWrapper no longer matches",
+                degraded=True,
+            )
+            return [{
+                "title": e["title"],
+                "start_dt": e["start_dt"],
+                "url": TICKETS_URL,
+                "location": e.get("location") or DEFAULT_LOCATION,
+            } for e in fallback]
+
         errors.note_suspect(
             "tca",
-            f"VBO iframe rendered {len(str(soup))} bytes but no .EventListWrapper card "
-            "matched — either the box office has nothing on sale or VBO changed its markup",
+            f"VBO iframe: no .EventListWrapper card and no structured event data — "
+            f"{eventpage.describe_page(soup)}",
         )
 
     for card in cards:
@@ -142,15 +161,11 @@ class TCACollector(BaseCollector):
         if cached:
             return [Event(**e) for e in cached]
 
-        cutoff = today + timedelta(days=lookahead_days)
         raw_events = _scrape_with_playwright()
         events: list[Event] = []
 
         for raw in raw_events:
             sd = raw["start_dt"].date()
-            if sd < today - timedelta(days=1) or sd > cutoff:
-                continue
-
             start_utc = raw["start_dt"].astimezone(timezone.utc)
 
             events.append(Event(
@@ -165,4 +180,6 @@ class TCACollector(BaseCollector):
                 tags=["local", "tecumseh", "tca", "arts"],
             ))
 
-        return events
+        # A theatre books months out, so "on sale but nothing this week" is its
+        # normal state — and it used to render as an unexplained empty source.
+        return eventpage.within_window(events, today, lookahead_days, LOCAL_TZ, "tca")

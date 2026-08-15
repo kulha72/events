@@ -71,6 +71,16 @@
   </div>
   {% endif %}
 
+  <!-- Sources still working, but on a fallback path — an early warning -->
+  {% if health.degraded %}
+  <p style="font-size:12px; line-height:1.55; color:#888; margin:0 0 12px; padding:0 4px;">
+    <strong style="color:#777;">Working, but on a fallback:</strong>
+    {% for s in health.degraded -%}
+      <strong style="color:#666;">{{ s.source }}</strong> ({{ s.reason }}){% if not loop.last %} &middot; {% endif %}
+    {%- endfor %}
+  </p>
+  {% endif %}
+
   <!-- Explained empties — informational, deliberately outside the red box -->
   {% if health.idle or health.not_configured %}
   <p style="font-size:12px; line-height:1.55; color:#888; margin:0 0 12px; padding:0 4px;">

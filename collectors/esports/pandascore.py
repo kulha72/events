@@ -31,6 +31,68 @@ GAME_SLUGS = {
 _session = requests.Session()
 _session.headers.update({"User-Agent": "daily-digest/1.0"})
 
+# The upcoming-matches endpoint caps a page at 50, and the tier-B circuits
+# (CCT, ESEA) run enough matches to fill one on their own. Filtering leagues
+# client-side over page 1 alone therefore drops real BLAST/ESL fixtures later
+# in the same window. Walk pages until the window is covered, capped so a busy
+# week cannot eat the free tier's 1000 requests/month.
+_PER_PAGE = 50
+_MAX_PAGES = 4
+
+
+def _fetch_all_matches(game_slug: str, headers: dict, today, cutoff) -> list[dict]:
+    """Page through every upcoming match in the window."""
+    matches: list[dict] = []
+    for page in range(1, _MAX_PAGES + 1):
+        resp = _session.get(
+            f"{API_BASE}/{game_slug}/matches/upcoming",
+            headers=headers,
+            params={
+                "range[scheduled_at]": f"{today.isoformat()},{cutoff.isoformat()}",
+                "sort": "begin_at",
+                "per_page": _PER_PAGE,
+                "page": page,
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+        batch = resp.json()
+        if not isinstance(batch, list) or not batch:
+            break
+        matches.extend(batch)
+        if len(batch) < _PER_PAGE:
+            break
+    return matches
+
+
+def _known_leagues(game_slug: str, headers: dict, names: list[str]) -> tuple[set[str], set[str]]:
+    """Split configured league names into those PandaScore knows and those it doesn't.
+
+    A filter that matches nothing has two very different causes: the league is
+    real but idle this week, or the name in config does not exist and the
+    filter can never match. Only the second is worth acting on.
+    """
+    known, unknown = set(), set()
+    for name in names:
+        try:
+            resp = _session.get(
+                f"{API_BASE}/{game_slug}/leagues",
+                headers=headers,
+                params={"search[name]": name, "per_page": 5},
+                timeout=15,
+            )
+            resp.raise_for_status()
+            hits = resp.json()
+        except Exception:
+            # Can't tell — don't accuse the config of being wrong.
+            known.add(name)
+            continue
+        if isinstance(hits, list) and hits:
+            known.add(name)
+        else:
+            unknown.add(name)
+    return known, unknown
+
 
 class PandaScoreCollector(BaseCollector):
     """Supplemental esports data from PandaScore."""
@@ -74,21 +136,8 @@ class PandaScoreCollector(BaseCollector):
 
             leagues_filter = [l.lower() for l in game_cfg.get("leagues", [])]
 
-            params = {
-                "range[scheduled_at]": f"{today.isoformat()},{cutoff.isoformat()}",
-                "sort": "begin_at",
-                "per_page": 50,
-            }
-
             try:
-                resp = _session.get(
-                    f"{API_BASE}/{game_slug}/matches/upcoming",
-                    headers=headers,
-                    params=params,
-                    timeout=15,
-                )
-                resp.raise_for_status()
-                matches = resp.json()
+                matches = _fetch_all_matches(game_slug, headers, today, cutoff)
             except Exception as e:
                 errors.record("pandascore", f"{game_name} fetch failed: {e}")
                 continue
@@ -152,13 +201,25 @@ class PandaScoreCollector(BaseCollector):
 
             if not kept:
                 if dropped_by_league:
-                    shown = ", ".join(sorted(dropped_by_league)[:4])
-                    errors.note_suspect(
-                        "pandascore",
-                        f"{game_name}: API returned {len(matches)} upcoming matches but the "
-                        f"leagues filter {game_cfg.get('leagues')} matched none of them "
-                        f"(saw: {shown})",
-                    )
+                    configured = game_cfg.get("leagues", [])
+                    known, unknown = _known_leagues(game_slug, headers, configured)
+                    if unknown:
+                        # The filter can never match — that is a config bug and
+                        # the one case here worth waking up for.
+                        errors.note_suspect(
+                            "pandascore",
+                            f"{game_name}: no league named {sorted(unknown)} exists in "
+                            f"PandaScore, so the filter can never match "
+                            f"(configured: {configured})",
+                        )
+                    else:
+                        # Real leagues, just nothing scheduled this week. A
+                        # circuit between stages is not a broken feed.
+                        errors.note_idle(
+                            "pandascore",
+                            f"{game_name}: {', '.join(sorted(known))} have no matches in the "
+                            f"next {lookahead_days} days ({len(matches)} other matches scheduled)",
+                        )
                 elif not matches:
                     errors.note_idle(
                         "pandascore",
