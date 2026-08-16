@@ -193,6 +193,8 @@ def main() -> None:
         print(f"  EMPTY (fetched, but returned nothing): {', '.join(health['empty_sources'])}")
     # Explained empties are printed last and unflagged — they are the expected
     # state of a dormant or out-of-season source, not something to act on.
+    for s in health["degraded"]:
+        print(f"  DEGRADED {s['source']}: {s['reason']}")
     for s in health["idle"]:
         print(f"  idle {s['source']}: {s['reason']}")
     for s in health["not_configured"]:

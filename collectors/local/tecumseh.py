@@ -22,6 +22,7 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.
 sys.path.insert(0, _ROOT)
 
 from collectors.base import BaseCollector
+from collectors.local import eventpage
 from models.event import Event, EventCategory, EventPriority
 
 import errors
@@ -91,15 +92,23 @@ def _fetch(url: str) -> BeautifulSoup:
     return BeautifulSoup(resp.text, "html.parser")
 
 
+# Any of these appearing means the events page has actually drawn its content.
+_DOWNTOWN_WAIT_SELECTORS = (
+    "div.event",
+    ".event__title",
+    "[class*='event-item']",
+    "script[type='application/ld+json']",
+)
+
+
 def _fetch_with_playwright(url: str) -> BeautifulSoup:
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(url, timeout=20_000, wait_until="domcontentloaded")
-        html = page.content()
-        browser.close()
-    return BeautifulSoup(html, "html.parser")
+    """Render the page and wait for its events to appear.
+
+    This used to return `page.content()` the moment DOMContentLoaded fired,
+    which on a client-rendered page is the empty shell — indistinguishable
+    from a site with no events on it.
+    """
+    return eventpage.render_page(url, wait_selectors=_DOWNTOWN_WAIT_SELECTORS, timeout_ms=20_000)
 
 
 def _line_times(line: str):
@@ -186,15 +195,18 @@ def _scrape_downtown() -> list[dict]:
     events = []
     soup = _fetch_with_playwright(DOWNTOWN_URL)
 
-    # Rendering the page and matching nothing is the failure mode this scraper
-    # cannot otherwise report: no exception is raised, so the run stays green
-    # and the section just disappears. Say so explicitly.
+    # div.event is this site's current theme, not a contract. When it stops
+    # matching, fall through to the layout-independent layers before declaring
+    # the page broken — a re-theme should cost fidelity, not the whole section.
     event_divs = soup.find_all("div", class_="event")
     if not event_divs:
+        fallback = _scrape_downtown_fallback(soup)
+        if fallback:
+            return fallback
         errors.note_suspect(
             "tecumseh",
-            f"downtowntecumseh.com rendered {len(str(soup))} bytes but no div.event "
-            "matched — the events page markup has probably changed",
+            f"downtowntecumseh.com: no div.event, and no JSON-LD, microdata or generic "
+            f"event markup either — {eventpage.describe_page(soup)}",
         )
 
     for event_div in event_divs:
@@ -245,6 +257,39 @@ def _scrape_downtown() -> list[dict]:
                 **entry,
             })
     return events
+
+
+def _scrape_downtown_fallback(soup) -> list[dict]:
+    """Read the downtown events page without relying on its theme's classes.
+
+    Returns entries carrying a resolved `start_dt`, which the collector
+    prefers over the `when`-text parsing the div.event path needs.
+    """
+    events, how = eventpage.extract_all(
+        soup, LOCAL_TZ, "Downtown Tecumseh", eventpage.DEFAULT_ITEM_SELECTORS, DOWNTOWN_URL
+    )
+    if not events:
+        return []
+
+    errors.note_strategy(
+        "tecumseh",
+        f"downtowntecumseh.com: {len(events)} events from {how} — div.event no longer matches",
+        degraded=True,
+    )
+
+    return [{
+        "title": e["title"],
+        "location": e.get("location") or "Downtown Tecumseh",
+        "description": "",
+        "url": e.get("url") or DOWNTOWN_URL,
+        "source": "downtown_tecumseh",
+        "start_dt": e["start_dt"],
+        "end_dt": e.get("end_dt"),
+        "start_date": e["start_dt"].date(),
+        "end_date": e["end_dt"].date() if e.get("end_dt") else None,
+        "start_time_str": None,
+        "end_time_str": None,
+    } for e in events]
 
 
 def _scrape_herald(months_ahead: int = 3) -> list[dict]:
@@ -391,7 +436,11 @@ class TecumsehCollector(BaseCollector):
             sd = raw["start_date"]
             if sd < today - timedelta(days=1) or sd > cutoff:
                 continue
-            if raw["start_time_str"]:
+            if raw.get("start_dt"):
+                # The structured fallback already resolved an exact time.
+                start = raw["start_dt"]
+                end = raw.get("end_dt")
+            elif raw["start_time_str"]:
                 start = _parse_time_str(raw["start_time_str"], sd)
                 end = _parse_time_str(raw["end_time_str"], sd) if raw["end_time_str"] else None
             else:

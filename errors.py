@@ -32,6 +32,7 @@ _SECRET_PARAM_RE = re.compile(
 
 _errors: list[dict] = []
 _counts: dict[str, int] = {}
+_strategies: dict[str, dict] = {}
 
 # Why a source returned nothing, when the source itself already knows.
 # An empty result is ambiguous on its own: "quiet day", "wired to nothing" and
@@ -112,6 +113,19 @@ def note_idle(source: str, reason: str) -> None:
     _set_status(source, _IDLE, reason)
 
 
+def note_strategy(source: str, message: str, degraded: bool = False) -> None:
+    """Record which extraction path actually produced a source's events.
+
+    A scraper that only works after falling through to its last resort is
+    still working, so it belongs nowhere near the failure list — but it is one
+    site change away from breaking, and that is worth seeing before it does.
+    Only the degraded paths are reported; the healthy ones just log.
+    """
+    clean = _condense(redact(message))
+    print(f"  [{source}] via {clean}")
+    _strategies[source] = {"source": source, "reason": clean, "degraded": degraded}
+
+
 def note_suspect(source: str, message: str) -> None:
     """Fetched real content but parsed nothing out of it.
 
@@ -161,6 +175,12 @@ def summary() -> dict:
     return {
         "failures": sorted(grouped.values(), key=lambda e: -e["count"]),
         "suspect": _of_kind(_SUSPECT),
+        # Working, but on a fallback path — the warning that arrives before the
+        # source breaks rather than after.
+        "degraded": sorted(
+            (s for s in _strategies.values() if s["degraded"] and s["source"] not in grouped),
+            key=lambda s: s["source"],
+        ),
         "idle": _of_kind(_IDLE),
         "not_configured": _of_kind(_NOT_CONFIGURED),
         "empty_sources": sorted(
@@ -175,3 +195,4 @@ def clear() -> None:
     _errors.clear()
     _counts.clear()
     _status.clear()
+    _strategies.clear()
