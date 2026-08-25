@@ -295,6 +295,7 @@ def _scrape_downtown_fallback(soup) -> list[dict]:
 def _scrape_herald(months_ahead: int = 3) -> list[dict]:
     events = []
     seen_paths: set[str] = set()
+    per_month: list[set[str]] = []
     today = date.today()
     months_failed = 0
 
@@ -310,15 +311,31 @@ def _scrape_herald(months_ahead: int = 3) -> list[dict]:
             errors.record("tecumseh", f"herald calendar {month_date:%Y-%m} fetch failed: {e}")
             continue
 
-        for a in soup.find_all("a", href=True):
-            path = a["href"]
-            if path.startswith("/content/") and path not in seen_paths:
-                seen_paths.add(path)
-                event = _parse_herald_event_page(HERALD_BASE + path)
-                if event:
-                    events.append(event)
+        month_paths = {a["href"] for a in soup.find_all("a", href=True)
+                       if a["href"].startswith("/content/")}
+        per_month.append(month_paths)
 
-    if not events and not months_failed:
+        for path in sorted(month_paths - seen_paths):
+            seen_paths.add(path)
+            event = _parse_herald_event_page(HERALD_BASE + path)
+            if event:
+                events.append(event)
+
+    if events or months_failed:
+        return events
+
+    # Every month offering the identical set of links means those links are the
+    # site's own navigation — subscriptions, classifieds, the current sports
+    # write-ups — and the calendar view itself is empty. That is a newspaper
+    # with nothing booked, not a scraper that broke, and calling it "markup may
+    # have changed" every morning is how a health block gets ignored.
+    if per_month and all(paths == per_month[0] for paths in per_month):
+        errors.note_idle(
+            "tecumseh",
+            f"the Herald's calendar has no entries — each of {len(per_month)} months "
+            f"returns the same {len(seen_paths)} site links",
+        )
+    else:
         errors.note_suspect(
             "tecumseh",
             f"herald calendar fetched for {months_ahead + 1} months but yielded 0 events "

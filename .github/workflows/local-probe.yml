@@ -1,0 +1,40 @@
+name: Local Sources Probe
+
+# Manual-only diagnostic for the four local calendars. Runs from a GitHub
+# Actions runner, which can reach the sites, and prints what each page
+# actually serves — endpoints, structured data, date-bearing markup, frames —
+# plus a live run of the collectors themselves. When one of these calendars
+# changes again, run this rather than guessing at selectors. Sends nothing,
+# deploys nothing.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright browser
+        run: playwright install chromium --with-deps
+
+      - name: Run the local collectors for real
+        run: python scripts/local_probe.py collect
+
+      - name: What does Ann Arbor's widened query come back with?
+        if: always()
+        run: python scripts/local_probe.py annarbor-widen
+
+      - name: Why does the Herald calendar yield no events?
+        if: always()
+        run: python scripts/local_probe.py herald

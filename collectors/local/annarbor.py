@@ -1,62 +1,256 @@
 """
 Ann Arbor local events collector.
-Scrapes visitannarbor.org events calendar.
 
-The scraper no longer assumes The Events Calendar's markup. It walks the
-layers in collectors/local/eventpage.py — REST API, JSON-LD, microdata, then
-CSS selectors, re-trying the page-level layers against a rendered DOM — so a
-re-theme or a switch to client-side rendering downgrades the scrape instead of
-emptying it.
+visitannarbor.org redirects to annarbor.org, a Simpleview destination site.
+Its calendar is not in the page: the page ships an empty list and fills it
+from a private JSON API, `/includes/rest_v2/plugins_events_events_by_date/`,
+signed with a token the page holds. Which is why the old scraper fetched a
+perfectly good 5,000-character page and found nothing on it — there was
+nothing on it.
+
+The API refuses `requests` outright ("Invalid credentials" without a token,
+"Access Denied" with the page's own token), so the way in is the page itself:
+
+  1. Render the calendar and keep the signed call it makes for its first screen
+  2. Hand that URL back to the page to replay with a later offset
+  3. If both come up empty, fall back to reading the rendered markup
+
+Requires: playwright, with chromium installed.
 """
 
 import uuid
-from datetime import date, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-import requests
+from dateutil import parser as dateparser
 
 from collectors.base import BaseCollector
 from collectors.local import eventpage
 from models.event import Event, EventCategory
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 BASE_URL = "https://www.visitannarbor.org/events/"
+SITE_ROOT = "https://www.annarbor.org"
 DEFAULT_LOCATION = "Ann Arbor, MI"
 
-# Selectors the calendar is known to have used, plus the generic shapes from
-# eventpage. Tried only after the structured layers come up empty.
-ITEM_SELECTORS = (
-    ".tribe-events-calendar article",
-    ".tribe-event-list-item",
-    ".wp-block-tribe-event-list .tribe-event",
-    "article.type-tribe_events",
-) + eventpage.DEFAULT_ITEM_SELECTORS
+# The API call the calendar makes for its own first screen.
+_API_PATTERN = r"plugins_events_events_by_date"
 
-# What to wait for when rendering: any of these means the calendar has drawn.
+# What to wait for: any of these means the calendar has drawn something.
 WAIT_SELECTORS = (
-    ".tribe-events-calendar article",
-    "article.type-tribe_events",
     "[class*='event-item']",
-    "script[type='application/ld+json']",
+    ".listing-item",
+    "article[class*='event']",
 )
 
-_session = requests.Session()
-_session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; daily-digest-annarbor/1.0)"})
+# The page signs its API call with a token it puts nowhere we can read: not a
+# global, not in the resource timings, and not through window.fetch or
+# XMLHttpRequest — all three were tried and caught nothing while the browser's
+# own network log saw the call every time. So take the signed URL from the
+# response we captured, and hand it back to the page to page through.
+# Page through the calendar using the query the page itself made, changing
+# nothing but the offset.
+#
+# Building our own filter and options — a wider date range, a bigger limit —
+# gets a 403 from the site's WAF even with the page's token and from inside
+# the page. Replaying its exact query and only advancing `skip` is the same
+# request the calendar makes when a reader scrolls, so it is answered.
+_PAGE_THROUGH_JS = """
+async ([seen, cutoffIso, maxPages]) => {
+  if (!seen) return { error: 'the page made no API call to borrow' };
+
+  let base, payload;
+  try {
+    base = new URL(seen);
+    payload = JSON.parse(base.searchParams.get('json'));
+  } catch (e) {
+    return { error: `could not read the page's own query: ${e}` };
+  }
+  const limit = (payload.options && payload.options.limit) || 12;
+  const collected = [];
+
+  for (let page = 1; page <= maxPages; page++) {
+    payload.options.skip = limit * page;
+    const next = new URL(base.toString());
+    next.searchParams.set('json', JSON.stringify(payload));
+
+    let res;
+    try {
+      res = await fetch(next, { method: 'GET' });
+    } catch (e) {
+      return { error: `fetch threw: ${e}`, data: { docs: { docs: collected } } };
+    }
+    if (!res.ok) {
+      return { error: `status ${res.status} on page ${page}`,
+               data: { docs: { docs: collected } } };
+    }
+
+    let docs;
+    try {
+      const body = await res.json();
+      docs = (body.docs && body.docs.docs) || [];
+    } catch (e) {
+      return { error: `not json: ${e}`, data: { docs: { docs: collected } } };
+    }
+    if (!docs.length) break;
+
+    collected.push(...docs);
+    const last = docs[docs.length - 1].date;
+    // Sorted by date ascending, so once a page ends past the digest window
+    // there is nothing further worth asking for.
+    if (last && last > cutoffIso) break;
+  }
+
+  return { data: { docs: { docs: collected } } };
+}
+"""
+
+# How many extra screens to walk before giving up on covering the window.
+_MAX_EXTRA_PAGES = 12
+
+
+def _first_query(captured: list) -> str:
+    """The URL of the signed call the page made, if it made one."""
+    for capture in captured:
+        url = capture.get("url") if isinstance(capture, dict) else ""
+        if url:
+            return url
+    return ""
+
+
+def _docs_of(payload) -> list[dict]:
+    """Unwrap the API's `{"docs": {"count": n, "docs": [...]}}` envelope."""
+    if not isinstance(payload, dict):
+        return []
+    docs = payload.get("docs")
+    if isinstance(docs, dict):
+        docs = docs.get("docs")
+    return [d for d in (docs or []) if isinstance(d, dict)]
+
+
+def _local_day(value) -> date | None:
+    """Read the occurrence day out of a Simpleview timestamp.
+
+    `date` is the end of the occurrence's local day expressed in UTC
+    ("2026-08-26T03:59:59Z" is the 25th in Detroit), so the local date is the
+    only part of it worth keeping.
+    """
+    if not value:
+        return None
+    try:
+        parsed = dateparser.parse(str(value))
+    except Exception:
+        return None
+    if parsed is None:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(LOCAL_TZ).date()
+
+
+def _events_from_docs(docs: list[dict]) -> list[dict]:
+    """Turn API docs into raw event dicts, one per occurrence."""
+    events = []
+    seen = set()
+    for doc in docs:
+        title = str(doc.get("title") or "").strip()
+        day = _local_day(doc.get("date")) or _local_day(doc.get("startDate"))
+        if not title or not day:
+            continue
+        key = (title, day)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        listing = doc.get("listing") if isinstance(doc.get("listing"), dict) else {}
+        location = str(doc.get("location") or listing.get("title") or "").strip()
+        city = str(doc.get("city") or listing.get("city") or "").strip()
+        if location and city and city not in location:
+            location = f"{location}, {city}"
+
+        url = str(doc.get("url") or "").strip()
+        if url.startswith("/"):
+            url = SITE_ROOT + url
+
+        # The feed carries no time of day, so these are all-day listings.
+        events.append({
+            "title": title,
+            "start_dt": datetime.combine(day, time.min, tzinfo=LOCAL_TZ),
+            "end_dt": None,
+            "location": location or DEFAULT_LOCATION,
+            "url": url or BASE_URL,
+        })
+    return events
 
 
 def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
-    return eventpage.scrape_calendar(
-        source="annarbor",
-        session=_session,
-        page_url=BASE_URL,
-        today=today,
-        lookahead_days=lookahead_days,
-        tz=LOCAL_TZ,
-        default_location=DEFAULT_LOCATION,
-        site_label="visitannarbor.org",
-        item_selectors=ITEM_SELECTORS,
-        wait_selectors=WAIT_SELECTORS,
+    cutoff = today + timedelta(days=lookahead_days)
+
+    try:
+        soup, payloads, widened = eventpage.render_page_capturing(
+            BASE_URL,
+            capture_pattern=_API_PATTERN,
+            wait_selectors=WAIT_SELECTORS,
+            evaluate=_PAGE_THROUGH_JS.strip(),
+            evaluate_args=lambda captured: [
+                _first_query(captured),
+                f"{cutoff.isoformat()}T23:59:59.000Z",
+                _MAX_EXTRA_PAGES,
+            ],
+        )
+    except Exception as e:
+        errors.record("annarbor", f"could not render annarbor.org/events: {e}")
+        return []
+
+    # The page's own call only asks for its first screen; the widened one
+    # covers the digest window. Both are the same API, so merge and dedupe.
+    widened = widened if isinstance(widened, dict) else {}
+    docs = _docs_of(widened.get("data"))
+    from_page = [
+        d for p in payloads
+        for d in _docs_of(p.get("json") if isinstance(p, dict) and "json" in p else p)
+    ]
+    if docs:
+        events = _events_from_docs(docs + from_page)
+        stopped = widened.get("error")
+        errors.note_strategy(
+            "annarbor",
+            f"annarbor.org: {len(events)} events from the events API"
+            + (f" — paging stopped at {stopped}" if stopped else ""),
+            degraded=bool(stopped),
+        )
+        return events
+
+    if from_page:
+        events = _events_from_docs(from_page)
+        why = widened.get("error") or "no further screens"
+        errors.note_strategy(
+            "annarbor",
+            f"annarbor.org: {len(events)} events from the calendar's first screen only "
+            f"— paging got {why}",
+            degraded=True,
+        )
+        return events
+
+    events, how = eventpage.extract_all(
+        soup, LOCAL_TZ, DEFAULT_LOCATION, eventpage.DEFAULT_ITEM_SELECTORS, BASE_URL
     )
+    if events:
+        errors.note_strategy(
+            "annarbor",
+            f"annarbor.org: {len(events)} events from {how} — the events API answered nothing",
+            degraded=True,
+        )
+        return events
+
+    errors.note_suspect(
+        "annarbor",
+        f"annarbor.org: the events API returned nothing and the page parsed to nothing "
+        f"— {eventpage.describe_page(soup)}",
+    )
+    return []
 
 
 class AnnArborCollector(BaseCollector):
