@@ -528,6 +528,7 @@ def render_page_capturing(
     timeout_ms: int = 30_000,
     evaluate: str | None = None,
     evaluate_args=None,
+    init_script: str | None = None,
 ):
     """Render a page and keep the JSON it fetched for itself.
 
@@ -535,6 +536,9 @@ def render_page_capturing(
     page and nobody else: the same request from `requests` comes back 403,
     with or without the page's token. Watching the page ask, and asking again
     from inside it, is the way in that does not involve forging anything.
+
+    `init_script` runs before the page's own scripts, which is the only place
+    to observe a call the page makes and then discards.
 
     Returns (soup, [payloads it fetched], result of `evaluate` or None).
     """
@@ -555,6 +559,8 @@ def render_page_capturing(
                     pass
 
             page.on("response", on_response)
+            if init_script:
+                page.add_init_script(init_script)
             page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
             _settle_challenge(page)
 

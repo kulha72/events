@@ -38,6 +38,26 @@ DEFAULT_LOCATION = "Ann Arbor, MI"
 # The API call the calendar makes for its own first screen.
 _API_PATTERN = r"plugins_events_events_by_date"
 
+# The page signs its API call with a token it never puts anywhere we can read
+# afterwards: it is not a global, and the resource-timing buffer has long
+# overflowed by the time the calendar draws. Wrapping fetch before the page's
+# own scripts run catches the token on its way past.
+_CATCH_TOKEN_JS = """
+(() => {
+  const original = window.fetch;
+  window.fetch = function (input, init) {
+    try {
+      const url = typeof input === 'string' ? input : (input && input.url) || '';
+      if (url.indexOf('plugins_events_events_by_date') !== -1) {
+        const found = new URL(url, window.location.origin).searchParams.get('token');
+        if (found) { window.__digestEventsToken = found; }
+      }
+    } catch (e) { /* never break the page we are borrowing from */ }
+    return original.apply(this, arguments);
+  };
+})();
+"""
+
 # What to wait for: any of these means the calendar has drawn something.
 WAIT_SELECTORS = (
     "[class*='event-item']",
@@ -53,9 +73,10 @@ async ([startIso, endIso]) => {
   // The token lives on the page's `core` object when that is a global, and
   // otherwise only in the URL of the call the page already made — which the
   // browser kept for us in its resource timings.
-  let token = (typeof core !== 'undefined' && core && core.simpleToken)
-    ? core.simpleToken
-    : (window.core && window.core.simpleToken);
+  let token = window.__digestEventsToken
+    || ((typeof core !== 'undefined' && core && core.simpleToken)
+        ? core.simpleToken
+        : (window.core && window.core.simpleToken));
   if (!token) {
     const earlier = performance.getEntriesByType('resource')
       .map((entry) => entry.name)
@@ -186,6 +207,7 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
             wait_selectors=WAIT_SELECTORS,
             evaluate=_WIDER_QUERY_JS.strip(),
             evaluate_args=window,
+            init_script=_CATCH_TOKEN_JS.strip(),
         )
     except Exception as e:
         errors.record("annarbor", f"could not render annarbor.org/events: {e}")

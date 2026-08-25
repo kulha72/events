@@ -25,7 +25,9 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-from collectors.local import adrian, annarbor, eventpage, tca
+import errors
+
+from collectors.local import adrian, annarbor, eventpage, tca, tecumseh
 
 TZ = ZoneInfo("America/Detroit")
 
@@ -342,6 +344,90 @@ def test_the_widget_key_is_resolvable():
         "s=0f0a024c-778a-42bb-b730-06793e983350"
         in tca._list_url("0f0a024c-778a-42bb-b730-06793e983350"),
     )
+
+
+# ── Tecumseh: the Herald half ────────────────────────────────────────────────
+
+HERALD_MONTH = """
+<html><head><title>| The Tecumseh Herald</title></head><body>
+<div class="view-content">
+  <div class="views-row views-row-odd views-row-first">
+    <a href="/content/clinton-boys-soccer-aiming-big-season">Clinton boys soccer</a>
+  </div>
+</div>
+<footer>
+  <a href="/content/subscriptions">Subscriptions</a>
+  <a href="/content/classifieds">Classifieds</a>
+  <a href="/content/refund-policy">Refund policy</a>
+</footer>
+</body></html>
+"""
+
+
+class _FakeHeraldSession:
+    """Serves the same month page for every month, as the Herald really does."""
+
+    def __init__(self, pages):
+        self.pages = pages
+        self.headers = {}
+        self.asked: list[str] = []
+
+    def get(self, url, timeout=None):
+        self.asked.append(url)
+        body = self.pages(url) if callable(self.pages) else self.pages
+
+        class Response:
+            text = body
+
+            def raise_for_status(self):
+                return None
+
+        return Response()
+
+
+def _with_herald_session(pages):
+    original = tecumseh._session
+    tecumseh._session = _FakeHeraldSession(pages)
+    try:
+        errors.clear()
+        return tecumseh._scrape_herald(months_ahead=2), errors.summary()
+    finally:
+        tecumseh._session = original
+        errors.clear()
+
+
+def test_an_empty_herald_calendar_reads_as_idle_not_broken():
+    print("\n[test_an_empty_herald_calendar_reads_as_idle_not_broken]")
+    # Every month returning the identical link set means those links are the
+    # site's nav and the calendar is simply empty.
+    events, health = _with_herald_session(HERALD_MONTH)
+    check("no events", events == [])
+    check("not reported as suspect", health["suspect"] == [], str(health["suspect"]))
+    check("reported as idle", [s["source"] for s in health["idle"]] == ["tecumseh"],
+          str(health["idle"]))
+    check(
+        "and says why",
+        health["idle"] and "no entries" in health["idle"][0]["reason"],
+        str(health["idle"]),
+    )
+    check("no failures", health["failures"] == [])
+
+
+def test_a_herald_calendar_that_differs_by_month_is_still_suspect():
+    print("\n[test_a_herald_calendar_that_differs_by_month_is_still_suspect]")
+    # Different links each month means there is a calendar and we failed to
+    # read it — the case that should still raise an eyebrow.
+    def pages(url):
+        month = url.rsplit("/", 1)[-1]
+        return HERALD_MONTH.replace(
+            "clinton-boys-soccer-aiming-big-season", f"something-in-{month}"
+        )
+
+    events, health = _with_herald_session(pages)
+    check("no events", events == [])
+    check("reported as suspect", [s["source"] for s in health["suspect"]] == ["tecumseh"],
+          str(health["suspect"]))
+    check("not reported as idle", health["idle"] == [], str(health["idle"]))
 
 
 if __name__ == "__main__":
