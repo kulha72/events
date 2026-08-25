@@ -817,9 +817,9 @@ def probe_annarbor_widen() -> None:
         annarbor.BASE_URL,
         capture_pattern=annarbor._API_PATTERN,
         wait_selectors=annarbor.WAIT_SELECTORS,
-        evaluate=annarbor._WIDER_QUERY_JS.strip(),
-        evaluate_args=window,
-        init_script=annarbor._CATCH_TOKEN_JS.strip(),
+        evaluate=annarbor._PAGE_THROUGH_JS.strip(),
+        evaluate_args=[window[1], annarbor._MAX_EXTRA_PAGES],
+        init_script=annarbor._CATCH_QUERY_JS.strip(),
     )
     print(f"  window: {window}")
     print(f"  the page's own API calls captured: {len(payloads)}")

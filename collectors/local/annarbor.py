@@ -12,7 +12,7 @@ The API refuses `requests` outright ("Invalid credentials" without a token,
 "Access Denied" with the page's own token), so the way in is the page itself:
 
   1. Render the calendar, keep the JSON it fetches for its own first screen
-  2. Ask the same API again from inside the page, for the whole digest window
+  2. Page through it from inside the page, replaying that exact query
   3. If both come up empty, fall back to reading the rendered markup
 
 Requires: playwright, with chromium installed.
@@ -41,16 +41,15 @@ _API_PATTERN = r"plugins_events_events_by_date"
 # The page signs its API call with a token it never puts anywhere we can read
 # afterwards: it is not a global, and the resource-timing buffer has long
 # overflowed by the time the calendar draws. Wrapping fetch before the page's
-# own scripts run catches the token on its way past.
-_CATCH_TOKEN_JS = """
+# own scripts run catches the whole request on its way past.
+_CATCH_QUERY_JS = """
 (() => {
   const original = window.fetch;
   window.fetch = function (input, init) {
     try {
       const url = typeof input === 'string' ? input : (input && input.url) || '';
       if (url.indexOf('plugins_events_events_by_date') !== -1) {
-        const found = new URL(url, window.location.origin).searchParams.get('token');
-        if (found) { window.__digestEventsToken = found; }
+        window.__digestEventsQuery = url;
       }
     } catch (e) { /* never break the page we are borrowing from */ }
     return original.apply(this, arguments);
@@ -58,77 +57,66 @@ _CATCH_TOKEN_JS = """
 })();
 """
 
-# What to wait for: any of these means the calendar has drawn something.
-WAIT_SELECTORS = (
-    "[class*='event-item']",
-    ".listing-item",
-    "article[class*='event']",
-)
+# Page through the calendar using the query the page itself made, changing
+# nothing but the offset.
+#
+# Building our own filter and options — a wider date range, a bigger limit —
+# gets a 403 from the site's WAF even with the page's token and from inside
+# the page. Replaying its exact query and only advancing `skip` is the same
+# request the calendar makes when a reader scrolls, so it is answered.
+_PAGE_THROUGH_JS = """
+async ([cutoffIso, maxPages]) => {
+  const seen = window.__digestEventsQuery;
+  if (!seen) return { error: 'the page made no API call to borrow' };
 
-# Ask the page to re-run its own query, widened to the digest window. Running
-# it here rather than from Python is the whole point: the fetch inherits the
-# page's origin, cookies and token, none of which we have to know or store.
-_WIDER_QUERY_JS = """
-async ([startIso, endIso]) => {
-  // The token lives on the page's `core` object when that is a global, and
-  // otherwise only in the URL of the call the page already made — which the
-  // browser kept for us in its resource timings.
-  let token = window.__digestEventsToken
-    || ((typeof core !== 'undefined' && core && core.simpleToken)
-        ? core.simpleToken
-        : (window.core && window.core.simpleToken));
-  if (!token) {
-    const earlier = performance.getEntriesByType('resource')
-      .map((entry) => entry.name)
-      .find((name) => name.includes('plugins_events_events_by_date'));
-    if (earlier) {
-      try { token = new URL(earlier).searchParams.get('token'); } catch (e) { token = null; }
+  let base, payload;
+  try {
+    base = new URL(seen);
+    payload = JSON.parse(base.searchParams.get('json'));
+  } catch (e) {
+    return { error: `could not read the page's own query: ${e}` };
+  }
+  const limit = (payload.options && payload.options.limit) || 12;
+  const collected = [];
+
+  for (let page = 1; page <= maxPages; page++) {
+    payload.options.skip = limit * page;
+    const next = new URL(base.toString());
+    next.searchParams.set('json', JSON.stringify(payload));
+
+    let res;
+    try {
+      res = await fetch(next, { method: 'GET' });
+    } catch (e) {
+      return { error: `fetch threw: ${e}`, data: { docs: { docs: collected } } };
     }
+    if (!res.ok) {
+      return { error: `status ${res.status} on page ${page}`,
+               data: { docs: { docs: collected } } };
+    }
+
+    let docs;
+    try {
+      const body = await res.json();
+      docs = (body.docs && body.docs.docs) || [];
+    } catch (e) {
+      return { error: `not json: ${e}`, data: { docs: { docs: collected } } };
+    }
+    if (!docs.length) break;
+
+    collected.push(...docs);
+    const last = docs[docs.length - 1].date;
+    // Sorted by date ascending, so once a page ends past the digest window
+    // there is nothing further worth asking for.
+    if (last && last > cutoffIso) break;
   }
-  if (!token) return { error: 'no token on the page' };
-  const url = new URL(
-    `${window.location.protocol}//${window.location.host}` +
-    `/includes/rest_v2/plugins_events_events_by_date/find/`
-  );
-  url.searchParams.append('json', JSON.stringify({
-    filter: {
-      active: true,
-      date_range: { start: { $date: startIso }, end: { $date: endIso } },
-    },
-    options: {
-      limit: 200,
-      skip: 0,
-      count: true,
-      castDocs: false,
-      fields: {
-        _id: 1, location: 1, date: 1, startDate: 1, endDate: 1,
-        recurrence: 1, recurType: 1, recid: 1, title: 1, url: 1,
-        categories: 1, city: 1, region: 1, admission: 1,
-        'listing.title': 1, 'listing.url': 1, 'listing.city': 1,
-      },
-      hooks: [],
-      sort: { date: 1, rank: 1, title_sort: 1 },
-    },
-  }));
-  url.searchParams.append('token', token);
-  let res;
-  try {
-    res = await fetch(url, { method: 'GET' });
-  } catch (e) {
-    return { error: `fetch threw: ${e}` };
-  }
-  if (!res.ok) {
-    let body = '';
-    try { body = (await res.text()).slice(0, 200); } catch (e) { body = '(unreadable)'; }
-    return { error: `status ${res.status}`, body: body };
-  }
-  try {
-    return { data: await res.json() };
-  } catch (e) {
-    return { error: `not json: ${e}` };
-  }
+
+  return { data: { docs: { docs: collected } } };
 }
 """
+
+# How many extra screens to walk before giving up on covering the window.
+_MAX_EXTRA_PAGES = 12
 
 
 def _docs_of(payload) -> list[dict]:
@@ -198,16 +186,15 @@ def _events_from_docs(docs: list[dict]) -> list[dict]:
 
 def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
     cutoff = today + timedelta(days=lookahead_days)
-    window = [f"{today.isoformat()}T00:00:00.000Z", f"{cutoff.isoformat()}T23:59:59.000Z"]
 
     try:
         soup, payloads, widened = eventpage.render_page_capturing(
             BASE_URL,
             capture_pattern=_API_PATTERN,
             wait_selectors=WAIT_SELECTORS,
-            evaluate=_WIDER_QUERY_JS.strip(),
-            evaluate_args=window,
-            init_script=_CATCH_TOKEN_JS.strip(),
+            evaluate=_PAGE_THROUGH_JS.strip(),
+            evaluate_args=[f"{cutoff.isoformat()}T23:59:59.000Z", _MAX_EXTRA_PAGES],
+            init_script=_CATCH_QUERY_JS.strip(),
         )
     except Exception as e:
         errors.record("annarbor", f"could not render annarbor.org/events: {e}")
@@ -220,16 +207,22 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
     from_page = [d for p in payloads for d in _docs_of(p)]
     if docs:
         events = _events_from_docs(docs + from_page)
-        errors.note_strategy("annarbor", f"annarbor.org: {len(events)} events from the events API")
+        stopped = widened.get("error")
+        errors.note_strategy(
+            "annarbor",
+            f"annarbor.org: {len(events)} events from the events API"
+            + (f" — paging stopped at {stopped}" if stopped else ""),
+            degraded=bool(stopped),
+        )
         return events
 
     if from_page:
         events = _events_from_docs(from_page)
-        why = widened.get("error") or "the page made no API call to borrow a token from"
+        why = widened.get("error") or "no further screens"
         errors.note_strategy(
             "annarbor",
-            f"annarbor.org: {len(events)} events from the API's first screen only "
-            f"— the widened query got {why}",
+            f"annarbor.org: {len(events)} events from the calendar's first screen only "
+            f"— paging got {why}",
             degraded=True,
         )
         return events
