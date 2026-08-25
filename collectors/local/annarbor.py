@@ -50,9 +50,20 @@ WAIT_SELECTORS = (
 # page's origin, cookies and token, none of which we have to know or store.
 _WIDER_QUERY_JS = """
 async ([startIso, endIso]) => {
-  const token = (typeof core !== 'undefined' && core && core.simpleToken)
+  // The token lives on the page's `core` object when that is a global, and
+  // otherwise only in the URL of the call the page already made — which the
+  // browser kept for us in its resource timings.
+  let token = (typeof core !== 'undefined' && core && core.simpleToken)
     ? core.simpleToken
     : (window.core && window.core.simpleToken);
+  if (!token) {
+    const earlier = performance.getEntriesByType('resource')
+      .map((entry) => entry.name)
+      .find((name) => name.includes('plugins_events_events_by_date'));
+    if (earlier) {
+      try { token = new URL(earlier).searchParams.get('token'); } catch (e) { token = null; }
+    }
+  }
   if (!token) return null;
   const url = new URL(
     `${window.location.protocol}//${window.location.host}` +

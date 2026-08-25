@@ -20,7 +20,7 @@ Run: python test_local_sources.py
 """
 
 import sys
-from datetime import date
+from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
@@ -291,8 +291,17 @@ def test_vbo_cards_parse():
 def test_structured_fallback_entries_pass_through_untouched():
     print("\n[test_structured_fallback_entries_pass_through_untouched]")
     # The JSON-LD fallback hands _parse_cards dicts rather than markup.
-    already = {"title": "A Play", "start_dt": None, "url": tca.TICKETS_URL, "location": "TCA"}
+    already = {
+        "title": "A Play",
+        "start_dt": datetime(2026, 9, 18, 19, 30, tzinfo=TZ),
+        "url": tca.TICKETS_URL,
+        "location": "TCA",
+    }
     check("passed straight through", tca._parse_cards([already]) == [already])
+    check(
+        "but one with no date is still dropped",
+        tca._parse_cards([dict(already, start_dt=None)]) == [],
+    )
 
 
 LOADPLUGIN_BODY = """

@@ -51,6 +51,11 @@ _ORG_ID_RE = re.compile(r'var\s+OrgID\s*=\s*"([^"]+)"')
 # How long to wait for the JS widget to render, in the fallback (milliseconds)
 _RENDER_TIMEOUT = 45_000
 
+# Problems worth reporting only if nothing else works. A wrapper page that
+# would not load is not a failure when the fallback key still returns the
+# season; reporting it anyway is how a health block trains you to ignore it.
+_problems: list[str] = []
+
 _session = requests.Session()
 _session.headers.update({
     "User-Agent": eventpage.BROWSER_UA,
@@ -77,7 +82,7 @@ def _resolve_site_key() -> str | None:
         resp = _session.get(WRAPPER_URL, timeout=15)
         resp.raise_for_status()
     except Exception as e:
-        errors.record("tca", f"could not read the VBO wrapper page: {e}")
+        _problems.append(f"could not read the VBO wrapper page: {e}")
         return None
 
     site_id = _SITE_ID_RE.search(resp.text)
@@ -120,7 +125,7 @@ def _fetch_cards_directly() -> list:
             resp = _session.get(_list_url(key), timeout=20)
             resp.raise_for_status()
         except Exception as e:
-            errors.record("tca", f"VBO list fetch failed: {e}")
+            _problems.append(f"VBO list fetch failed: {e}")
             continue
 
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -143,7 +148,7 @@ def _scrape_with_playwright() -> list:
     try:
         from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
     except ImportError:
-        errors.record("tca", "playwright not installed. Run: pip install playwright && playwright install chromium")
+        _problems.append("playwright not installed. Run: pip install playwright && playwright install chromium")
         return []
 
     with sync_playwright() as pw:
@@ -154,13 +159,13 @@ def _scrape_with_playwright() -> list:
                 # page; the iframe we want is in the DOM long before that.
                 page.goto(WRAPPER_URL, timeout=_RENDER_TIMEOUT, wait_until="domcontentloaded")
             except PWTimeout:
-                errors.record("tca", f"VBO wrapper page did not load within {_RENDER_TIMEOUT}ms")
+                _problems.append(f"VBO wrapper page did not load within {_RENDER_TIMEOUT}ms")
                 return []
 
             try:
                 page.wait_for_selector("iframe", timeout=_RENDER_TIMEOUT)
             except PWTimeout:
-                errors.record("tca", f"VBO iframe did not appear within {_RENDER_TIMEOUT}ms")
+                _problems.append(f"VBO iframe did not appear within {_RENDER_TIMEOUT}ms")
                 return []
 
             frame = next(
@@ -169,13 +174,13 @@ def _scrape_with_playwright() -> list:
                 None,
             )
             if frame is None:
-                errors.record("tca", "could not locate the VBO iframe among the page's frames")
+                _problems.append("could not locate the VBO iframe among the page's frames")
                 return []
 
             try:
                 frame.wait_for_selector(".EventListWrapper", timeout=_RENDER_TIMEOUT)
             except PWTimeout:
-                errors.record("tca", f"VBO events did not finish loading within {_RENDER_TIMEOUT}ms")
+                _problems.append(f"VBO events did not finish loading within {_RENDER_TIMEOUT}ms")
 
             soup = BeautifulSoup(frame.content(), "html.parser")
         finally:
@@ -222,7 +227,8 @@ def _parse_cards(cards) -> list[dict]:
     for card in cards:
         if isinstance(card, dict):
             # Already normalised by the structured-data fallback.
-            raw_events.append(card)
+            if card.get("start_dt"):
+                raw_events.append(card)
             continue
 
         title_el = card.select_one("h2.HeaderEventName a") or card.select_one("h2.HeaderEventName")
@@ -257,10 +263,16 @@ def _parse_cards(cards) -> list[dict]:
 
 
 def _scrape_events() -> list[dict]:
+    _problems.clear()
     cards = _fetch_cards_directly()
     if not cards:
         cards = _scrape_with_playwright()
-    return _parse_cards(cards)
+
+    events = _parse_cards(cards)
+    if not events:
+        for problem in _problems:
+            errors.record("tca", problem)
+    return events
 
 
 class TCACollector(BaseCollector):

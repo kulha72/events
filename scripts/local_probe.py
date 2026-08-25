@@ -757,6 +757,52 @@ def probe_collectors() -> None:
     for name, count in totals.items():
         print(f"  {name}: {count}")
 
+# ── The Tecumseh Herald half, which the downtown outage was masking ──────────
+
+def probe_herald() -> None:
+    """Why does the Herald calendar yield links but no events?"""
+    from collectors.local import tecumseh
+
+    head("tecumseh — the Herald calendar")
+    today = date.today()
+    for offset in (0, 1):
+        month = f"{today.year + (today.month + offset - 1) // 12}-" \
+                f"{(today.month + offset - 1) % 12 + 1:02d}"
+        url = f"{tecumseh.HERALD_BASE}{tecumseh.HERALD_CALENDAR_PATH}/{month}"
+        try:
+            resp = tecumseh._session.get(url, timeout=20)
+        except Exception as e:
+            print(f"  {url}: ERROR {type(e).__name__}: {e}")
+            continue
+        print(f"\n  {url} -> {resp.status_code} {len(resp.content)}B")
+        soup = BeautifulSoup(resp.text, "html.parser")
+        print(f"    {describe_page(soup)}")
+        paths = sorted({a["href"] for a in soup.find_all("a", href=True)
+                        if a["href"].startswith("/content/")})
+        print(f"    /content/ links: {len(paths)}")
+        for path in paths[:8]:
+            print(f"      {path}")
+
+        # Follow a couple and show what the parser is working with.
+        for path in paths[:3]:
+            page_url = tecumseh.HERALD_BASE + path
+            try:
+                page = tecumseh._session.get(page_url, timeout=20)
+            except Exception as e:
+                print(f"    {path}: ERROR {e}")
+                continue
+            page_soup = BeautifulSoup(page.text, "html.parser")
+            h1 = page_soup.find("h1")
+            text = " ".join(page_soup.get_text(" ", strip=True).split())
+            print(f"\n    --- {page_url} -> {page.status_code}")
+            print(f"      h1: {h1.get_text(strip=True) if h1 else None!r}")
+            print(f"      text[:400]: {text[:400]}")
+            dt_match = tecumseh._HERALD_DT_RE.search(text)
+            date_match = tecumseh._HERALD_DATE_ONLY_RE.search(text)
+            print(f"      date+time regex: {dt_match.groups() if dt_match else None}")
+            print(f"      date-only regex: {date_match.group(1) if date_match else None}")
+            print(f"      parser returns: {tecumseh._parse_herald_event_page(page_url)}")
+
 def main() -> None:
     wanted = [a.lower() for a in sys.argv[1:]] or list(SITES) + ["tca"]
 
@@ -793,6 +839,7 @@ def main() -> None:
         "annarbor-api": probe_annarbor_api,
         "vbo-key": probe_vbo_loadplugin,
         "collect": probe_collectors,
+        "herald": probe_herald,
     }
     for name, fn in round2.items():
         if name in wanted:

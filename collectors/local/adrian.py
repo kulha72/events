@@ -61,29 +61,30 @@ def _widget_url(widget_id: str) -> str:
     return f"https://events.yodel.today/y/widget/{widget_id}"
 
 
-def _discover_widget_id() -> str | None:
-    """Read the Yodel embed id off visitlenawee.com's events page."""
+def _discover_widget_id() -> tuple[str | None, str]:
+    """Read the Yodel embed id off visitlenawee.com's events page.
+
+    Returns the id and, when there isn't one, why — which only becomes worth
+    reporting if the fallback id fails too.
+    """
     try:
         resp = _session.get(BASE_URL, timeout=20)
         resp.raise_for_status()
     except Exception as e:
-        errors.record("adrian", f"could not fetch {BASE_URL}: {e}")
-        return None
+        return None, f"could not fetch {BASE_URL}: {e}"
 
     found = _WIDGET_ID_RE.search(resp.text)
     if found:
-        return found.group(1)
+        return found.group(1), ""
 
-    errors.note_suspect(
-        "adrian",
+    return None, (
         f"visitlenawee.com: no Yodel widget embedded on the events page any more "
-        f"— {eventpage.describe_page(BeautifulSoup(resp.text, 'html.parser'))}",
+        f"— {eventpage.describe_page(BeautifulSoup(resp.text, 'html.parser'))}"
     )
-    return None
 
 
 def _scrape_events() -> list[dict]:
-    widget_id = _discover_widget_id()
+    widget_id, why_not = _discover_widget_id()
     from_page = bool(widget_id)
     widget_id = widget_id or KNOWN_WIDGET_ID
 
@@ -91,6 +92,8 @@ def _scrape_events() -> list[dict]:
     try:
         soup = eventpage.render_page(url, wait_selectors=WAIT_SELECTORS, timeout_ms=45_000)
     except Exception as e:
+        if why_not:
+            errors.record("adrian", why_not)
         errors.record("adrian", f"could not render the Lenawee events widget: {e}")
         return []
 
@@ -110,8 +113,8 @@ def _scrape_events() -> list[dict]:
 
     errors.note_suspect(
         "adrian",
-        f"Yodel widget {widget_id}: no events from any strategy — "
-        f"{eventpage.describe_page(soup)}",
+        why_not or f"Yodel widget {widget_id}: no events from any strategy — "
+                   f"{eventpage.describe_page(soup)}",
     )
     return []
 

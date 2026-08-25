@@ -31,3 +31,7 @@ jobs:
 
       - name: Run the local collectors for real
         run: python scripts/local_probe.py collect
+
+      - name: Why does the Herald calendar yield no events?
+        if: always()
+        run: python scripts/local_probe.py herald
