@@ -540,7 +540,9 @@ def render_page_capturing(
     `init_script` runs before the page's own scripts, which is the only place
     to observe a call the page makes and then discards.
 
-    Returns (soup, [payloads it fetched], result of `evaluate` or None).
+    Returns (soup, [{"url", "json"} for each capture], result of `evaluate`).
+    `evaluate_args` may be a callable, which is handed the captures so an
+    evaluation can build on what the page actually asked for.
     """
     from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
@@ -554,7 +556,7 @@ def render_page_capturing(
                 if not re.search(capture_pattern, response.url, re.IGNORECASE):
                     return
                 try:
-                    payloads.append(response.json())
+                    payloads.append({"url": response.url, "json": response.json()})
                 except Exception:
                     pass
 
@@ -578,8 +580,11 @@ def render_page_capturing(
                 page.wait_for_timeout(settle_ms)
 
             if evaluate:
+                # The argument may depend on what the page turned out to
+                # fetch — a signed URL, say — which is only known by now.
+                args = evaluate_args(payloads) if callable(evaluate_args) else evaluate_args
                 try:
-                    evaluated = page.evaluate(evaluate, evaluate_args)
+                    evaluated = page.evaluate(evaluate, args)
                 except Exception:
                     evaluated = None
 

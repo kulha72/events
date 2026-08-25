@@ -178,15 +178,20 @@ def test_the_ann_arbor_scrape_runs_end_to_end():
     # the whole function with the browser stubbed out.
     calls = {}
 
+    captured = [{"url": "https://www.annarbor.org/includes/rest_v2/"
+                        "plugins_events_events_by_date/find/?json=%7B%7D&token=abc",
+                 "json": API_PAYLOAD}]
+
     def fake_render(url, capture_pattern, wait_selectors=(), evaluate=None,
                     evaluate_args=None, init_script=None, **kwargs):
         calls["url"] = url
         calls["wait_selectors"] = wait_selectors
-        calls["has_init_script"] = bool(init_script)
-        calls["evaluate_args"] = evaluate_args
+        calls["evaluate_args"] = (
+            evaluate_args(captured) if callable(evaluate_args) else evaluate_args
+        )
         return (
             soup_of("<html><body></body></html>"),
-            [API_PAYLOAD],
+            captured,
             {"data": {"docs": {"docs": [{
                 "title": "A later screen event",
                 "date": "2026-08-28T03:59:59.000Z",
@@ -205,11 +210,15 @@ def test_the_ann_arbor_scrape_runs_end_to_end():
         errors.clear()
 
     check("the calendar page was rendered", calls.get("url") == annarbor.BASE_URL)
-    check("the token catcher was installed", calls.get("has_init_script") is True)
     check(
-        "paging was told where the window ends",
-        calls.get("evaluate_args") and calls["evaluate_args"][0].startswith("2026-09-01"),
-        str(calls.get("evaluate_args")),
+        "paging was handed the signed url the page used",
+        calls.get("evaluate_args") and "token=abc" in calls["evaluate_args"][0],
+        str(calls.get("evaluate_args"))[:120],
+    )
+    check(
+        "and told where the window ends",
+        calls.get("evaluate_args") and calls["evaluate_args"][1].startswith("2026-09-01"),
+        str(calls.get("evaluate_args"))[:120],
     )
     check(
         "first screen and later screens are merged",
@@ -224,7 +233,8 @@ def test_a_refused_page_two_still_delivers_the_first_screen():
     print("\n[test_a_refused_page_two_still_delivers_the_first_screen]")
 
     def fake_render(url, capture_pattern, **kwargs):
-        return (soup_of("<html><body></body></html>"), [API_PAYLOAD],
+        return (soup_of("<html><body></body></html>"),
+                [{"url": "https://www.annarbor.org/x?token=abc", "json": API_PAYLOAD}],
                 {"error": "status 403 on page 1"})
 
     original = annarbor.eventpage.render_page_capturing

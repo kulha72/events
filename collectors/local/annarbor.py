@@ -11,8 +11,8 @@ nothing on it.
 The API refuses `requests` outright ("Invalid credentials" without a token,
 "Access Denied" with the page's own token), so the way in is the page itself:
 
-  1. Render the calendar, keep the JSON it fetches for its own first screen
-  2. Page through it from inside the page, replaying that exact query
+  1. Render the calendar and keep the signed call it makes for its first screen
+  2. Hand that URL back to the page to replay with a later offset
   3. If both come up empty, fall back to reading the rendered markup
 
 Requires: playwright, with chromium installed.
@@ -45,40 +45,11 @@ WAIT_SELECTORS = (
     "article[class*='event']",
 )
 
-# The page signs its API call with a token it never puts anywhere we can read
-# afterwards: it is not a global, and the resource-timing buffer has long
-# overflowed by the time the calendar draws. Wrapping fetch before the page's
-# own scripts run catches the whole request on its way past.
-_CATCH_QUERY_JS = """
-(() => {
-  const wanted = 'plugins_events_events_by_date';
-  const remember = (url) => {
-    try {
-      if (String(url).indexOf(wanted) !== -1) { window.__digestEventsQuery = String(url); }
-    } catch (e) { /* never break the page we are borrowing from */ }
-  };
-
-  const originalFetch = window.fetch;
-  if (originalFetch) {
-    window.fetch = function (input, init) {
-      remember(typeof input === 'string' ? input : (input && input.url) || '');
-      return originalFetch.apply(this, arguments);
-    };
-  }
-
-  // The calendar's first screen does not come through fetch — wrapping it
-  // alone caught nothing while the network log clearly showed the call.
-  const XHR = window.XMLHttpRequest;
-  if (XHR && XHR.prototype && XHR.prototype.open) {
-    const originalOpen = XHR.prototype.open;
-    XHR.prototype.open = function (method, url) {
-      remember(url);
-      return originalOpen.apply(this, arguments);
-    };
-  }
-})();
-"""
-
+# The page signs its API call with a token it puts nowhere we can read: not a
+# global, not in the resource timings, and not through window.fetch or
+# XMLHttpRequest — all three were tried and caught nothing while the browser's
+# own network log saw the call every time. So take the signed URL from the
+# response we captured, and hand it back to the page to page through.
 # Page through the calendar using the query the page itself made, changing
 # nothing but the offset.
 #
@@ -87,14 +58,7 @@ _CATCH_QUERY_JS = """
 # the page. Replaying its exact query and only advancing `skip` is the same
 # request the calendar makes when a reader scrolls, so it is answered.
 _PAGE_THROUGH_JS = """
-async ([cutoffIso, maxPages]) => {
-  // The calendar fetches its first screen on its own schedule, and a wait
-  // selector can match the page's chrome before that happens. Give the call
-  // a few seconds to go out rather than concluding it never will.
-  for (let waited = 0; waited < 40 && !window.__digestEventsQuery; waited++) {
-    await new Promise((resume) => setTimeout(resume, 250));
-  }
-  const seen = window.__digestEventsQuery;
+async ([seen, cutoffIso, maxPages]) => {
   if (!seen) return { error: 'the page made no API call to borrow' };
 
   let base, payload;
@@ -145,6 +109,15 @@ async ([cutoffIso, maxPages]) => {
 
 # How many extra screens to walk before giving up on covering the window.
 _MAX_EXTRA_PAGES = 12
+
+
+def _first_query(captured: list) -> str:
+    """The URL of the signed call the page made, if it made one."""
+    for capture in captured:
+        url = capture.get("url") if isinstance(capture, dict) else ""
+        if url:
+            return url
+    return ""
 
 
 def _docs_of(payload) -> list[dict]:
@@ -221,8 +194,11 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
             capture_pattern=_API_PATTERN,
             wait_selectors=WAIT_SELECTORS,
             evaluate=_PAGE_THROUGH_JS.strip(),
-            evaluate_args=[f"{cutoff.isoformat()}T23:59:59.000Z", _MAX_EXTRA_PAGES],
-            init_script=_CATCH_QUERY_JS.strip(),
+            evaluate_args=lambda captured: [
+                _first_query(captured),
+                f"{cutoff.isoformat()}T23:59:59.000Z",
+                _MAX_EXTRA_PAGES,
+            ],
         )
     except Exception as e:
         errors.record("annarbor", f"could not render annarbor.org/events: {e}")
@@ -232,7 +208,10 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
     # covers the digest window. Both are the same API, so merge and dedupe.
     widened = widened if isinstance(widened, dict) else {}
     docs = _docs_of(widened.get("data"))
-    from_page = [d for p in payloads for d in _docs_of(p)]
+    from_page = [
+        d for p in payloads
+        for d in _docs_of(p.get("json") if isinstance(p, dict) and "json" in p else p)
+    ]
     if docs:
         events = _events_from_docs(docs + from_page)
         stopped = widened.get("error")

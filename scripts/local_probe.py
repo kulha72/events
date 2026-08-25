@@ -818,13 +818,15 @@ def probe_annarbor_widen() -> None:
         capture_pattern=annarbor._API_PATTERN,
         wait_selectors=annarbor.WAIT_SELECTORS,
         evaluate=annarbor._PAGE_THROUGH_JS.strip(),
-        evaluate_args=[window[1], annarbor._MAX_EXTRA_PAGES],
-        init_script=annarbor._CATCH_QUERY_JS.strip(),
+        evaluate_args=lambda captured: [
+            annarbor._first_query(captured), window[1], annarbor._MAX_EXTRA_PAGES,
+        ],
     )
     print(f"  window: {window}")
     print(f"  the page's own API calls captured: {len(payloads)}")
     for payload in payloads:
-        print(f"    first-screen docs: {len(annarbor._docs_of(payload))}")
+        print(f"    signed url: {str(payload.get('url'))[:120]}")
+        print(f"    first-screen docs: {len(annarbor._docs_of(payload.get('json')))}")
     print(f"  widened result type: {type(widened).__name__}")
     if isinstance(widened, dict):
         print(f"    keys: {sorted(widened)}")
