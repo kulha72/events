@@ -38,6 +38,13 @@ DEFAULT_LOCATION = "Ann Arbor, MI"
 # The API call the calendar makes for its own first screen.
 _API_PATTERN = r"plugins_events_events_by_date"
 
+# What to wait for: any of these means the calendar has drawn something.
+WAIT_SELECTORS = (
+    "[class*='event-item']",
+    ".listing-item",
+    "article[class*='event']",
+)
+
 # The page signs its API call with a token it never puts anywhere we can read
 # afterwards: it is not a global, and the resource-timing buffer has long
 # overflowed by the time the calendar draws. Wrapping fetch before the page's

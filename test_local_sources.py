@@ -170,6 +170,87 @@ def test_a_doc_with_no_usable_date_is_dropped():
     check("neither survives", events == [], str(events))
 
 
+def test_the_ann_arbor_scrape_runs_end_to_end():
+    print("\n[test_the_ann_arbor_scrape_runs_end_to_end]")
+    # The parsing tests above all call helpers directly, so they stayed green
+    # through a rewrite that left _scrape_events referring to a name that no
+    # longer existed — a NameError the digest only found in production. Drive
+    # the whole function with the browser stubbed out.
+    calls = {}
+
+    def fake_render(url, capture_pattern, wait_selectors=(), evaluate=None,
+                    evaluate_args=None, init_script=None, **kwargs):
+        calls["url"] = url
+        calls["wait_selectors"] = wait_selectors
+        calls["has_init_script"] = bool(init_script)
+        calls["evaluate_args"] = evaluate_args
+        return (
+            soup_of("<html><body></body></html>"),
+            [API_PAYLOAD],
+            {"data": {"docs": {"docs": [{
+                "title": "A later screen event",
+                "date": "2026-08-28T03:59:59.000Z",
+                "url": "/event/later/99/",
+            }]}}},
+        )
+
+    original = annarbor.eventpage.render_page_capturing
+    annarbor.eventpage.render_page_capturing = fake_render
+    try:
+        errors.clear()
+        events = annarbor._scrape_events(date(2026, 8, 25), 7)
+        health = errors.summary()
+    finally:
+        annarbor.eventpage.render_page_capturing = original
+        errors.clear()
+
+    check("the calendar page was rendered", calls.get("url") == annarbor.BASE_URL)
+    check("the token catcher was installed", calls.get("has_init_script") is True)
+    check(
+        "paging was told where the window ends",
+        calls.get("evaluate_args") and calls["evaluate_args"][0].startswith("2026-09-01"),
+        str(calls.get("evaluate_args")),
+    )
+    check(
+        "first screen and later screens are merged",
+        len(events) == 3,
+        str([e["title"] for e in events]),
+    )
+    check("no failure reported", health["failures"] == [], str(health["failures"]))
+    check("not reported as degraded", health["degraded"] == [], str(health["degraded"]))
+
+
+def test_a_refused_page_two_still_delivers_the_first_screen():
+    print("\n[test_a_refused_page_two_still_delivers_the_first_screen]")
+
+    def fake_render(url, capture_pattern, **kwargs):
+        return (soup_of("<html><body></body></html>"), [API_PAYLOAD],
+                {"error": "status 403 on page 1"})
+
+    original = annarbor.eventpage.render_page_capturing
+    annarbor.eventpage.render_page_capturing = fake_render
+    try:
+        errors.clear()
+        events = annarbor._scrape_events(date(2026, 8, 25), 7)
+        health = errors.summary()
+    finally:
+        annarbor.eventpage.render_page_capturing = original
+        errors.clear()
+
+    check("the first screen still arrives", len(events) == 2, str(len(events)))
+    check("not a failure", health["failures"] == [])
+    check("flagged as degraded", len(health["degraded"]) == 1, str(health["degraded"]))
+    check(
+        "and the note says what stopped it",
+        health["degraded"] and "403" in health["degraded"][0]["reason"],
+        str(health["degraded"]),
+    )
+
+
+def soup_of(html: str) -> BeautifulSoup:
+    return BeautifulSoup(html, "html.parser")
+
+
 # ── Adrian: the Yodel embed ──────────────────────────────────────────────────
 
 LENAWEE_PAGE = """
