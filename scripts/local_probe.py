@@ -776,7 +776,7 @@ def probe_herald() -> None:
             continue
         print(f"\n  {url} -> {resp.status_code} {len(resp.content)}B")
         soup = BeautifulSoup(resp.text, "html.parser")
-        print(f"    {describe_page(soup)}")
+        describe_markup(soup, resp.text)
         paths = sorted({a["href"] for a in soup.find_all("a", href=True)
                         if a["href"].startswith("/content/")})
         print(f"    /content/ links: {len(paths)}")
@@ -802,6 +802,40 @@ def probe_herald() -> None:
             print(f"      date+time regex: {dt_match.groups() if dt_match else None}")
             print(f"      date-only regex: {date_match.group(1) if date_match else None}")
             print(f"      parser returns: {tecumseh._parse_herald_event_page(page_url)}")
+
+
+def probe_annarbor_widen() -> None:
+    """What does the widened in-page query actually come back with?"""
+    from collectors.local import annarbor
+
+    head("annarbor — the widened in-page query, verbatim")
+    today = date.today()
+    window = [f"{today.isoformat()}T00:00:00.000Z",
+              f"{(today + timedelta(days=7)).isoformat()}T23:59:59.000Z"]
+
+    soup, payloads, widened = annarbor.eventpage.render_page_capturing(
+        annarbor.BASE_URL,
+        capture_pattern=annarbor._API_PATTERN,
+        wait_selectors=annarbor.WAIT_SELECTORS,
+        evaluate=annarbor._WIDER_QUERY_JS.strip(),
+        evaluate_args=window,
+    )
+    print(f"  window: {window}")
+    print(f"  the page's own API calls captured: {len(payloads)}")
+    for payload in payloads:
+        print(f"    first-screen docs: {len(annarbor._docs_of(payload))}")
+    print(f"  widened result type: {type(widened).__name__}")
+    if isinstance(widened, dict):
+        print(f"    keys: {sorted(widened)}")
+        print(f"    error: {widened.get('error')!r}")
+        print(f"    body: {str(widened.get('body'))[:300]!r}")
+        docs = annarbor._docs_of(widened.get("data"))
+        print(f"    widened docs: {len(docs)}")
+        for doc in docs[:8]:
+            print(f"      {doc.get('date')} | {str(doc.get('title'))[:50]}")
+    else:
+        print(f"    raw: {str(widened)[:300]}")
+
 
 def main() -> None:
     wanted = [a.lower() for a in sys.argv[1:]] or list(SITES) + ["tca"]
@@ -840,6 +874,7 @@ def main() -> None:
         "vbo-key": probe_vbo_loadplugin,
         "collect": probe_collectors,
         "herald": probe_herald,
+        "annarbor-widen": probe_annarbor_widen,
     }
     for name, fn in round2.items():
         if name in wanted:

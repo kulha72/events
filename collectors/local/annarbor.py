@@ -64,7 +64,7 @@ async ([startIso, endIso]) => {
       try { token = new URL(earlier).searchParams.get('token'); } catch (e) { token = null; }
     }
   }
-  if (!token) return null;
+  if (!token) return { error: 'no token on the page' };
   const url = new URL(
     `${window.location.protocol}//${window.location.host}` +
     `/includes/rest_v2/plugins_events_events_by_date/find/`
@@ -90,9 +90,22 @@ async ([startIso, endIso]) => {
     },
   }));
   url.searchParams.append('token', token);
-  const res = await fetch(url, { method: 'GET' });
-  if (!res.ok) return null;
-  return await res.json();
+  let res;
+  try {
+    res = await fetch(url, { method: 'GET' });
+  } catch (e) {
+    return { error: `fetch threw: ${e}` };
+  }
+  if (!res.ok) {
+    let body = '';
+    try { body = (await res.text()).slice(0, 200); } catch (e) { body = '(unreadable)'; }
+    return { error: `status ${res.status}`, body: body };
+  }
+  try {
+    return { data: await res.json() };
+  } catch (e) {
+    return { error: `not json: ${e}` };
+  }
 }
 """
 
@@ -180,7 +193,8 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
 
     # The page's own call only asks for its first screen; the widened one
     # covers the digest window. Both are the same API, so merge and dedupe.
-    docs = _docs_of(widened)
+    widened = widened if isinstance(widened, dict) else {}
+    docs = _docs_of(widened.get("data"))
     from_page = [d for p in payloads for d in _docs_of(p)]
     if docs:
         events = _events_from_docs(docs + from_page)
@@ -189,10 +203,11 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
 
     if from_page:
         events = _events_from_docs(from_page)
+        why = widened.get("error") or "the page made no API call to borrow a token from"
         errors.note_strategy(
             "annarbor",
             f"annarbor.org: {len(events)} events from the API's first screen only "
-            f"— the widened query was refused",
+            f"— the widened query got {why}",
             degraded=True,
         )
         return events
