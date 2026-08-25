@@ -439,6 +439,100 @@ def probe_tecumseh_markup() -> None:
     for div in divs[:3]:
         print(f"\n  --- card ---\n  {' '.join(str(div).split())[:1200]}")
 
+# ── Round 3: the exact query, and the Yodel widget's own API ─────────────────
+
+def probe_annarbor_query() -> None:
+    """Print the events query the page sends, fully decoded, plus its token."""
+    from playwright.sync_api import sync_playwright
+    from urllib.parse import parse_qs, urlsplit
+
+    url = "https://www.annarbor.org/events/"
+    head(f"annarbor — the exact events query  {url}")
+
+    captured: list[str] = []
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(
+            headless=True, args=["--disable-blink-features=AutomationControlled"]
+        )
+        page = browser.new_context(user_agent=BROWSER_UA, locale="en-US").new_page()
+        page.on("request", lambda r: captured.append(r.url)
+                if "events_by_date" in r.url else None)
+        page.goto(url, timeout=60_000, wait_until="domcontentloaded")
+        page.wait_for_timeout(12_000)
+        browser.close()
+
+    print(f"  events_by_date requests: {len(captured)}")
+    for raw in captured[:2]:
+        params = parse_qs(urlsplit(raw).query)
+        token = (params.get("token") or [""])[0]
+        print(f"\n  token param: {token[:80]!r} (len {len(token)})")
+        try:
+            payload = json.loads((params.get("json") or ["{}"])[0])
+        except Exception as e:
+            print(f"  json param unparseable: {e}")
+            continue
+        print("  filter:")
+        print("    " + json.dumps(payload.get("filter"), indent=2)[:3000].replace("\n", "\n    "))
+        print("  options:")
+        print("    " + json.dumps(payload.get("options"), indent=2)[:2500].replace("\n", "\n    "))
+
+    session = requests.Session()
+    session.headers.update({"User-Agent": BROWSER_UA})
+    html_text = session.get(url, timeout=25).text
+    print("\n  simpleToken declarations in the page source:")
+    for m in re.finditer(r"simpleToken[\"']?\s*[:=]\s*[\"']([^\"']{4,200})[\"']", html_text):
+        print(f"    {m.group(0)[:220]}")
+    for m in list(re.finditer(r"simpleToken", html_text))[:6]:
+        print(f"    @{m.start()}: ...{' '.join(html_text[m.start()-90:m.start()+90].split())}...")
+
+
+def probe_yodel_api() -> None:
+    """The Lenawee calendar is a Yodel widget — what does it fetch, and draw?"""
+    from playwright.sync_api import sync_playwright
+
+    url = "https://events.yodel.today/y/widget/699331672d0ab3b826bf79e5"
+    head(f"adrian — Yodel widget XHR + rendered cards  {url}")
+
+    hits: list[tuple[str, str]] = []
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(
+            headless=True, args=["--disable-blink-features=AutomationControlled"]
+        )
+        page = browser.new_context(user_agent=BROWSER_UA, locale="en-US",
+                                   viewport={"width": 1400, "height": 2200}).new_page()
+
+        def on_response(resp):
+            # Only the data calls: the widget is a Next.js app, so its own
+            # hostname matches "event" on every stylesheet it loads.
+            if resp.request.resource_type not in ("xhr", "fetch"):
+                return
+            try:
+                body = resp.text()
+            except Exception as e:
+                body = f"(unavailable: {e})"
+            hits.append((f"{resp.status} {resp.request.method} {resp.url}", body))
+
+        page.on("response", on_response)
+        page.goto(url, timeout=60_000, wait_until="domcontentloaded")
+        page.wait_for_timeout(15_000)
+        html_text = page.content()
+        browser.close()
+
+    print(f"  xhr/fetch responses: {len(hits)}")
+    for line, body in hits[:12]:
+        print(f"\n  --- {line[:300]}")
+        print(f"      body[:1800]: {' '.join(body.split())[:1800]}")
+
+    soup = BeautifulSoup(html_text, "html.parser")
+    print(f"\n  rendered widget: {len(soup.get_text(strip=True))} chars text")
+    describe_markup(soup, html_text)
+    for selector in ("[class*='eventcardtile']", "[class*='eventCard']",
+                     "[class*='eventList']", "a[href*='/event']"):
+        found = soup.select(selector)
+        print(f"\n  {selector}: {len(found)}")
+        if found:
+            print(f"    first: {' '.join(str(found[0]).split())[:1200]}")
+
 def main() -> None:
     wanted = [a.lower() for a in sys.argv[1:]] or list(SITES) + ["tca"]
 
@@ -469,6 +563,8 @@ def main() -> None:
             r"api|json|event", "adrian/yodel"),
         "vbo": probe_vbo_fragment,
         "tecumseh-markup": probe_tecumseh_markup,
+        "annarbor-query": probe_annarbor_query,
+        "yodel": probe_yodel_api,
     }
     for name, fn in round2.items():
         if name in wanted:

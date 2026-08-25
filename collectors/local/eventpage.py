@@ -426,8 +426,64 @@ def fetch_tribe_rest(session, page_url: str, start: date, end: date, tz, timeout
 
 # ── Rendering ────────────────────────────────────────────────────────────────
 
+# Chromium's headless default announces itself — "HeadlessChrome/…" in the
+# User-Agent, navigator.webdriver set — and Cloudflare answers that with a 403
+# interstitial. Presenting a stock desktop Chrome is the difference between the
+# events page and 400 characters of "Just a moment...".
+BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+)
+
+_CHALLENGE_TITLES = (
+    "just a moment",
+    "attention required",
+    "checking your browser",
+    "access denied",
+    "please wait",
+)
+
+
+def _is_challenge_title(title: str) -> bool:
+    lowered = (title or "").lower()
+    return any(marker in lowered for marker in _CHALLENGE_TITLES)
+
+
+def new_browser_page(pw, **context_kwargs):
+    """Open a page that looks like somebody's desktop Chrome, not a crawler."""
+    browser = pw.chromium.launch(
+        headless=True,
+        args=["--disable-blink-features=AutomationControlled"],
+    )
+    context = browser.new_context(
+        user_agent=BROWSER_UA,
+        locale="en-US",
+        viewport={"width": 1280, "height": 1800},
+        **context_kwargs,
+    )
+    return browser, context.new_page()
+
+
+def _settle_challenge(page, budget_ms: int = 20_000) -> None:
+    """Wait out a bot interstitial, which swaps itself for the real page.
+
+    Reading the DOM while the challenge is still up is how the downtown
+    calendar came back as a 392-character page with no events on it.
+    """
+    remaining = budget_ms
+    while remaining > 0:
+        try:
+            title = page.title()
+        except Exception:
+            title = ""
+        if not _is_challenge_title(title):
+            return
+        page.wait_for_timeout(2_000)
+        remaining -= 2_000
+
+
 def render_page(url: str, wait_selectors=(), settle_ms: int = 2500, timeout_ms: int = 30_000):
-    """Render a page in headless Chromium and return the parsed DOM.
+    """Render a page in a browser-shaped Chromium and return the parsed DOM.
 
     `domcontentloaded` alone fires before a client-rendered calendar has drawn
     anything, which is exactly how a JS-only page looks like an empty one. Wait
@@ -436,10 +492,10 @@ def render_page(url: str, wait_selectors=(), settle_ms: int = 2500, timeout_ms: 
     from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser, page = new_browser_page(pw)
         try:
-            page = browser.new_page()
             page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
+            _settle_challenge(page)
 
             drew_content = False
             for selector in wait_selectors:
