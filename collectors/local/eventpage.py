@@ -520,6 +520,70 @@ def render_page(url: str, wait_selectors=(), settle_ms: int = 2500, timeout_ms: 
     return BeautifulSoup(html_text, "html.parser")
 
 
+def render_page_capturing(
+    url: str,
+    capture_pattern: str,
+    wait_selectors=(),
+    settle_ms: int = 2500,
+    timeout_ms: int = 30_000,
+    evaluate: str | None = None,
+    evaluate_args=None,
+):
+    """Render a page and keep the JSON it fetched for itself.
+
+    Some calendars now draw from a private JSON API that answers their own
+    page and nobody else: the same request from `requests` comes back 403,
+    with or without the page's token. Watching the page ask, and asking again
+    from inside it, is the way in that does not involve forging anything.
+
+    Returns (soup, [payloads it fetched], result of `evaluate` or None).
+    """
+    from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
+
+    payloads: list = []
+    evaluated = None
+
+    with sync_playwright() as pw:
+        browser, page = new_browser_page(pw)
+        try:
+            def on_response(response):
+                if not re.search(capture_pattern, response.url, re.IGNORECASE):
+                    return
+                try:
+                    payloads.append(response.json())
+                except Exception:
+                    pass
+
+            page.on("response", on_response)
+            page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
+            _settle_challenge(page)
+
+            for selector in wait_selectors:
+                try:
+                    page.wait_for_selector(selector, timeout=6_000)
+                    break
+                except PWTimeout:
+                    continue
+            else:
+                try:
+                    page.wait_for_load_state("networkidle", timeout=10_000)
+                except PWTimeout:
+                    pass
+                page.wait_for_timeout(settle_ms)
+
+            if evaluate:
+                try:
+                    evaluated = page.evaluate(evaluate, evaluate_args)
+                except Exception:
+                    evaluated = None
+
+            html_text = page.content()
+        finally:
+            browser.close()
+
+    return BeautifulSoup(html_text, "html.parser"), payloads, evaluated
+
+
 # ── Orchestration ────────────────────────────────────────────────────────────
 
 def scrape_calendar(

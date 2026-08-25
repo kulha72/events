@@ -709,6 +709,49 @@ def probe_vbo_loadplugin() -> None:
                   f"{title.get_text(strip=True) if title else '?'} | "
                   f"{venue.get_text(strip=True) if venue else '?'}")
 
+# ── Verification: run the collectors themselves ──────────────────────────────
+
+def probe_collectors() -> None:
+    """Run the four local collectors for real and print what comes back.
+
+    Unit tests pin the parsing down against fixtures; only this says whether
+    the live sites still answer the way the fixtures claim.
+    """
+    import errors as errmod
+    from collectors.local.adrian import AdrianCollector
+    from collectors.local.annarbor import AnnArborCollector
+    from collectors.local.tca import TCACollector
+    from collectors.local.tecumseh import TecumsehCollector
+
+    today = date.today()
+    collectors = [
+        ("tecumseh", TecumsehCollector),
+        ("tca", TCACollector),
+        ("annarbor", AnnArborCollector),
+        ("adrian", AdrianCollector),
+    ]
+
+    totals = {}
+    for name, cls in collectors:
+        head(f"{name} — live collect")
+        try:
+            events = cls({}).collect(today, 7)
+        except Exception as e:
+            print(f"  RAISED {type(e).__name__}: {e}")
+            totals[name] = "raised"
+            continue
+        totals[name] = len(events)
+        print(f"  {len(events)} events in the next 7 days")
+        for event in events[:12]:
+            print(f"    {event.start.isoformat()}  {event.title[:56]}  @ {str(event.location)[:40]}")
+
+    head("what the digest's health block would say")
+    print(json.dumps(errmod.summary(), indent=2, default=str)[:4000])
+
+    head("summary")
+    for name, count in totals.items():
+        print(f"  {name}: {count}")
+
 def main() -> None:
     wanted = [a.lower() for a in sys.argv[1:]] or list(SITES) + ["tca"]
 
@@ -744,6 +787,7 @@ def main() -> None:
         "yodel-static": probe_yodel_static,
         "annarbor-api": probe_annarbor_api,
         "vbo-key": probe_vbo_loadplugin,
+        "collect": probe_collectors,
     }
     for name, fn in round2.items():
         if name in wanted:

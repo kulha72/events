@@ -24,18 +24,10 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4 lxml python-dateutil playwright
+        run: pip install -r requirements.txt
 
       - name: Install Playwright browser
         run: playwright install chromium --with-deps
 
-      - name: Is Ann Arbor's events API usable without a browser?
-        run: python scripts/local_probe.py annarbor-api
-
-      - name: Does the Yodel widget server-render its events?
-        if: always()
-        run: python scripts/local_probe.py yodel-static
-
-      - name: Can the VBO widget key be resolved over plain HTTP?
-        if: always()
-        run: python scripts/local_probe.py vbo-key
+      - name: Run the local collectors for real
+        run: python scripts/local_probe.py collect

@@ -1,62 +1,119 @@
 """
 Adrian / Lenawee County local events collector.
-Scrapes visitlenawee.com events calendar.
 
-The scraper no longer assumes The Events Calendar's markup. It walks the
-layers in collectors/local/eventpage.py — REST API, JSON-LD, microdata, then
-CSS selectors, re-trying the page-level layers against a rendered DOM — so a
-re-theme or a switch to client-side rendering downgrades the scrape instead of
-emptying it.
+visitlenawee.com no longer runs its own calendar. The events page is a shell
+around a Yodel widget in an iframe (events.yodel.today), so the old scraper
+was parsing the frame around the calendar rather than the calendar — every
+layer it tried, REST through CSS selectors, was looking at the wrong document.
+
+This follows the embed instead:
+
+  1. Read the widget id out of the bureau's own page, so a re-embed is picked
+     up rather than hard-coded
+  2. Render the widget and read its schema.org JSON-LD, which is what Yodel
+     publishes for search engines
+
+The widget answers a plain HTTP request with 403, so the render is not
+optional here.
+
+Requires: playwright, with chromium installed.
 """
 
+import re
 import uuid
 from datetime import date, timezone
 from zoneinfo import ZoneInfo
 
 import requests
+from bs4 import BeautifulSoup
 
 from collectors.base import BaseCollector
 from collectors.local import eventpage
 from models.event import Event, EventCategory
 
+import errors
+
 LOCAL_TZ = ZoneInfo("America/Detroit")
 BASE_URL = "https://www.visitlenawee.com/events/"
 DEFAULT_LOCATION = "Adrian, MI"
 
-# Selectors the calendar is known to have used, plus the generic shapes from
-# eventpage. Tried only after the structured layers come up empty.
-ITEM_SELECTORS = (
-    "article.type-tribe_events",
-    ".tribe-events-loop .tribe-events-calendar-list__event",
-    ".tribe-event-list-item",
-    ".tribe-events-loop article",
-) + eventpage.DEFAULT_ITEM_SELECTORS
+# The embed the bureau was using when this was written; only a fallback, since
+# _discover_widget_id reads the current one off the page first.
+KNOWN_WIDGET_ID = "699331672d0ab3b826bf79e5"
+_WIDGET_ID_RE = re.compile(r"events\.yodel\.today/y/widget/([0-9a-f]{16,32})", re.I)
 
-# What to wait for when rendering: any of these means the calendar has drawn.
+# What to wait for: any of these means the widget has drawn its cards.
 WAIT_SELECTORS = (
-    "article.type-tribe_events",
-    ".tribe-events-calendar-list__event",
-    "[class*='event-item']",
+    "[class*='eventcardtile']",
+    "[id='eventContainer']",
     "script[type='application/ld+json']",
 )
 
 _session = requests.Session()
-_session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; daily-digest-adrian/1.0)"})
+_session.headers.update({
+    "User-Agent": eventpage.BROWSER_UA,
+    "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+})
 
 
-def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
-    return eventpage.scrape_calendar(
-        source="adrian",
-        session=_session,
-        page_url=BASE_URL,
-        today=today,
-        lookahead_days=lookahead_days,
-        tz=LOCAL_TZ,
-        default_location=DEFAULT_LOCATION,
-        site_label="visitlenawee.com",
-        item_selectors=ITEM_SELECTORS,
-        wait_selectors=WAIT_SELECTORS,
+def _widget_url(widget_id: str) -> str:
+    return f"https://events.yodel.today/y/widget/{widget_id}"
+
+
+def _discover_widget_id() -> str | None:
+    """Read the Yodel embed id off visitlenawee.com's events page."""
+    try:
+        resp = _session.get(BASE_URL, timeout=20)
+        resp.raise_for_status()
+    except Exception as e:
+        errors.record("adrian", f"could not fetch {BASE_URL}: {e}")
+        return None
+
+    found = _WIDGET_ID_RE.search(resp.text)
+    if found:
+        return found.group(1)
+
+    errors.note_suspect(
+        "adrian",
+        f"visitlenawee.com: no Yodel widget embedded on the events page any more "
+        f"— {eventpage.describe_page(BeautifulSoup(resp.text, 'html.parser'))}",
     )
+    return None
+
+
+def _scrape_events() -> list[dict]:
+    widget_id = _discover_widget_id()
+    from_page = bool(widget_id)
+    widget_id = widget_id or KNOWN_WIDGET_ID
+
+    url = _widget_url(widget_id)
+    try:
+        soup = eventpage.render_page(url, wait_selectors=WAIT_SELECTORS, timeout_ms=45_000)
+    except Exception as e:
+        errors.record("adrian", f"could not render the Lenawee events widget: {e}")
+        return []
+
+    events, how = eventpage.extract_all(
+        soup, LOCAL_TZ, DEFAULT_LOCATION, eventpage.DEFAULT_ITEM_SELECTORS, url
+    )
+    if events:
+        errors.note_strategy(
+            "adrian",
+            f"Yodel widget: {len(events)} events from {how}"
+            + ("" if from_page else " — using the hard-coded widget id"),
+            # Reading the third-party markup, or guessing which widget, are
+            # both a step short of solid.
+            degraded=(how == "CSS selectors" or not from_page),
+        )
+        return events
+
+    errors.note_suspect(
+        "adrian",
+        f"Yodel widget {widget_id}: no events from any strategy — "
+        f"{eventpage.describe_page(soup)}",
+    )
+    return []
 
 
 class AdrianCollector(BaseCollector):
@@ -75,7 +132,7 @@ class AdrianCollector(BaseCollector):
         if cached:
             return [Event(**e) for e in cached]
 
-        raw_events = _scrape_events(today, lookahead_days)
+        raw_events = _scrape_events()
         events = []
 
         for raw in raw_events:
