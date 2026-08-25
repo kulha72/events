@@ -29,9 +29,13 @@ jobs:
       - name: Install Playwright browser
         run: playwright install chromium --with-deps
 
-      - name: What exactly does Ann Arbor's events query look like?
-        run: python scripts/local_probe.py annarbor-query
+      - name: Is Ann Arbor's events API usable without a browser?
+        run: python scripts/local_probe.py annarbor-api
 
-      - name: What does the Yodel widget fetch and draw?
+      - name: Does the Yodel widget server-render its events?
         if: always()
-        run: python scripts/local_probe.py yodel
+        run: python scripts/local_probe.py yodel-static
+
+      - name: Can the VBO widget key be resolved over plain HTTP?
+        if: always()
+        run: python scripts/local_probe.py vbo-key

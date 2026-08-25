@@ -533,6 +533,182 @@ def probe_yodel_api() -> None:
         if found:
             print(f"    first: {' '.join(str(found[0]).split())[:1200]}")
 
+# ── Round 4: can each replacement path run without a browser? ────────────────
+
+def probe_yodel_static() -> None:
+    """Does the Yodel widget server-render its events, JSON-LD and all?"""
+    head("adrian — Yodel widget over plain HTTP")
+    session = requests.Session()
+    session.headers.update({"User-Agent": BROWSER_UA, "Accept": "text/html,*/*;q=0.8"})
+
+    listing = session.get(SITES["adrian"], timeout=25).text
+    ids = set(re.findall(r"events\.yodel\.today/y/widget/([0-9a-f]{16,32})", listing))
+    print(f"  widget ids discoverable in visitlenawee.com's HTML: {sorted(ids)}")
+
+    for widget_id in sorted(ids) or ["699331672d0ab3b826bf79e5"]:
+        url = f"https://events.yodel.today/y/widget/{widget_id}"
+        resp = session.get(url, timeout=25)
+        print(f"\n  {url} -> {resp.status_code} {len(resp.content)}B")
+        soup = BeautifulSoup(resp.text, "html.parser")
+        blocks = soup.find_all("script", type="application/ld+json")
+        print(f"    ld+json blocks: {len(blocks)}")
+        events = parse_jsonld_preview(soup)
+        print(f"    Events found by the JSON-LD layer: {len(events)}")
+        for ev in events[:5]:
+            print(f"      {ev}")
+
+
+def parse_jsonld_preview(soup) -> list[dict]:
+    """Mirror of the collector's JSON-LD layer, so the probe proves the layer."""
+    out = []
+    for block in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(block.string or block.get_text() or "{}")
+        except Exception:
+            continue
+        stack = [data]
+        while stack:
+            node = stack.pop()
+            if isinstance(node, list):
+                stack.extend(node)
+            elif isinstance(node, dict):
+                types = node.get("@type")
+                types = types if isinstance(types, list) else [types]
+                if any(isinstance(t, str) and t.endswith("Event") for t in types) and node.get("name"):
+                    loc = node.get("location")
+                    if isinstance(loc, dict):
+                        loc = loc.get("name")
+                    out.append({
+                        "name": str(node.get("name"))[:60],
+                        "startDate": node.get("startDate"),
+                        "endDate": node.get("endDate"),
+                        "location": str(loc)[:50],
+                        "url": str(node.get("url"))[:80],
+                    })
+                stack.extend(v for v in node.values() if isinstance(v, (dict, list)))
+    return out
+
+
+def probe_annarbor_api() -> None:
+    """Is the Simpleview token enforced, and does a custom date range work?"""
+    head("annarbor — is the events API usable without a browser?")
+    session = requests.Session()
+    session.headers.update({"User-Agent": BROWSER_UA, "Accept": "application/json,*/*"})
+
+    endpoint = "https://www.annarbor.org/includes/rest_v2/plugins_events_events_by_date/find/"
+    today = date.today()
+    payload = {
+        "filter": {
+            "active": True,
+            "date_range": {
+                "start": {"$date": f"{today.isoformat()}T00:00:00.000Z"},
+                "end": {"$date": f"{(today + timedelta(days=7)).isoformat()}T23:59:59.000Z"},
+            },
+        },
+        "options": {
+            "limit": 100,
+            "skip": 0,
+            "count": True,
+            "castDocs": False,
+            "fields": {
+                "_id": 1, "location": 1, "date": 1, "startDate": 1, "endDate": 1,
+                "recurrence": 1, "recurType": 1, "recid": 1, "title": 1, "url": 1,
+                "categories": 1, "city": 1, "region": 1, "admission": 1,
+                "listing.title": 1, "listing.url": 1, "listing.city": 1,
+            },
+            "hooks": [],
+            "sort": {"date": 1, "rank": 1, "title_sort": 1},
+        },
+    }
+
+    for label, token in (
+        ("no token param", None),
+        ("garbage token", "0" * 32),
+        ("the token the page used", "2c2e93b51c6d574ef1fb9d1922b5e008"),
+    ):
+        params = {"json": json.dumps(payload)}
+        if token is not None:
+            params["token"] = token
+        try:
+            resp = session.get(endpoint, params=params, timeout=25)
+        except Exception as e:
+            print(f"  {label}: ERROR {type(e).__name__}: {e}")
+            continue
+        body = resp.text
+        print(f"\n  {label}: {resp.status_code} {len(resp.content)}B")
+        try:
+            data = resp.json()
+        except Exception:
+            print(f"    not json: {' '.join(body.split())[:300]}")
+            continue
+        docs = (data.get("docs") or {})
+        rows = docs.get("docs") if isinstance(docs, dict) else None
+        print(f"    count={docs.get('count') if isinstance(docs, dict) else '?'} "
+              f"returned={len(rows) if rows else 0}")
+        for row in (rows or [])[:6]:
+            print(f"      {row.get('date')} | {str(row.get('title'))[:48]} | "
+                  f"{str(row.get('location'))[:30]} | {row.get('url')}")
+
+    # Where does the token come from, if not the page HTML?
+    page = session.get("https://www.annarbor.org/events/", timeout=25).text
+    scripts = re.findall(r'<script[^>]+src="([^"]+)"', page)
+    print(f"\n  external scripts on the events page: {len(scripts)}")
+    for src in scripts[:40]:
+        if not re.search(r"core|simple|main|app|bundle", src, re.I):
+            continue
+        url = src if src.startswith("http") else "https://www.annarbor.org" + src
+        try:
+            body = session.get(url, timeout=20).text
+        except Exception:
+            continue
+        for m in re.finditer(r"simpleToken[\"']?\s*[:=]\s*[\"']([0-9a-f]{16,64})[\"']", body):
+            print(f"    token in {url[:90]}: {m.group(1)}")
+
+
+def probe_vbo_loadplugin() -> None:
+    """Can the widget session key be resolved over plain HTTP?"""
+    head("tca — resolving the VBO widget key")
+    session = requests.Session()
+    session.headers.update({"User-Agent": BROWSER_UA, "Referer": TCA_URL})
+    page = session.get(TCA_URL, timeout=25).text
+    site_id = re.search(r'var\s+SiteID\s*=\s*"([^"]+)"', page)
+    org_id = re.search(r'var\s+OrgID\s*=\s*"([^"]+)"', page)
+    print(f"  SiteID: {site_id.group(1) if site_id else None}")
+    print(f"  OrgID:  {org_id.group(1) if org_id else None}")
+    if not site_id:
+        return
+
+    params = {
+        "siteid": site_id.group(1), "page": "ListEvents", "w": "1280", "h": "720",
+        "o": org_id.group(1) if org_id else "0",
+        "eid": "0", "edid": "0", "did": "0", "wlid": "0",
+    }
+    resp = session.get("https://plugin.vbotickets.com/plugin/loadplugin",
+                       params=params, timeout=25)
+    print(f"  loadplugin -> {resp.status_code} {len(resp.content)}B "
+          f"{resp.headers.get('content-type','?')[:40]}")
+    print(f"    body[:800]: {' '.join(resp.text.split())[:800]}")
+    guids = re.findall(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+                       resp.text, re.I)
+    print(f"    GUIDs in the response: {guids[:5]}")
+    for guid in guids[:2]:
+        url = (f"https://plugin.vbotickets.com/Plugin/events/showevents"
+               f"?ViewType=list&EventType=current&day=&s={guid}")
+        try:
+            listing = session.get(url, timeout=25)
+        except Exception as e:
+            print(f"    {guid}: ERROR {e}")
+            continue
+        cards = BeautifulSoup(listing.text, "html.parser").select(".EventListWrapper")
+        print(f"    key {guid} -> {listing.status_code}, {len(cards)} cards")
+        for card in cards[:4]:
+            title = card.select_one("h2.HeaderEventName")
+            when = card.select_one(".TextEventDate")
+            venue = card.select_one(".TextVenueName")
+            print(f"      {when.get_text(' ', strip=True) if when else '?'} | "
+                  f"{title.get_text(strip=True) if title else '?'} | "
+                  f"{venue.get_text(strip=True) if venue else '?'}")
+
 def main() -> None:
     wanted = [a.lower() for a in sys.argv[1:]] or list(SITES) + ["tca"]
 
@@ -565,6 +741,9 @@ def main() -> None:
         "tecumseh-markup": probe_tecumseh_markup,
         "annarbor-query": probe_annarbor_query,
         "yodel": probe_yodel_api,
+        "yodel-static": probe_yodel_static,
+        "annarbor-api": probe_annarbor_api,
+        "vbo-key": probe_vbo_loadplugin,
     }
     for name, fn in round2.items():
         if name in wanted:
