@@ -51,16 +51,31 @@ WAIT_SELECTORS = (
 # own scripts run catches the whole request on its way past.
 _CATCH_QUERY_JS = """
 (() => {
-  const original = window.fetch;
-  window.fetch = function (input, init) {
+  const wanted = 'plugins_events_events_by_date';
+  const remember = (url) => {
     try {
-      const url = typeof input === 'string' ? input : (input && input.url) || '';
-      if (url.indexOf('plugins_events_events_by_date') !== -1) {
-        window.__digestEventsQuery = url;
-      }
+      if (String(url).indexOf(wanted) !== -1) { window.__digestEventsQuery = String(url); }
     } catch (e) { /* never break the page we are borrowing from */ }
-    return original.apply(this, arguments);
   };
+
+  const originalFetch = window.fetch;
+  if (originalFetch) {
+    window.fetch = function (input, init) {
+      remember(typeof input === 'string' ? input : (input && input.url) || '');
+      return originalFetch.apply(this, arguments);
+    };
+  }
+
+  // The calendar's first screen does not come through fetch — wrapping it
+  // alone caught nothing while the network log clearly showed the call.
+  const XHR = window.XMLHttpRequest;
+  if (XHR && XHR.prototype && XHR.prototype.open) {
+    const originalOpen = XHR.prototype.open;
+    XHR.prototype.open = function (method, url) {
+      remember(url);
+      return originalOpen.apply(this, arguments);
+    };
+  }
 })();
 """
 
