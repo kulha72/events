@@ -1,0 +1,41 @@
+name: Local Sources Probe
+
+# Diagnostic for the four local calendars. Runs from a GitHub Actions runner,
+# which can reach the sites, and prints what each page actually serves so the
+# scrapers get fixed against evidence rather than guesses. Sends nothing,
+# deploys nothing.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/feed-problems-ez2jos
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 lxml python-dateutil playwright
+
+      - name: Install Playwright browser
+        run: playwright install chromium --with-deps
+
+      - name: Probe the visitor bureaus
+        run: python scripts/local_probe.py adrian annarbor
+
+      - name: Probe downtown Tecumseh
+        if: always()
+        run: python scripts/local_probe.py tecumseh
+
+      - name: Probe TCA
+        if: always()
+        run: python scripts/local_probe.py tca
