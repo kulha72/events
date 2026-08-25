@@ -73,6 +73,12 @@ _CATCH_QUERY_JS = """
 # request the calendar makes when a reader scrolls, so it is answered.
 _PAGE_THROUGH_JS = """
 async ([cutoffIso, maxPages]) => {
+  // The calendar fetches its first screen on its own schedule, and a wait
+  // selector can match the page's chrome before that happens. Give the call
+  // a few seconds to go out rather than concluding it never will.
+  for (let waited = 0; waited < 40 && !window.__digestEventsQuery; waited++) {
+    await new Promise((resume) => setTimeout(resume, 250));
+  }
   const seen = window.__digestEventsQuery;
   if (!seen) return { error: 'the page made no API call to borrow' };
 
