@@ -318,6 +318,127 @@ def probe_tca() -> None:
                 print(f"    inline script snippet: {' '.join(body.split())[:400]}")
 
 
+# ── Round 2: capture what the widgets actually fetch ─────────────────────────
+
+def _capture_xhr(url: str, match: str, label: str, wait_ms: int = 15_000) -> None:
+    """Render a page and print the API calls it makes, with their responses.
+
+    Guessing a JSON API's query shape is how the last fix went wrong. The page
+    already knows the shape — watch it ask.
+    """
+    from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
+
+    head(f"{label} — XHR capture  {url}")
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(
+            headless=True, args=["--disable-blink-features=AutomationControlled"]
+        )
+        context = browser.new_context(user_agent=BROWSER_UA, locale="en-US",
+                                      viewport={"width": 1280, "height": 2000})
+        page = context.new_page()
+
+        hits: list[tuple[str, str]] = []
+
+        def on_response(resp):
+            if not re.search(match, resp.url, re.IGNORECASE):
+                return
+            try:
+                body = resp.text()
+            except Exception as e:
+                body = f"(body unavailable: {e})"
+            hits.append((f"{resp.status} {resp.url}", body))
+
+        page.on("response", on_response)
+
+        try:
+            page.goto(url, timeout=60_000, wait_until="domcontentloaded")
+        except PWTimeout as e:
+            print(f"  goto timed out: {e}")
+            browser.close()
+            return
+        page.wait_for_timeout(wait_ms)
+        print(f"  final url: {page.url}  title: {page.title()!r}")
+        browser.close()
+
+    print(f"  matching responses: {len(hits)}")
+    for line, body in hits[:6]:
+        print(f"\n  --- {line[:400]}")
+        print(f"      body[:2500]: {body[:2500]}")
+
+
+def probe_simpleview_token() -> None:
+    """How does annarbor.org build its events query, and where is the token?"""
+    url = "https://www.annarbor.org/events/"
+    head(f"annarbor — Simpleview query construction  {url}")
+    session = requests.Session()
+    session.headers.update({"User-Agent": BROWSER_UA})
+    html_text = session.get(url, timeout=25).text
+
+    for needle in ("simpleToken", "rest_v2"):
+        for m in list(re.finditer(needle, html_text))[:3]:
+            lo, hi = max(0, m.start() - 1500), m.start() + 1500
+            print(f"\n  --- {needle} @ {m.start()} ---")
+            print("  " + " ".join(html_text[lo:hi].split())[:2800])
+
+
+def probe_vbo_fragment() -> None:
+    """Can the VBO event list be fetched without a browser at all?"""
+    site = "d7b7befb-80ac-4c77-b28c-a23b353a5df7"
+    urls = [
+        f"https://plugin.vbotickets.com/Plugin/events/showevents?ViewType=list&EventType=current&day=&s={site}",
+        f"https://plugin.vbotickets.com/plugin/events?s={site}",
+    ]
+    head("tca — plain fetch of the VBO widget endpoints")
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": BROWSER_UA,
+        "Accept": "text/html,*/*;q=0.8",
+        "Referer": "https://tecumsehcenterforthearts.vbotickets.com/",
+        "X-Requested-With": "XMLHttpRequest",
+    })
+    for url in urls:
+        try:
+            resp = session.get(url, timeout=25)
+        except Exception as e:
+            print(f"  {url}: ERROR {type(e).__name__}: {e}")
+            continue
+        print(f"\n  {url}\n    -> {resp.status_code} {len(resp.content)}B "
+              f"{resp.headers.get('content-type','?')[:40]}")
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for sel in (".EventListWrapper", ".EventListExtra", ".TextEventDate",
+                    "h2.HeaderEventName", ".TextVenueName", "[class*='EventList']"):
+            print(f"    {sel}: {len(soup.select(sel))}")
+        card = soup.select_one(".EventListWrapper") or soup.select_one("[class*='EventList']")
+        if card:
+            print(f"    first card html[:1500]: {' '.join(str(card).split())[:1500]}")
+        else:
+            print(f"    body text[:600]: {' '.join(soup.get_text(' ', strip=True).split())[:600]}")
+
+
+def probe_tecumseh_markup() -> None:
+    """With a browser-shaped context, does div.event come back intact?"""
+    from playwright.sync_api import sync_playwright
+
+    url = SITES["tecumseh"]
+    head(f"tecumseh — browser-shaped render, existing selectors  {url}")
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(
+            headless=True, args=["--disable-blink-features=AutomationControlled"]
+        )
+        context = browser.new_context(user_agent=BROWSER_UA, locale="en-US")
+        page = context.new_page()
+        page.goto(url, timeout=60_000, wait_until="domcontentloaded")
+        page.wait_for_timeout(6_000)
+        html_text = page.content()
+        browser.close()
+
+    soup = BeautifulSoup(html_text, "html.parser")
+    divs = soup.find_all("div", class_="event")
+    print(f"  title: {soup.title.get_text(strip=True) if soup.title else None!r}")
+    print(f"  div.event count: {len(divs)}")
+    for div in divs[:3]:
+        print(f"\n  --- card ---\n  {' '.join(str(div).split())[:1200]}")
+
 def main() -> None:
     wanted = [a.lower() for a in sys.argv[1:]] or list(SITES) + ["tca"]
 
@@ -338,6 +459,23 @@ def main() -> None:
             probe_tca()
         except Exception as e:
             print(f"  tca probe blew up: {type(e).__name__}: {e}")
+
+    round2 = {
+        "simpleview": probe_simpleview_token,
+        "xhr-annarbor": lambda: _capture_xhr(
+            "https://www.annarbor.org/events/", r"rest_v2|events_by_date", "annarbor"),
+        "xhr-adrian": lambda: _capture_xhr(
+            "https://events.yodel.today/y/widget/699331672d0ab3b826bf79e5",
+            r"api|json|event", "adrian/yodel"),
+        "vbo": probe_vbo_fragment,
+        "tecumseh-markup": probe_tecumseh_markup,
+    }
+    for name, fn in round2.items():
+        if name in wanted:
+            try:
+                fn()
+            except Exception as e:
+                print(f"  {name} probe blew up: {type(e).__name__}: {e}")
 
 
 if __name__ == "__main__":
