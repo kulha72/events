@@ -19,10 +19,15 @@ Run: python scripts/local_probe.py [tecumseh|adrian|annarbor|tca] ...
 """
 
 import json
+import os
 import re
 import sys
 from collections import Counter
 from datetime import date, timedelta
+
+# Run from the repo root's point of view, so `collectors` and `errors` import
+# the same way they do for main.py.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import requests
 from bs4 import BeautifulSoup
