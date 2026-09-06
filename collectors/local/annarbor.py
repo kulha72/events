@@ -150,6 +150,30 @@ def _local_day(value) -> date | None:
     return parsed.astimezone(LOCAL_TZ).date()
 
 
+def _doc_start(doc: dict, day: date):
+    """The occurrence's start, and whether the feed gave a clock time for it.
+
+    `date` is only ever the end of the local day, so it says nothing about
+    when the event begins. A few listings do carry a real `startDate` or a
+    separate `startTime`; when one does, use it rather than filing the event
+    at midnight.
+    """
+    for key in ("startTime", "start_time", "starttime"):
+        raw = doc.get(key)
+        if not raw:
+            continue
+        start, all_day = eventpage.parse_start(raw, LOCAL_TZ, reference=day)
+        if start and not all_day:
+            return start.replace(year=day.year, month=day.month, day=day.day), False
+
+    start, all_day = eventpage.parse_start(doc.get("startDate"), LOCAL_TZ, reference=day)
+    if start and not all_day:
+        return start.replace(year=day.year, month=day.month, day=day.day), False
+
+    # Nothing named a time, so this is an all-day listing.
+    return datetime.combine(day, time.min, tzinfo=LOCAL_TZ), True
+
+
 def _events_from_docs(docs: list[dict]) -> list[dict]:
     """Turn API docs into raw event dicts, one per occurrence."""
     events = []
@@ -174,11 +198,12 @@ def _events_from_docs(docs: list[dict]) -> list[dict]:
         if url.startswith("/"):
             url = SITE_ROOT + url
 
-        # The feed carries no time of day, so these are all-day listings.
+        start_dt, all_day = _doc_start(doc, day)
         events.append({
             "title": title,
-            "start_dt": datetime.combine(day, time.min, tzinfo=LOCAL_TZ),
+            "start_dt": start_dt,
             "end_dt": None,
+            "all_day": all_day,
             "location": location or DEFAULT_LOCATION,
             "url": url or BASE_URL,
         })
@@ -282,6 +307,7 @@ class AnnArborCollector(BaseCollector):
                 category=EventCategory.LOCAL,
                 start=start_utc,
                 end=end_utc,
+                all_day=raw.get("all_day", False),
                 location=raw.get("location") or DEFAULT_LOCATION,
                 source="annarbor",
                 url=raw.get("url") or BASE_URL,
