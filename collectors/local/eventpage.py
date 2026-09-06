@@ -19,6 +19,10 @@ always carries its events in more than one form:
 Callers try them in that order and report which one produced the events, so a
 silent downgrade (REST gone, now scraping HTML) is visible before the HTML
 layer breaks too.
+
+Every layer reports `all_day` alongside the start time, because "this listing
+has no clock time" and "this listing starts at midnight" are different facts
+that a bare datetime cannot tell apart — see `_parse_parts`.
 """
 
 import html
@@ -54,28 +58,121 @@ def _is_event_type(raw_type) -> bool:
     return False
 
 
+# ── Date/time parsing ────────────────────────────────────────────────────────
+
+# dateutil fills whatever the text left out from `default`, and then hands back
+# a datetime that looks exactly like one the text spelled out in full. So
+# "August 20" and "August 20 at midnight" both parse to 00:00 and there is no
+# way to tell them apart from the result alone — which is how a calendar full
+# of 7pm shows finished up in the digest at 12 AM.
+#
+# Parsing twice against two defaults separates them: a component that comes
+# back the same was named in the text, and one that tracks its default was
+# missing from it.
+#
+# The two differ only in year, month, day and hour. Text almost never spells
+# out seconds, so defaults that disagreed on them would make every "7:00 pm"
+# look like it came from the default and land back at midnight — the bug this
+# is here to fix. Minute and second are held equal so they cannot vote.
+_PROBE_A = datetime(1899, 3, 4, 5, 6, 7)
+_PROBE_B = datetime(1955, 8, 9, 17, 6, 7)
+
+
+def _parse_parts(text: str, fuzzy: bool = False, reference: date | None = None):
+    """Parse a date/time string, reporting which parts the text actually named.
+
+    Returns `(datetime, has_date, has_time)`, or `(None, False, False)` when
+    the text carries no date or time at all. Anything the text omitted is
+    filled from `reference` (default today) at midnight, so a bare "August 20"
+    lands in the current year rather than whichever one dateutil assumed.
+    """
+    if not text:
+        return None, False, False
+    text = _clean(text)
+    if not text:
+        return None, False, False
+
+    reference = reference or date.today()
+    try:
+        probe_a = dateparser.parse(text, fuzzy=fuzzy, default=_PROBE_A)
+        probe_b = dateparser.parse(text, fuzzy=fuzzy, default=_PROBE_B)
+        parsed = dateparser.parse(
+            text, fuzzy=fuzzy, default=datetime.combine(reference, time.min)
+        )
+    except Exception:
+        return None, False, False
+    if probe_a is None or probe_b is None or parsed is None:
+        return None, False, False
+
+    # The year is allowed to come from the default — "August 20" is a date.
+    has_date = (probe_a.month, probe_a.day) == (probe_b.month, probe_b.day)
+    # Likewise the minute — "7 pm" is a time of day.
+    has_time = (probe_a.hour, probe_a.minute) == (probe_b.hour, probe_b.minute)
+    if not has_date and not has_time:
+        return None, False, False
+    return parsed, has_date, has_time
+
+
 def _to_local(value, tz) -> datetime | None:
     """Parse a date/datetime string and pin it to the calendar's local zone.
 
     Date-only values ("2026-08-20") become local midnight, which is how an
     all-day listing should sort against timed ones.
     """
+    parsed, _, _ = _to_local_parts(value, tz)
+    return parsed
+
+
+def _to_local_parts(value, tz, fuzzy: bool = False, reference: date | None = None):
+    """`_parse_parts`, with the result pinned to the calendar's local zone.
+
+    Returns `(datetime, has_date, has_time)`. A value that already carries an
+    offset keeps it; a naive one is read as local time.
+    """
     if not value:
-        return None
+        return None, False, False
     text = _clean(value)
     if not text:
-        return None
-    try:
-        parsed = dateparser.parse(text)
-    except Exception:
-        return None
+        return None, False, False
+
+    parsed, has_date, has_time = _parse_parts(text, fuzzy=fuzzy, reference=reference)
     if parsed is None:
-        return None
-    if isinstance(parsed, datetime) and parsed.tzinfo is None:
+        return None, False, False
+    if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=tz)
-    elif not isinstance(parsed, datetime):
-        parsed = datetime.combine(parsed, time.min, tzinfo=tz)
-    return parsed
+    return parsed, has_date, has_time
+
+
+def parse_start(value, tz, fuzzy: bool = False, reference: date | None = None):
+    """Parse a listing's start date, saying whether the text named a clock time.
+
+    Returns `(datetime, all_day)`, or `(None, False)` when the text carries no
+    date. Collectors that read a start out of free text share this so they all
+    tell "no time given" apart from "starts at midnight" the same way.
+    """
+    parsed, has_date, has_time = _to_local_parts(
+        value, tz, fuzzy=fuzzy, reference=reference
+    )
+    if parsed is None or not has_date:
+        return None, False
+    return parsed, not has_time
+
+
+def _combine(day_dt: datetime, time_dt: datetime | None) -> datetime:
+    """Put a clock time read from one element onto a date read from another.
+
+    The Events Calendar writes `<time datetime="2026-08-20">` — the date, no
+    time — and then spells "August 20 @ 7:00 pm" out in the schedule text
+    beside it. Reading only the first is a 7pm show listed at midnight.
+    """
+    if time_dt is None:
+        return day_dt
+    return day_dt.replace(
+        hour=time_dt.hour,
+        minute=time_dt.minute,
+        second=time_dt.second,
+        microsecond=0,
+    )
 
 
 def _place_name(value) -> str:
@@ -170,7 +267,7 @@ def parse_jsonld(soup: BeautifulSoup, tz, default_location: str = "") -> list[di
     events = []
     seen = set()
     for item in found:
-        start = _to_local(item.get("startDate"), tz)
+        start, _, has_time = _to_local_parts(item.get("startDate"), tz)
         if not start:
             continue
         title = _clean(item.get("name", ""))
@@ -185,6 +282,8 @@ def parse_jsonld(soup: BeautifulSoup, tz, default_location: str = "") -> list[di
             "title": title,
             "start_dt": start,
             "end_dt": _to_local(item.get("endDate"), tz),
+            # schema.org spells an all-day event as a bare date ("2026-08-22").
+            "all_day": not has_time,
             "location": _place_name(item.get("location")) or default_location,
             "url": url,
         })
@@ -216,7 +315,7 @@ def parse_microdata(soup: BeautifulSoup, tz, default_location: str = "") -> list
             continue
 
         title = _itemprop_value(scope, "name")
-        start = _to_local(_itemprop_value(scope, "startDate"), tz)
+        start, _, has_time = _to_local_parts(_itemprop_value(scope, "startDate"), tz)
         if not title or not start:
             continue
 
@@ -224,6 +323,7 @@ def parse_microdata(soup: BeautifulSoup, tz, default_location: str = "") -> list
             "title": title,
             "start_dt": start,
             "end_dt": _to_local(_itemprop_value(scope, "endDate"), tz),
+            "all_day": not has_time,
             "location": _itemprop_value(scope, "location") or default_location,
             "url": _itemprop_value(scope, "url"),
         })
@@ -255,10 +355,14 @@ _TITLE_SELECTORS = (
     "h2", "h3", "h4", "[class*='title']",
 )
 
+# `time[datetime]` is first because it is the most reliable *date*. It is also
+# routinely date-only, so this list is now read to the end looking for a clock
+# time rather than stopping at the first thing that parses.
 _DATE_SELECTORS = (
     "time[datetime]", "[datetime]", "abbr[title]",
     ".tribe-event-schedule-details", ".tribe-events-schedule",
     "[class*='date']", "[class*='schedule']", "[class*='when']",
+    "[class*='time']",
 )
 
 _LOCATION_SELECTORS = (
@@ -306,17 +410,7 @@ def parse_selectors(
             url = link["href"] if link else ""
         url = _absolute(url, base_url)
 
-        start = None
-        for date_el in _iter_date_elements(item):
-            raw = (
-                date_el.get("datetime")
-                or date_el.get("content")
-                or date_el.get("title")
-                or date_el.get_text(" ", strip=True)
-            )
-            start = _to_local_fuzzy(raw, tz)
-            if start:
-                break
+        start, all_day = _item_start(item, tz)
         if not start:
             continue
 
@@ -325,35 +419,66 @@ def parse_selectors(
             "title": title,
             "start_dt": start,
             "end_dt": None,
+            "all_day": all_day,
             "location": _clean(loc_el.get_text(" ", strip=True)) if loc_el else default_location,
             "url": url or base_url,
         })
     return events
 
 
+def _item_start(item, tz):
+    """Read one listing's start, taking the date and the time from wherever they are.
+
+    A listing routinely spreads the two across separate elements — a date-only
+    `<time datetime>` for machines and "August 20 @ 7:00 pm" for readers.
+    Stopping at the first element that parsed is what put those shows at
+    midnight, so keep reading until both halves are in hand.
+
+    Returns `(datetime, all_day)`; `(None, False)` when there is no date at all.
+    """
+    day_dt = None       # first element that named a date
+    time_dt = None      # first element that named a clock time
+
+    for date_el in _iter_date_elements(item):
+        raw = (
+            date_el.get("datetime")
+            or date_el.get("content")
+            or date_el.get("title")
+            or date_el.get_text(" ", strip=True)
+        )
+        # A bare "7:00 pm" has no date of its own, so anchor the fuzzy parse to
+        # the date already found rather than to today.
+        reference = day_dt.date() if day_dt else None
+        parsed, has_date, has_time = _to_local_parts(raw, tz, reference=reference)
+        if parsed is None:
+            parsed, has_date, has_time = _to_local_parts(
+                raw, tz, fuzzy=True, reference=reference
+            )
+        if parsed is None:
+            continue
+
+        if has_date and day_dt is None:
+            day_dt = parsed
+        if has_time and time_dt is None:
+            time_dt = parsed
+        if day_dt is not None and time_dt is not None:
+            break
+
+    if day_dt is None:
+        # A time with no date anywhere in the listing is not enough to place it.
+        return None, False
+    return _combine(day_dt, time_dt), time_dt is None
+
+
 def _iter_date_elements(item):
+    seen = set()
     for selector in _DATE_SELECTORS:
         for el in item.select(selector):
+            marker = id(el)
+            if marker in seen:
+                continue
+            seen.add(marker)
             yield el
-
-
-def _to_local_fuzzy(value, tz) -> datetime | None:
-    """Parse a human date string ("Thu, August 20 @ 7:00 pm") if a strict parse fails."""
-    parsed = _to_local(value, tz)
-    if parsed:
-        return parsed
-    text = _clean(value)
-    if not text:
-        return None
-    try:
-        # fuzzy picks the date out of surrounding words; a default year keeps
-        # bare "August 20" from landing in whatever year dateutil assumes.
-        naive = dateparser.parse(text, fuzzy=True, default=datetime.combine(date.today(), time.min))
-    except Exception:
-        return None
-    if naive is None:
-        return None
-    return naive.replace(tzinfo=tz) if naive.tzinfo is None else naive
 
 
 def _absolute(url: str, base_url: str) -> str:
@@ -406,7 +531,9 @@ def fetch_tribe_rest(session, page_url: str, start: date, end: date, tz, timeout
     for item in payload.get("events") or []:
         if not isinstance(item, dict):
             continue
-        start_dt = _to_local(item.get("start_date") or item.get("utc_start_date"), tz)
+        start_dt, _, has_time = _to_local_parts(
+            item.get("start_date") or item.get("utc_start_date"), tz
+        )
         title = _clean(item.get("title", ""))
         if not start_dt or not title:
             continue
@@ -418,6 +545,10 @@ def fetch_tribe_rest(session, page_url: str, start: date, end: date, tz, timeout
             "title": title,
             "start_dt": start_dt,
             "end_dt": _to_local(item.get("end_date"), tz),
+            # Tribe writes an all-day event's start as "2026-08-20 00:00:00",
+            # so its own flag is the only thing that separates one from a
+            # listing that really does begin at midnight.
+            "all_day": bool(item.get("all_day")) or not has_time,
             "location": location,
             "url": _clean(item.get("url", "")),
         })
