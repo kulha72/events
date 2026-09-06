@@ -25,9 +25,19 @@ def _esc(text: str) -> str:
 _MAX = 4096
 
 
+def _fmt_time(event: Event, tz: ZoneInfo) -> str:
+    """An event's start, or "All day" when the source never gave one.
+
+    Every all-day listing used to come through here as "12:00 AM", which reads
+    as a real start time and is the wrong one.
+    """
+    if event.all_day:
+        return "All day"
+    return event.start.astimezone(tz).strftime("%-I:%M %p")
+
+
 def _fmt_event(event: Event, tz: ZoneInfo) -> str:
-    time_str = event.start.astimezone(tz).strftime("%-I:%M %p")
-    line = f"• <b>{event.title}</b> — {time_str}"
+    line = f"• <b>{event.title}</b> — {_fmt_time(event, tz)}"
     if event.location:
         line += f" @ {event.location}"
     if event.result:
