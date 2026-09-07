@@ -55,11 +55,27 @@ _MONTHS = (
     "July|August|September|October|November|December"
 )
 _DAYS_OF_WEEK = "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday"
+
+# These used to be spelled `(?:am|pm)` hard against the digits, so they matched
+# "7pm" and nothing else. Every listing written the ordinary way — "7:00 pm",
+# "7 PM", "7 p.m." — fell through as having no time at all, and the collector
+# below dropped such an event onto local midnight. That is the 12 AM in the
+# digest. Allow the space and the periods.
+_MERIDIEM = r"[ap]\.?\s?m\.?"
+_CLOCK = rf"\d{{1,2}}(?::\d{{2}})?\s*{_MERIDIEM}"
+# Clock times people write as words rather than digits.
+_WORD_TIMES = {"noon": "12:00 pm", "midday": "12:00 pm", "midnight": "12:00 am"}
+_WORD_TIME_RE = re.compile(r"\b(noon|midday|midnight)\b", re.IGNORECASE)
+
 _TIME_RANGE_RE = re.compile(
-    r"(\d{1,2}(?::\d{2})?(?:am|pm))\s*(?:[-–]|to)\s*(\d{1,2}(?::\d{2})?(?:am|pm))",
+    # The opening time may leave its am/pm to the closing one ("10 - 4pm").
+    rf"(?<![\d:])(\d{{1,2}}(?::\d{{2}})?\s*(?:{_MERIDIEM})?)\s*(?:[-–—]|to|until)\s*({_CLOCK})",
     re.IGNORECASE,
 )
-_SINGLE_TIME_RE = re.compile(r"\b(\d{1,2}(?::\d{2})?(?:am|pm))\b", re.IGNORECASE)
+_SINGLE_TIME_RE = re.compile(rf"(?<![\d:])({_CLOCK})", re.IGNORECASE)
+_MERIDIEM_RE = re.compile(_MERIDIEM, re.IGNORECASE)
+_HOUR_RE = re.compile(r"\d{1,2}")
+
 _YEAR_RE = re.compile(r"\b(20\d{2})\b")
 _ORDINAL_RE = re.compile(r"(\d+)(?:st|nd|rd|th)\b", re.IGNORECASE)
 _DAY_RANGE_RE = re.compile(
@@ -77,8 +93,13 @@ _HERALD_SKIP_RE = re.compile(
     re.IGNORECASE,
 )
 _HERALD_DT_RE = re.compile(
-    r"(?:\w+,\s+)?(\w+ \d{1,2},\s+\d{4}),?\s+from\s+"
-    r"(\d{1,2}(?::\d{2})?(?:am|pm))\s+to\s+(\d{1,2}(?::\d{2})?(?:am|pm))",
+    rf"(?:\w+,\s+)?(\w+ \d{{1,2}},\s+\d{{4}}),?\s+(?:from\s+)?({_CLOCK})"
+    rf"\s*(?:to|[-–—])\s*({_CLOCK})",
+    re.IGNORECASE,
+)
+# A start with no advertised finish — "August 20, 2026 at 7:00 pm".
+_HERALD_DATE_TIME_RE = re.compile(
+    rf"(?:\w+,\s+)?(\w+ \d{{1,2}},\s+\d{{4}}),?\s+(?:at\s+|from\s+)?({_CLOCK})",
     re.IGNORECASE,
 )
 _HERALD_DATE_ONLY_RE = re.compile(r"(?:\w+,\s+)?(\w+ \d{1,2},\s+\d{4})", re.IGNORECASE)
@@ -111,13 +132,39 @@ def _fetch_with_playwright(url: str) -> BeautifulSoup:
     return eventpage.render_page(url, wait_selectors=_DOWNTOWN_WAIT_SELECTORS, timeout_ms=20_000)
 
 
+def _hour_of(time_str: str) -> int:
+    found = _HOUR_RE.search(time_str or "")
+    return int(found.group(0)) if found else 0
+
+
+def _infer_meridiem(start_t: str, end_t: str) -> str:
+    """Give an opening time the am/pm its closing time implies.
+
+    "10 - 4pm" is a daytime range: an opening hour that reads later on the
+    clock than the closing one means the two straddle noon, so the open is am.
+    """
+    end_meridiem = _MERIDIEM_RE.search(end_t)
+    if not end_meridiem:
+        return start_t
+    meridiem = end_meridiem.group(0)
+    if meridiem.lower().startswith("p") and _hour_of(start_t) > _hour_of(end_t):
+        meridiem = "am"
+    return f"{start_t.strip()} {meridiem}"
+
+
 def _line_times(line: str):
     tm = _TIME_RANGE_RE.search(line)
     if tm:
-        return tm.group(1), tm.group(2)
+        start_t, end_t = tm.group(1).strip(), tm.group(2).strip()
+        if not _MERIDIEM_RE.search(start_t):
+            start_t = _infer_meridiem(start_t, end_t)
+        return start_t, end_t
     sm = _SINGLE_TIME_RE.search(line)
     if sm:
-        return sm.group(1), None
+        return sm.group(1).strip(), None
+    wm = _WORD_TIME_RE.search(line)
+    if wm:
+        return _WORD_TIMES[wm.group(1).lower()], None
     return None, None
 
 
@@ -285,6 +332,7 @@ def _scrape_downtown_fallback(soup) -> list[dict]:
         "source": "downtown_tecumseh",
         "start_dt": e["start_dt"],
         "end_dt": e.get("end_dt"),
+        "all_day": e.get("all_day", False),
         "start_date": e["start_dt"].date(),
         "end_date": e["end_dt"].date() if e.get("end_dt") else None,
         "start_time_str": None,
@@ -344,6 +392,41 @@ def _scrape_herald(months_ahead: int = 3) -> list[dict]:
     return events
 
 
+def _parse_herald_datetimes(full_text: str):
+    """Read a Herald listing's start and end out of its page text.
+
+    Returns `(start, end, all_day)`. Tried widest first: a full range, then a
+    lone start time, then the bare date — so an event that advertises "at
+    7:00 pm" is not filed as all-day just because it named no finish.
+    """
+    m = _HERALD_DT_RE.search(full_text)
+    if m:
+        date_str, start_t, end_t = m.group(1), m.group(2), m.group(3)
+        try:
+            return (dateparser.parse(f"{date_str} {start_t}").replace(tzinfo=LOCAL_TZ),
+                    dateparser.parse(f"{date_str} {end_t}").replace(tzinfo=LOCAL_TZ),
+                    False)
+        except Exception:
+            pass
+
+    m = _HERALD_DATE_TIME_RE.search(full_text)
+    if m:
+        date_str, start_t = m.group(1), m.group(2)
+        try:
+            return dateparser.parse(f"{date_str} {start_t}").replace(tzinfo=LOCAL_TZ), None, False
+        except Exception:
+            pass
+
+    m = _HERALD_DATE_ONLY_RE.search(full_text)
+    if m:
+        try:
+            return dateparser.parse(m.group(1)).date(), None, True
+        except Exception:
+            pass
+
+    return None, None, False
+
+
 def _parse_herald_event_page(url: str) -> dict | None:
     try:
         soup = _fetch(url)
@@ -356,24 +439,7 @@ def _parse_herald_event_page(url: str) -> dict | None:
         return None
 
     full_text = soup.get_text(" ", strip=True)
-    start_dt = end_dt = None
-
-    m = _HERALD_DT_RE.search(full_text)
-    if m:
-        date_str, start_t, end_t = m.group(1), m.group(2), m.group(3)
-        try:
-            start_dt = dateparser.parse(f"{date_str} {start_t}").replace(tzinfo=LOCAL_TZ)
-            end_dt = dateparser.parse(f"{date_str} {end_t}").replace(tzinfo=LOCAL_TZ)
-        except Exception:
-            pass
-
-    if not start_dt:
-        m = _HERALD_DATE_ONLY_RE.search(full_text)
-        if m:
-            try:
-                start_dt = dateparser.parse(m.group(1)).date()
-            except Exception:
-                pass
+    start_dt, end_dt, all_day = _parse_herald_datetimes(full_text)
 
     if not start_dt:
         return None
@@ -400,6 +466,7 @@ def _parse_herald_event_page(url: str) -> dict | None:
         "title": title,
         "start_dt": start_dt,
         "end_dt": end_dt,
+        "all_day": all_day,
         "location": location,
         "description": description,
         "url": url,
@@ -453,22 +520,26 @@ class TecumsehCollector(BaseCollector):
             sd = raw["start_date"]
             if sd < today - timedelta(days=1) or sd > cutoff:
                 continue
+            end = None
             if raw.get("start_dt"):
                 # The structured fallback already resolved an exact time.
                 start = raw["start_dt"]
                 end = raw.get("end_dt")
+                all_day = raw.get("all_day", False)
             elif raw["start_time_str"]:
                 start = _parse_time_str(raw["start_time_str"], sd)
                 end = _parse_time_str(raw["end_time_str"], sd) if raw["end_time_str"] else None
+                # A time we matched but could not parse is a reason to show the
+                # event without one, not to drop the event.
+                all_day = start is None
+                if start is None:
+                    start = datetime(sd.year, sd.month, sd.day, tzinfo=LOCAL_TZ)
             else:
                 start = datetime(sd.year, sd.month, sd.day, tzinfo=LOCAL_TZ)
-                end = None
+                all_day = True
                 if raw.get("end_date"):
                     ed = raw["end_date"]
                     end = datetime(ed.year, ed.month, ed.day, 23, 59, tzinfo=LOCAL_TZ)
-
-            if not start:
-                continue
 
             events.append(Event(
                 id=f"tecumseh:downtown:{uuid.uuid5(uuid.NAMESPACE_URL, raw['url'] + str(sd))}",
@@ -476,6 +547,7 @@ class TecumsehCollector(BaseCollector):
                 category=EventCategory.LOCAL,
                 start=_to_utc(start),
                 end=_to_utc(end) if end else None,
+                all_day=all_day,
                 location=raw.get("location") or "Downtown Tecumseh",
                 source="downtown_tecumseh",
                 url=raw.get("url"),
@@ -502,6 +574,7 @@ class TecumsehCollector(BaseCollector):
                 category=EventCategory.LOCAL,
                 start=start_utc,
                 end=end_utc,
+                all_day=raw.get("all_day", False),
                 location=raw.get("location") or "Tecumseh, MI",
                 source="tecumseh_herald",
                 url=raw.get("url"),

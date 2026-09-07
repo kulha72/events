@@ -148,6 +148,10 @@ class AdrianCollector(BaseCollector):
                 category=EventCategory.LOCAL,
                 start=start_utc,
                 end=end_utc,
+                # Yodel publishes a date-only startDate for its all-day
+                # listings; without carrying that through they all arrive in
+                # the digest announced at 12 AM.
+                all_day=raw.get("all_day", False),
                 location=raw.get("location") or DEFAULT_LOCATION,
                 source="adrian",
                 url=raw.get("url") or BASE_URL,

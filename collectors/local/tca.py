@@ -24,7 +24,6 @@ from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup
-from dateutil import parser as dateparser
 
 from collectors.base import BaseCollector
 from collectors.local import eventpage
@@ -209,6 +208,7 @@ def _scrape_with_playwright() -> list:
         return [{
             "title": e["title"],
             "start_dt": e["start_dt"],
+            "all_day": e.get("all_day", False),
             "url": TICKETS_URL,
             "location": e.get("location") or DEFAULT_LOCATION,
         } for e in fallback]
@@ -238,15 +238,12 @@ def _parse_cards(cards) -> list[dict]:
 
         # Date — ".TextEventDate" contains text like "Fri, 3/13/2026 @ 7:30 PM"
         date_el = card.select_one(".TextEventDate")
-        start_dt = None
+        start_dt, all_day = None, False
         if date_el:
             date_text = date_el.get_text(" ", strip=True).replace("@", "")
-            try:
-                start_dt = dateparser.parse(date_text, fuzzy=True)
-                if start_dt:
-                    start_dt = start_dt.replace(tzinfo=LOCAL_TZ)
-            except Exception:
-                pass
+            # Shared with the page-parsing layers so a card that names no
+            # curtain time is reported as all-day rather than as 12 AM.
+            start_dt, all_day = eventpage.parse_start(date_text, LOCAL_TZ, fuzzy=True)
 
         if not start_dt:
             continue
@@ -255,6 +252,7 @@ def _parse_cards(cards) -> list[dict]:
         raw_events.append({
             "title": title,
             "start_dt": start_dt,
+            "all_day": all_day,
             # Always point at the TCA tickets page rather than the booking tab.
             "url": TICKETS_URL,
             "location": loc_el.get_text(strip=True) if loc_el else DEFAULT_LOCATION,
@@ -304,6 +302,7 @@ class TCACollector(BaseCollector):
                 category=EventCategory.LOCAL,
                 start=start_utc,
                 end=None,
+                all_day=raw.get("all_day", False),
                 location=raw.get("location") or DEFAULT_LOCATION,
                 source="tca",
                 url=raw.get("url"),

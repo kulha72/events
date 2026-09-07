@@ -56,8 +56,13 @@ def _group_by_date(events: list[Event], tz: ZoneInfo) -> list[tuple[date, list[E
 
 def _event_display(event: Event, tz: ZoneInfo) -> dict:
     """Pre-compute all display fields for a single event."""
-    local_start = event.start.astimezone(tz)
-    time_str = _fmt_time(event.start, tz) if event.start.hour or event.start.minute else "All day"
+    # `all_day` is the collector's own verdict, and the only reliable one.
+    # Reading it back off the clock used to be done here as
+    # `event.start.hour or event.start.minute` — against a UTC datetime, so an
+    # all-day listing (midnight in Detroit, 04:00 or 05:00 UTC) was announced
+    # at "12 AM ET", while an 8 PM ET fixture (00:00 UTC the next day) was
+    # written off as all-day.
+    time_str = "All day" if event.all_day else _fmt_time(event.start, tz)
     return {
         "title": event.title,
         "subtitle": event.subtitle,

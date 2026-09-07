@@ -35,3 +35,11 @@ class Event:
     result: Optional[str] = None     # "W 27-14" — filled in for yesterday's events
     is_today: bool = False           # Computed at format time
     is_past: bool = False            # Computed at format time
+    # True when the source gave a date but no clock time. `start` is still a
+    # real datetime — local midnight — so everything sorts on one field, but
+    # that midnight is a placeholder rather than a start time. Without this the
+    # formatters have to guess from the hour, and every all-day listing in the
+    # digest gets announced at 12 AM.
+    #
+    # Declared last so the field order the collectors rely on does not move.
+    all_day: bool = False
