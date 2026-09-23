@@ -1,6 +1,7 @@
 """
 Test that playoff games on a Saturday are not dropped when the ESPN
-scoreboard response omits the season.type field.
+scoreboard response omits the season.type field, and that preseason games
+ESPN hands back for a seasontype=3 query are not passed off as playoffs.
 """
 
 import sys
@@ -28,11 +29,12 @@ TODAY = date(2026, 4, 17)
 SATURDAY = date(2026, 4, 18)
 
 
-def _make_game(game_id: str, home: str, away: str, game_date: date) -> dict:
+def _make_game(game_id: str, home: str, away: str, game_date: date, season_type: int = 3) -> dict:
     dt = datetime(game_date.year, game_date.month, game_date.day, 19, 0, tzinfo=timezone.utc)
     return {
         "id": game_id,
         "date": dt.isoformat().replace("+00:00", "Z"),
+        "season": {"year": game_date.year, "type": season_type},
         "competitions": [{
             "date": dt.isoformat().replace("+00:00", "Z"),
             "status": {"type": {"completed": False, "name": "STATUS_SCHEDULED"}},
@@ -110,12 +112,48 @@ def test_non_postseason_days_still_skipped():
     print("  PASS (regular-season games correctly excluded)")
 
 
+def test_preseason_games_excluded_despite_postseason_response():
+    """ESPN answers a seasontype=3 query in September with that day's preseason
+    games; each game says so even when the response-level type doesn't."""
+    preseason = _make_game("pre1", "Ottawa Senators", "Toronto Maple Leafs", SATURDAY, season_type=1)
+    playoff = _make_game("post1", "Heat", "Celtics", SATURDAY, season_type=3)
+
+    def fake_fetch(url, params=None):
+        return {"events": [preseason, playoff], "season": {"type": 3}}
+
+    collector = ESPNCollector(CONFIG)
+    with patch("collectors.sports.espn._fetch_json", side_effect=fake_fetch):
+        events = collector.collect_playoffs(TODAY, lookahead_days=7)
+
+    titles = [e.title for e in events]
+    assert not any("Maple Leafs" in t for t in titles), f"FAIL: preseason game shown as playoffs: {titles}"
+    assert any("Celtics" in t for t in titles), f"FAIL: real playoff game dropped: {titles}"
+    print(f"  PASS (preseason excluded, playoff kept): {titles}")
+
+
+def test_preseason_games_excluded_without_response_season_type():
+    """Same leak on a day the response omits season.type entirely."""
+    preseason = _make_game("pre2", "Dallas Stars", "Minnesota Wild", SATURDAY, season_type=1)
+
+    def fake_fetch(url, params=None):
+        return {"events": [preseason]}
+
+    collector = ESPNCollector(CONFIG)
+    with patch("collectors.sports.espn._fetch_json", side_effect=fake_fetch):
+        events = collector.collect_playoffs(TODAY, lookahead_days=7)
+
+    assert not events, f"FAIL: preseason game shown as playoffs: {[e.title for e in events]}"
+    print("  PASS (preseason excluded when response omits season.type)")
+
+
 if __name__ == "__main__":
     print("Running playoff Saturday feed tests...\n")
     tests = [
         test_saturday_games_with_season_type,
         test_saturday_games_without_season_type,
         test_non_postseason_days_still_skipped,
+        test_preseason_games_excluded_despite_postseason_response,
+        test_preseason_games_excluded_without_response_season_type,
     ]
     failed = 0
     for t in tests:
