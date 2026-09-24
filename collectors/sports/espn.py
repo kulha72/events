@@ -181,6 +181,21 @@ def _apply_priority(event: Event, config: dict) -> None:
             return
 
 
+def _event_season_type(raw_event: dict) -> int | None:
+    """The season type ESPN stamps on a single game: 1 pre, 2 regular, 3 post.
+
+    Unlike the response-level season.type, this describes the game itself, not
+    the query. Returns None when the game doesn't say.
+    """
+    raw = (raw_event.get("season") or {}).get("type")
+    if isinstance(raw, dict):
+        raw = raw.get("type", raw.get("id"))
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return None
+
+
 def _parse_playoff_game(raw_event: dict, league: str) -> dict | None:
     """
     Parse a single playoff game from the scoreboard API.
@@ -435,6 +450,15 @@ class ESPNCollector(BaseCollector):
                     if event_id in seen_ids:
                         continue
                     seen_ids.add(event_id)
+
+                    # ESPN doesn't honor seasontype=3 on dates with no
+                    # postseason; it returns that day's games anyway, and the
+                    # day-level check above let the whole 2026 NHL preseason
+                    # through as "playoffs". Each game carries its own season
+                    # type, so drop any game that says it isn't postseason.
+                    game_season_type = _event_season_type(raw)
+                    if game_season_type is not None and game_season_type != 3:
+                        continue
 
                     parsed = _parse_playoff_game(raw, league)
                     if not parsed:
