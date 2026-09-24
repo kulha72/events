@@ -119,6 +119,8 @@
   .pref-chip[data-pref="sports"].checked    { background: var(--sports-color); }
   .pref-chip[data-pref="playoffs"].checked  { background: var(--playoffs-color); }
   .pref-chip[data-pref="esports"].checked   { background: var(--esports-color); }
+  .pref-chip[data-area].checked             { background: var(--local-color); }
+  .pref-panel-title.pref-subtitle { margin-top: 18px; }
 
   /* Layout */
   .content { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
@@ -294,7 +296,7 @@
   <button class="filter-btn" data-cat="sports">Sports</button>
   <button class="filter-btn" data-cat="playoffs">Playoffs</button>
   <button class="filter-btn" data-cat="esports">Esports</button>
-  <button class="pref-toggle" id="prefToggleBtn" aria-expanded="false" title="Filter categories from the All feed">
+  <button class="pref-toggle" id="prefToggleBtn" aria-expanded="false" title="Filter categories and local towns">
     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
       <path d="M1.5 3h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1zm2 4h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1zm2 4h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"/>
     </svg>
@@ -332,6 +334,20 @@
       Esports
     </label>
   </div>
+
+  {% if local_area_chips %}
+  <p class="pref-panel-title pref-subtitle">Local Towns</p>
+  <p class="pref-panel-hint">Choose which towns' events you see. This applies to both the <strong>All</strong> feed and the <strong>Local</strong> tab.</p>
+  <div class="pref-toggles">
+    {% for area in local_area_chips %}
+    <label class="pref-chip" data-area="{{ area.key }}">
+      <input type="checkbox" value="{{ area.key }}" checked>
+      <span class="chip-dot"></span>
+      {{ area.label }}
+    </label>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
 
 <main class="content">
@@ -347,7 +363,7 @@
           {% for event in today_by_cat[cat] %}
             {% set ev = event_display(event, tz) %}
             <div class="event-card{% if ev.is_high %} high-priority{% endif %}"
-                 data-cat="{{ cat_slug }}">
+                 data-cat="{{ cat_slug }}"{% if local_area(event) %} data-area="{{ local_area(event) }}"{% endif %}>
               <span class="cat-badge {{ cat_slug }}">{{ ev.category_label }}</span>
               <p class="event-title">
                 {% if ev.url %}<a href="{{ ev.url }}" target="_blank" rel="noopener">{{ ev.title }}</a>
@@ -453,7 +469,7 @@
               {% for event in day_cats[cat] %}
                 {% set ev = event_display(event, tz) %}
                 <div class="event-card{% if ev.is_high %} high-priority{% endif %}"
-                     data-cat="{{ cat_slug }}">
+                     data-cat="{{ cat_slug }}"{% if local_area(event) %} data-area="{{ local_area(event) }}"{% endif %}>
                   <span class="cat-badge {{ cat_slug }}">{{ ev.category_label }}</span>
                   <p class="event-title">
                     {% if ev.url %}<a href="{{ ev.url }}" target="_blank" rel="noopener">{{ ev.title }}</a>
@@ -485,25 +501,27 @@
 <script>
   (function () {
     const STORAGE_KEY = 'digest_hidden_cats';
+    const AREA_STORAGE_KEY = 'digest_hidden_areas';
     const ALL_CATS = ['local', 'estate_sales', 'sports', 'playoffs', 'esports'];
 
     // ── Preferences ────────────────────────────────────────────────────────
-    function loadHidden() {
+    function loadHidden(key) {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(key);
         if (raw) return new Set(JSON.parse(raw));
       } catch (_) {}
       return new Set(); // nothing hidden by default
     }
 
-    function saveHidden(hidden) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...hidden])); } catch (_) {}
+    function saveHidden(key, set) {
+      try { localStorage.setItem(key, JSON.stringify([...set])); } catch (_) {}
     }
 
-    let hidden = loadHidden();
+    let hidden = loadHidden(STORAGE_KEY);
+    let hiddenAreas = loadHidden(AREA_STORAGE_KEY);
 
     // Sync chip UI to loaded prefs
-    document.querySelectorAll('.pref-chip').forEach(chip => {
+    document.querySelectorAll('.pref-chip[data-pref]').forEach(chip => {
       const cat = chip.dataset.pref;
       const cb  = chip.querySelector('input[type="checkbox"]');
       const isChecked = !hidden.has(cat);
@@ -511,15 +529,23 @@
       chip.classList.toggle('checked', isChecked);
     });
 
+    document.querySelectorAll('.pref-chip[data-area]').forEach(chip => {
+      const isChecked = !hiddenAreas.has(chip.dataset.area);
+      chip.querySelector('input[type="checkbox"]').checked = isChecked;
+      chip.classList.toggle('checked', isChecked);
+    });
+
     // Chip click handler
     document.querySelectorAll('.pref-chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        const cat = chip.dataset.pref;
+        const isArea = 'area' in chip.dataset;
+        const key = isArea ? chip.dataset.area : chip.dataset.pref;
+        const set = isArea ? hiddenAreas : hidden;
         const cb  = chip.querySelector('input[type="checkbox"]');
         cb.checked = !cb.checked;
         chip.classList.toggle('checked', cb.checked);
-        if (cb.checked) hidden.delete(cat); else hidden.add(cat);
-        saveHidden(hidden);
+        if (cb.checked) set.delete(key); else set.add(key);
+        saveHidden(isArea ? AREA_STORAGE_KEY : STORAGE_KEY, set);
         // Re-apply current filter
         applyFilter(activeCat());
       });
@@ -553,6 +579,8 @@
         } else {
           show = (cardCat === cat);
         }
+        // Town toggles apply on every tab, not just All
+        if (card.dataset.area && hiddenAreas.has(card.dataset.area)) show = false;
         card.style.display = show ? '' : 'none';
       });
 
