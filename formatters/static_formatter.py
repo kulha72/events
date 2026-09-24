@@ -28,6 +28,33 @@ OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
 
 _NPR_RSS = "https://feeds.npr.org/1001/rss.xml"
 
+# Local events can be switched on and off by town from the page's Preferences
+# panel. Keyed by the Event.source each local collector writes; both Tecumseh
+# calendars share one toggle. Order here is the order the chips appear in.
+LOCAL_AREAS = {
+    "annarbor":          ("annarbor", "Ann Arbor"),
+    "adrian":            ("adrian", "Adrian"),
+    "downtown_tecumseh": ("tecumseh", "Tecumseh"),
+    "tecumseh_herald":   ("tecumseh", "Tecumseh"),
+    "tca":               ("tca", "Tecumseh Center for the Arts"),
+}
+
+
+def local_area(event: Event) -> str:
+    """The area key a local event is filtered under, or "" if it has none."""
+    if event.category != EventCategory.LOCAL:
+        return ""
+    area = LOCAL_AREAS.get(event.source)
+    return area[0] if area else ""
+
+
+def _local_area_chips() -> list[dict]:
+    """One chip per distinct area, in LOCAL_AREAS order."""
+    chips: dict[str, str] = {}
+    for key, label in LOCAL_AREAS.values():
+        chips.setdefault(key, label)
+    return [{"key": k, "label": v} for k, v in chips.items()]
+
 
 def _fetch_npr_headlines(n: int = 5) -> list[dict]:
     """Fetch top N headlines from NPR News RSS. Returns [] on any error."""
@@ -85,6 +112,8 @@ def format_static_page(
         category_order=CATEGORY_ORDER,
         category_label=CATEGORY_LABEL,
         event_display=_event_display,
+        local_area=local_area,
+        local_area_chips=_local_area_chips(),
         tz=tz,
         config=config,
         generated_at=generated_at,
