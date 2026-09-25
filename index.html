@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Digest — September 24, 2026</title>
+<title>Daily Digest — September 25, 2026</title>
 <style>
   :root {
     --local-color: #2e7d32;
@@ -119,6 +119,8 @@
   .pref-chip[data-pref="sports"].checked    { background: var(--sports-color); }
   .pref-chip[data-pref="playoffs"].checked  { background: var(--playoffs-color); }
   .pref-chip[data-pref="esports"].checked   { background: var(--esports-color); }
+  .pref-chip[data-area].checked             { background: var(--local-color); }
+  .pref-panel-title.pref-subtitle { margin-top: 18px; }
 
   /* Layout */
   .content { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
@@ -212,7 +214,7 @@
 
 <header class="site-header">
   <h1>Daily Digest</h1>
-  <p class="subtitle">Thursday, September 24, 2026</p>
+  <p class="subtitle">Friday, September 25, 2026</p>
 </header>
 
 
@@ -238,15 +240,15 @@
   <h3>NPR Top Headlines</h3>
   <ul class="headlines-list">
     
-      <li><a href="https://www.npr.org/2026/09/24/g-s1-144806/trump-rolls-out-red-carpet-for-xi-as-high-stakes-summit-begins" target="_blank" rel="noopener">Trump rolls out red carpet for Xi as high-stakes summit begins</a></li>
+      <li><a href="https://www.npr.org/2026/09/25/g-s1-144994/up-first-newsletter-trump-xi-netanyahu-united-nations-mortgage-rates" target="_blank" rel="noopener">Trump and Xi strike cordial tone at summit. And, Netanyahu gives defiant UNGA speech</a></li>
     
-      <li><a href="https://www.npr.org/2026/09/24/g-s1-144850/up-first-newsletter-cnn-msnow-politico-iran-ukraine-unga-china-xi-jinping-trump" target="_blank" rel="noopener">Judge restores journalists&#39; White House access. And, Tucker Carlson on his MAGA split</a></li>
+      <li><a href="https://www.npr.org/sections/planet-money/2026/09/25/nx-s1-5980393/why-this-pokemon-set-is-dropping-in-value" target="_blank" rel="noopener">Why this Pokémon set is dropping in value</a></li>
     
-      <li><a href="https://www.npr.org/2026/09/24/g-s1-144544/cash-transfer-poverty-liberia-partner-violence" target="_blank" rel="noopener">Needy couples got cash and a spending plan. Results were good -- and bad</a></li>
+      <li><a href="https://www.npr.org/2026/09/25/nx-s1-5979852/israels-prime-minister-addresses-u-n-general-assembly" target="_blank" rel="noopener">Netanyahu rages against critics, including Mamdani, at the U.N. General Assembly</a></li>
     
-      <li><a href="https://www.npr.org/2026/09/24/nx-s1-5968605/education-department-dismantling-how-its-going" target="_blank" rel="noopener">The Education Dept. hasn&#39;t been dismantled. It&#39;s become more inefficient, staff say</a></li>
+      <li><a href="https://www.npr.org/2026/09/25/g-s1-144665/trump-arch-fat-bear-media-ai-news-quiz" target="_blank" rel="noopener">Fill in the blank in the quiz: Trump&#39;s says his triumphal arch will include _____</a></li>
     
-      <li><a href="https://www.npr.org/2026/09/24/nx-s1-5978124/ebay-bans-airbags-faulty-counterfeit-auto-parts" target="_blank" rel="noopener">eBay bans airbag sales as concerns about faulty or counterfeit parts rise</a></li>
+      <li><a href="https://www.npr.org/2026/09/25/nx-s1-5978936/how-to-manage-mom-rage" target="_blank" rel="noopener">Mom! Mom! MOM! 3 ways to stay calm in stressful parenting moments</a></li>
     
   </ul>
 </div>
@@ -259,15 +261,14 @@
     
       <li>
         <strong>espn</strong> <span class="feed-health-count">&times;7</span>
-        &mdash; Arsenal (epl) scoreboard fetch failed: 400 Client Error: Bad Request for url: https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20260923-20261001
-      </li>
-    
-      <li>
-        <strong>ai_summary</strong>
-        &mdash; summary generation failed: 503 UNAVAILABLE. {&#39;error&#39;: {&#39;code&#39;: 503, &#39;message&#39;: &#39;This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.&#39;, &#39;status&#39;: &#39;UNAVAILABLE&#39;}}
+        &mdash; Arsenal (epl) scoreboard fetch failed: 400 Client Error: Bad Request for url: https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20260924-20261002
       </li>
     
     
+    
+      <li class="feed-health-empty">
+        <strong>No events returned:</strong> startgg
+      </li>
     
   </ul>
 </div>
@@ -283,6 +284,14 @@
 
 
 
+<div class="ai-summary">
+  <span class="ai-summary-icon">&#10024;</span>
+  <div class="ai-summary-body">
+    <p class="ai-summary-label">Today's Briefing</p>
+    <p class="ai-summary-text">Alright, it&#39;s Friday, September 25th. The local event calendar is, as usual, aggressively packed, featuring everything from an Oktoberfest and a book sale to &#34;Paint Your Partner Date Night&#34; and a &#34;Women&#39;s Wellness Elevated&#34; workshop, which sounds exactly as vague and potentially alarming as it looks. For those of you who prefer your entertainment with a bit more sweat, the Tigers are playing the Pirates tonight, and the Rangers are facing the Islanders. Just try not to spill your popcorn during the latter, it’s a bit of a trek to UBS Arena.</p>
+  </div>
+</div>
+
 
 <nav class="filter-bar">
   <button class="filter-btn active" data-cat="all">All</button>
@@ -291,7 +300,7 @@
   <button class="filter-btn" data-cat="sports">Sports</button>
   <button class="filter-btn" data-cat="playoffs">Playoffs</button>
   <button class="filter-btn" data-cat="esports">Esports</button>
-  <button class="pref-toggle" id="prefToggleBtn" aria-expanded="false" title="Filter categories from the All feed">
+  <button class="pref-toggle" id="prefToggleBtn" aria-expanded="false" title="Filter categories and local towns">
     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
       <path d="M1.5 3h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1zm2 4h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1zm2 4h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"/>
     </svg>
@@ -329,13 +338,45 @@
       Esports
     </label>
   </div>
+
+  
+  <p class="pref-panel-title pref-subtitle">Local Towns</p>
+  <p class="pref-panel-hint">Choose which towns' events you see. This applies to both the <strong>All</strong> feed and the <strong>Local</strong> tab.</p>
+  <div class="pref-toggles">
+    
+    <label class="pref-chip" data-area="annarbor">
+      <input type="checkbox" value="annarbor" checked>
+      <span class="chip-dot"></span>
+      Ann Arbor
+    </label>
+    
+    <label class="pref-chip" data-area="adrian">
+      <input type="checkbox" value="adrian" checked>
+      <span class="chip-dot"></span>
+      Adrian
+    </label>
+    
+    <label class="pref-chip" data-area="tecumseh">
+      <input type="checkbox" value="tecumseh" checked>
+      <span class="chip-dot"></span>
+      Tecumseh
+    </label>
+    
+    <label class="pref-chip" data-area="tca">
+      <input type="checkbox" value="tca" checked>
+      <span class="chip-dot"></span>
+      Tecumseh Center for the Arts
+    </label>
+    
+  </div>
+  
 </div>
 
 <main class="content">
 
   
   <section class="digest-section">
-    <h2>Today &mdash; Thursday, September 24</h2>
+    <h2>Today &mdash; Friday, September 25</h2>
 
     
       
@@ -344,7 +385,7 @@
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
                 <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Windsor Continuous Arm Chair</a>
@@ -360,359 +401,39 @@
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="annarbor">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.annarbor.org/event/patio-playlist-with-p-o-r-k/25410/" target="_blank" rel="noopener">Patio Playlist with P.O.R.K.</a>
+                <a href="https://www.annarbor.org/event/friday-night-music-and-oktoberfest!/25725/" target="_blank" rel="noopener">Friday Night Music and Oktoberfest!</a>
                 
                 
               </p>
               <p class="event-meta">
                 <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Zingerman&#39;s Delicatessen, Ann Arbor
+                &nbsp;&middot;&nbsp;Lake Forest Golf Club, Ann Arbor
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="annarbor">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.annarbor.org/event/penny-stamps-series%3a-cosmo-whyte/25316/" target="_blank" rel="noopener">Penny Stamps Series: Cosmo Whyte</a>
+                <a href="https://www.annarbor.org/event/full-cord/25310/" target="_blank" rel="noopener">Full Cord</a>
                 
                 
               </p>
               <p class="event-meta">
                 <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Michigan Theater, Ann Arbor
+                &nbsp;&middot;&nbsp;JD&#39;s Stage Bistro, Chelsea
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/pianist-barron-ryan-%26%238211%3b-classic-meets-cool/25625/" target="_blank" rel="noopener">Pianist Barron Ryan &amp;#8211; Classic Meets Cool</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Kerrytown Concert House, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/popstar%3a-never-stop-never-stopping/25627/" target="_blank" rel="noopener">Popstar: Never Stop Never Stopping</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Michigan Theater, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/small-bite-sessions%3a-butter/25273/" target="_blank" rel="noopener">Small Bite Sessions: Butter</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Zingerman&#39;s Delicatessen, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/ypsi-trivia/25182/" target="_blank" rel="noopener">Ypsi Trivia</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Water Tower Distilling Co., Ypsilanti
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/%e2%80%9cwho-counts%3f-a-history-of-voting-in-america%e2%80%9d/25499/" target="_blank" rel="noopener">“Who Counts? A History of Voting in America”</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;William L. Clements Library, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/whats-goin-on-melanie-stengel-photography/25117/" target="_blank" rel="noopener">&#34;What&#39;s Goin On&#34; - Melanie Stengel Photography</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Argus Museum, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/ann-arbor-gallery-nights-in-kerrytown/25048/" target="_blank" rel="noopener">Ann Arbor Gallery Nights in Kerrytown</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Various Gallery Locations, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/bad-movie-night/24803/" target="_blank" rel="noopener">Bad Movie Night</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Ypsi Cocktail Club, Ypsilanti
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/bastard/25210/" target="_blank" rel="noopener">Bastard</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Purple Rose Theatre Company, Chelsea
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/pub-trivia-at-conor-oneills-irish-pub/24307/" target="_blank" rel="noopener">Pub Trivia at Conor O&#39;Neill&#39;s Irish Pub</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Conor O&#39;Neill&#39;s Irish Pub &amp; Restaurant, ANN ARBOR
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/tiki-trivia/24228/" target="_blank" rel="noopener">Tiki Trivia</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;The Circ Bar, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/art-bar-at-found-for-ann-arbor-gallery-night/25636/" target="_blank" rel="noopener">&#34;ART BAR&#34; at Found for Ann Arbor Gallery Night</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Found, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/the-city-on-three-lakes%3a-a-maritime-history-of-charlevoix-%26-the-surrounding-region/25469/" target="_blank" rel="noopener">&#34;The City on Three Lakes: A Maritime History of Charlevoix &amp; the Surrounding Region&#34;</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;William L. Clements Library, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/a2-summer-streets-music-series/24324/" target="_blank" rel="noopener">A2 Summer Streets Music Series</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Downtown Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/a2tech360/23302/" target="_blank" rel="noopener">a2Tech360</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Various Locations, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/acoustic-tuesday-jams-at-og-brewing/24580/" target="_blank" rel="noopener">Acoustic Tuesday Jams at OG Brewing</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Original Gravity Brewing, Milan
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/boots-brews-and-bbq/25367/" target="_blank" rel="noopener">Boots, Brews and BBQ</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Revel Run, Chelsea
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/celebrate-innovation/24684/" target="_blank" rel="noopener">Celebrate Innovation</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;University of Michigan - Michigan Union, Ann Arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/comedy-jamm-open-mic/24473/" target="_blank" rel="noopener">Comedy Jamm Open Mic</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Ann Arbor Comedy Showcase
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.annarbor.org/event/communitea-hive-exhibition-fundraiser/25508/" target="_blank" rel="noopener">CommuniTEA Hive Exhibition/Fundraiser</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;TeaHaus, Ann arbor
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="annarbor">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
                 <a href="https://www.annarbor.org/event/jlc-huge-book-sale/25133/" target="_blank" rel="noopener">JLC HUGE Book Sale</a>
@@ -728,26 +449,122 @@
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="annarbor">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.annarbor.org/event/manchester-farmers-market/24338/" target="_blank" rel="noopener">Manchester Farmers Market</a>
+                <a href="https://www.annarbor.org/event/joe-pug-%26-willie-watson-at-the-ark/25640/" target="_blank" rel="noopener">Joe Pug &amp; Willie Watson at The Ark</a>
                 
                 
               </p>
               <p class="event-meta">
                 <span class="time">12 AM ET</span>
-                &nbsp;&middot;&nbsp;Manchester Farmers Market
+                &nbsp;&middot;&nbsp;The Ark, Ann Arbor
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="annarbor">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.annarbor.org/event/nate-topo-group-at-blue-llama/25643/" target="_blank" rel="noopener">Nate Topo Group at Blue LLama</a>
+                <a href="https://www.annarbor.org/event/latin-fridays/17107/" target="_blank" rel="noopener">Latin Fridays</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Club Above, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/line-dance-with-carrie/25303/" target="_blank" rel="noopener">Line Dance with Carrie</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Robin Hills Farm, Chelsea
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/mi-fusion-connection%3a-blues-swing-west-coast-dance-%2b-live-music/25675/" target="_blank" rel="noopener">MI Fusion Connection: Blues/Swing/West Coast Dance + Live Music</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Concourse Hall, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/oktoberfest-at-lake-forest/25652/" target="_blank" rel="noopener">Oktoberfest at Lake Forest</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Lake Forest Golf Club, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/paint-your-partner-date-night-workshop/25647/" target="_blank" rel="noopener">Paint Your Partner Date Night Workshop</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Geek Brush Studio, Chelsea
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/pride-karaoke-night!/25449/" target="_blank" rel="noopener">Pride Karaoke Night!</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Necto Nightclub, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/russ-macklem-detroit-quintet-at-blue-llama/25644/" target="_blank" rel="noopener">Russ Macklem Detroit Quintet at Blue LLama</a>
                 
                 
               </p>
@@ -760,23 +577,407 @@
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="annarbor">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Adrian Area Health Check</a>
+                <a href="https://www.annarbor.org/event/start-your-modern-career/24686/" target="_blank" rel="noopener">Start Your Modern Career</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">8 AM ET</span>
-                &nbsp;&middot;&nbsp;232 Dennis St, Adrian, MI 49221, USA, Adrian, MI
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;SPARK East Innovation Center, Ypsilanti
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/storytime-with-elsa/25334/" target="_blank" rel="noopener">Storytime with Elsa</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;MilkShake Factory Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/turn-up-the-heat%3a-womens-wellness-elevated/25137/" target="_blank" rel="noopener">Turn Up the Heat: Women&#39;s Wellness Elevated</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Revel Run, Chelsea
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/voting-in-america%3a-past-%26-present/25653/" target="_blank" rel="noopener">Voting in America: Past &amp; Present</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;William L. Clements Library, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/%e2%80%9cwho-counts%3f-a-history-of-voting-in-america%e2%80%9d/25499/" target="_blank" rel="noopener">“Who Counts? A History of Voting in America”</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;William L. Clements Library, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/whats-goin-on-melanie-stengel-photography/25117/" target="_blank" rel="noopener">&#34;What&#39;s Goin On&#34; - Melanie Stengel Photography</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Argus Museum, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/bastard/25210/" target="_blank" rel="noopener">Bastard</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Purple Rose Theatre Company, Chelsea
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/friday-night-euchre/24458/" target="_blank" rel="noopener">Friday Night Euchre</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;HOMES Campus, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/night-terrors-%26%238211%3b-michigan%e2%80%99s-premier-haunted-thrill-park/21172/" target="_blank" rel="noopener">Night Terrors &amp;#8211; Michigan’s Premier Haunted Thrill Park</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Wiard&#39;s Orchards Night Terrors, Ypsilanti
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/stabby-club%3a-needle-felting-support-group/25100/" target="_blank" rel="noopener">Stabby Club: Needle Felting Support Group</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;LullCo Design Studio, ANN ARBOR
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/weekend-horseback-riding-trail-rides/24523/" target="_blank" rel="noopener">Weekend Horseback Riding Trail Rides</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Storm Breaker Stables, Milan
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/9-to-5%3a-a-dolly-parton-yoga-party/25646/" target="_blank" rel="noopener">9 to 5: A Dolly Parton Yoga Party</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Breathe Yoga Chelsea
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/a2-summer-streets-music-series/24324/" target="_blank" rel="noopener">A2 Summer Streets Music Series</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Downtown Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/a2ac-creative-pours/24774/" target="_blank" rel="noopener">A2AC Creative Pours</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Ann Arbor Art Center
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/a2tech360/23302/" target="_blank" rel="noopener">a2Tech360</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Various Locations, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/an-acoustic-evening-with-kate-peterson/25486/" target="_blank" rel="noopener">An Acoustic Evening with Kate Peterson</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Wolverine Pickleball, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/artist-reception%3a-esther-kirshenbaum-multimedia-artist-%26%238211%3b-a-symphony-of-seeing/25624/" target="_blank" rel="noopener">Artist Reception: Esther Kirshenbaum, multimedia artist &amp;#8211; A Symphony of Seeing</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Kerrytown Concert House, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/a%c2%b2zero-treeducation-series%3a-history-of-trees-in-ann-arbor/25682/" target="_blank" rel="noopener">A²ZERO TREEducation Series: History of Trees in Ann Arbor</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Leslie Science &amp; Nature Center, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/comedian%3a-josh-adams/24471/" target="_blank" rel="noopener">Comedian: Josh Adams</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Ann Arbor Comedy Showcase
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/dolly-day-at-aadl/25634/" target="_blank" rel="noopener">Dolly Day at AADL</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Ann Arbor District Library
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/fasttrack-awards/24687/" target="_blank" rel="noopener">FastTrack Awards</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Vanguard Hotel, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/foodie-fridays-at-county-farm-park/24199/" target="_blank" rel="noopener">Foodie Fridays at County Farm Park</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;County Farm Park, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/friday-night-improv%3a-11-non-blondes/24052/" target="_blank" rel="noopener">Friday Night Improv: 11 Non-Blondes</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">12 AM ET</span>
+                &nbsp;&middot;&nbsp;Hear.Say Brewing + Theater, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="annarbor">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.annarbor.org/event/pride-fridays/6576/" target="_blank" rel="noopener">PRIDE Fridays</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">1 AM ET</span>
+                &nbsp;&middot;&nbsp;Necto Nightclub, Ann Arbor
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="adrian">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Fitness is Ageless - With Collette</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">8 AM ET</span>
+                &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
                 <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Adult Walking</a>
@@ -792,31 +993,15 @@
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Manitou Beach Sip &amp; Shop</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Drop-in Pickleball</a>
                 
                 
               </p>
               <p class="event-meta">
                 <span class="time">10 AM ET</span>
-                &nbsp;&middot;&nbsp;141 N Lakeview Blvd, Manitou Beach, MI 49253, USA, Manitou Beach-Devils Lake, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Fitness is Ageless - With Collette</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">12 PM ET</span>
                 &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
                 
               </p>
@@ -824,23 +1009,39 @@
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Oakwood Cemetery Adrian - Soldier’s Field Tombstone Cleaning</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Clinton Fall Festival</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">12 PM ET</span>
-                &nbsp;&middot;&nbsp;1001 Oakwood Rd, Adrian, MI 49221, USA, Adrian, MI
+                <span class="time">10 AM ET</span>
+                &nbsp;&middot;&nbsp;119 E Michigan Ave, Clinton, MI 49236, USA, Clinton, MI
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Big Fam Music &amp; Arts Festival 2026</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">10 AM ET</span>
+                &nbsp;&middot;&nbsp;13500 US-12, Brooklyn, MI 49230, USA, Brooklyn, MI
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
                 <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Woolstok Tweed Trunk Show</a>
@@ -848,23 +1049,23 @@
                 
               </p>
               <p class="event-meta">
+                <span class="time">11 AM ET</span>
+                &nbsp;&middot;&nbsp;128 E Maumee St, Adrian, MI 49221, USA, Adrian, MI
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="adrian">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Adult Shoot Around</a>
+                
+                
+              </p>
+              <p class="event-meta">
                 <span class="time">12 PM ET</span>
-                &nbsp;&middot;&nbsp;128 E Maumee St, Adrian, MI 49221, USA, Adrian, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Stretch &amp; Mat Class - With Collette</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">1:15 PM ET</span>
                 &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
                 
               </p>
@@ -872,192 +1073,112 @@
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Whiskey Blending Experience in Adrian</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Friday After Five</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">2 PM ET</span>
-                &nbsp;&middot;&nbsp;108 E Maumee St, Adrian, MI 49221, USA, Adrian, MI
+                <span class="time">5 PM ET</span>
+                &nbsp;&middot;&nbsp;6214 Monroe Rd, Tipton, MI 49287, USA, Tipton, MI
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Open Gym</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Friday After Five – Ornamental Grasses</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">3 PM ET</span>
-                &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                <span class="time">5 PM ET</span>
+                &nbsp;&middot;&nbsp;6214 Monroe Rd m 50, Tipton, MI 49287, USA, Tipton, MI
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Farmer&#39;s Market</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">3 PM ET</span>
-                &nbsp;&middot;&nbsp;424 US-223, Adrian, MI 49221, USA, Adrian, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Social Stitching @ Tink &amp; The Frog</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">4 PM ET</span>
-                &nbsp;&middot;&nbsp;128 E Maumee St, Adrian, MI 49221, USA, Adrian, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Brooklyn&#39;s Art in the Park</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">4:30 PM ET</span>
-                &nbsp;&middot;&nbsp;115 Water St, Brooklyn, MI 49230, USA, Brooklyn, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Fusion- Jazzercise</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">5:15 PM ET</span>
-                &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">3 &amp; 4 Year Old Soccer- Session 2</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">5:30 PM ET</span>
-                &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">An Apple a Day Intro to Watercolors</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">5:30 PM ET</span>
-                &nbsp;&middot;&nbsp;1375 N Main St, Adrian, MI 49221, USA, Adrian, MI
-                
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="local">
-              <span class="cat-badge local">LOCAL</span>
-              <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Cardio Drumming</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Garden Vegetables Watercolor Class with Haley Jula Design</a>
                 
                 
               </p>
               <p class="event-meta">
                 <span class="time">6 PM ET</span>
-                &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                &nbsp;&middot;&nbsp;135 E Chicago Blvd, Tecumseh, MI 49286, USA, Tecumseh, MI
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">U8 Soccer - co-ed</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Haunting in the Hills Opening Night</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">6 PM ET</span>
-                &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                <span class="time">7:30 PM ET</span>
+                &nbsp;&middot;&nbsp;7204 US-12, Onsted, MI 49265, USA, Onsted, MI
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">BIKE NIGHT!</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Haunting in the Hills</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">6 PM ET</span>
-                &nbsp;&middot;&nbsp;18711 US-12, Cement City, MI 49233, USA, Cement City, MI
+                <span class="time">7:30 PM ET</span>
+                &nbsp;&middot;&nbsp;8410 US-12, Onsted, MI 49265, USA, Onsted, MI
                 
               </p>
             </div>
           
             
             <div class="event-card"
-                 data-cat="local">
+                 data-cat="local" data-area="adrian">
               <span class="cat-badge local">LOCAL</span>
               <p class="event-title">
-                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">U6 Soccer - co-ed</a>
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Friday September 25th Bret Maynard 8-11</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">6:15 PM ET</span>
-                &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                <span class="time">8 PM ET</span>
+                &nbsp;&middot;&nbsp;110 Walnut St, Manitou Beach, MI 49253, USA, Manitou Beach-Devils Lake, MI
+                
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="local" data-area="adrian">
+              <span class="cat-badge local">LOCAL</span>
+              <p class="event-title">
+                <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">ZZ Top Tribute by Thunderbeard</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">8 PM ET</span>
+                &nbsp;&middot;&nbsp;12000 Pentecost Hwy, Onsted, MI 49265, USA, Onsted, MI
                 
               </p>
             </div>
@@ -1088,7 +1209,7 @@
                  data-cat="estate_sales">
               <span class="cat-badge estate_sales">ESTATE SALES</span>
               <p class="event-title">
-                <a href="https://www.estatesales.net/MI/Milan/48160/5090925" target="_blank" rel="noopener">Vintage Tonka &amp;Metal Trucks, Hadley Pottery, and Antiques Phase 2 Milan Estate Sale</a>
+                <a href="https://www.estatesales.net/MI/Milan/48160/5090925" target="_blank" rel="noopener">Estate Sale</a>
                 
                 
               </p>
@@ -1099,6 +1220,54 @@
               </p>
             </div>
           
+            
+            <div class="event-card"
+                 data-cat="estate_sales">
+              <span class="cat-badge estate_sales">ESTATE SALES</span>
+              <p class="event-title">
+                <a href="https://www.estatesales.net/OH/Sylvania/43560/5084214" target="_blank" rel="noopener">SYLVANIA CLOSING HOME</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">9 AM ET</span>
+                &nbsp;&middot;&nbsp;3845 PEPPERWOOD COURT, Sylvania, OH 43560
+                &nbsp;&middot;&nbsp;<em>by RiverPort Liquidators LLC · 28 mi</em>
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="estate_sales">
+              <span class="cat-badge estate_sales">ESTATE SALES</span>
+              <p class="event-title">
+                <a href="https://www.estatesales.net/MI/Temperance/48182/5062674" target="_blank" rel="noopener">Blue Moon Temperance Sale! Furniture, Decor, Kitchenware, Garage items And More!</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">9 AM ET</span>
+                &nbsp;&middot;&nbsp;6803 Rutland Rd, Temperance, MI 48182
+                &nbsp;&middot;&nbsp;<em>by Blue Moon Estate Sales · 28 mi</em>
+              </p>
+            </div>
+          
+            
+            <div class="event-card"
+                 data-cat="estate_sales">
+              <span class="cat-badge estate_sales">ESTATE SALES</span>
+              <p class="event-title">
+                <a href="https://www.estatesales.net/OH/Toledo/43613/5078283" target="_blank" rel="noopener">Big downsizing house sale..Vintage toys, furniture, tools and more!</a>
+                
+                
+              </p>
+              <p class="event-meta">
+                <span class="time">9 AM ET</span>
+                &nbsp;&middot;&nbsp;3820 Woodmont, Toledo, OH 43613
+                &nbsp;&middot;&nbsp;<em>by Private Listing · 29 mi</em>
+              </p>
+            </div>
+          
         
       
         
@@ -1111,14 +1280,14 @@
                  data-cat="sports">
               <span class="cat-badge sports">SPORTS</span>
               <p class="event-title">
-                <a href="https://duckduckgo.com/?q=PGA+Tour+Presidents+Cup" target="_blank" rel="noopener">⛳ Presidents Cup</a>
+                <a href="https://duckduckgo.com/?q=Tigers+vs+Pittsburgh+Pirates+mlb" target="_blank" rel="noopener">⚾ Tigers vs Pittsburgh Pirates</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">3 AM ET</span>
-                
-                &nbsp;&middot;&nbsp;<em>PGA Tour · Sep 24–27</em>
+                <span class="time">6:40 PM ET</span>
+                &nbsp;&middot;&nbsp;Comerica Park
+                &nbsp;&middot;&nbsp;<em>Comerica Park</em>
               </p>
             </div>
           
@@ -1127,30 +1296,14 @@
                  data-cat="sports">
               <span class="cat-badge sports">SPORTS</span>
               <p class="event-title">
-                <a href="https://duckduckgo.com/?q=Rangers+vs+New+Jersey+Devils+nhl" target="_blank" rel="noopener">🏒 Rangers vs New Jersey Devils</a>
+                <a href="https://duckduckgo.com/?q=Rangers+%40+New+York+Islanders+nhl" target="_blank" rel="noopener">🏒 Rangers @ New York Islanders</a>
                 
                 
               </p>
               <p class="event-meta">
-                <span class="time">7 PM ET</span>
-                &nbsp;&middot;&nbsp;Madison Square Garden
-                &nbsp;&middot;&nbsp;<em>Madison Square Garden</em>
-              </p>
-            </div>
-          
-            
-            <div class="event-card"
-                 data-cat="sports">
-              <span class="cat-badge sports">SPORTS</span>
-              <p class="event-title">
-                <a href="https://duckduckgo.com/?q=Packers+vs+Atlanta+Falcons+nfl" target="_blank" rel="noopener">🏈 Packers vs Atlanta Falcons</a>
-                
-                
-              </p>
-              <p class="event-meta">
-                <span class="time">8:15 PM ET</span>
-                &nbsp;&middot;&nbsp;Lambeau Field
-                &nbsp;&middot;&nbsp;<em>Week 3 · Lambeau Field</em>
+                <span class="time">7:30 PM ET</span>
+                &nbsp;&middot;&nbsp;UBS Arena
+                &nbsp;&middot;&nbsp;<em>UBS Arena</em>
               </p>
             </div>
           
@@ -1170,14 +1323,29 @@
       <div class="event-card" data-cat="sports">
         <span class="cat-badge sports">SPORTS</span>
         <p class="event-title">
-          <a href="https://duckduckgo.com/?q=Tigers+vs+Washington+Nationals+mlb" target="_blank" rel="noopener">⚾ Tigers vs Washington Nationals</a>
+          <a href="https://duckduckgo.com/?q=Rangers+vs+New+Jersey+Devils+nhl" target="_blank" rel="noopener">🏒 Rangers vs New Jersey Devils</a>
           
           
-            <span class="result-badge result-l">L 2–4</span>
+            <span class="result-badge result-w">W 4–3</span>
           
         </p>
         
-          <p class="event-meta"><em>Comerica Park</em></p>
+          <p class="event-meta"><em>Madison Square Garden</em></p>
+        
+      </div>
+    
+      
+      <div class="event-card" data-cat="sports">
+        <span class="cat-badge sports">SPORTS</span>
+        <p class="event-title">
+          <a href="https://duckduckgo.com/?q=Packers+vs+Atlanta+Falcons+nfl" target="_blank" rel="noopener">🏈 Packers vs Atlanta Falcons</a>
+          
+          
+            <span class="result-badge result-l">L 14–35</span>
+          
+        </p>
+        
+          <p class="event-meta"><em>Week 3 · Lambeau Field</em></p>
         
       </div>
     
@@ -1234,7 +1402,7 @@
                         
                       </span>
                     </td>
-                    <td>91</td><td>67</td><td>.576</td><td>5</td>
+                    <td>92</td><td>67</td><td>.579</td><td>4</td>
                   </tr>
                 
                   <tr>
@@ -1246,7 +1414,7 @@
                         
                       </span>
                     </td>
-                    <td>85</td><td>73</td><td>.538</td><td>11</td>
+                    <td>85</td><td>74</td><td>.535</td><td>11</td>
                   </tr>
                 
                   <tr>
@@ -1258,19 +1426,7 @@
                         
                       </span>
                     </td>
-                    <td>96</td><td>62</td><td>.608</td><td>-</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/tor.png" alt="" loading="lazy">
-                        <span>Toronto Blue Jays</span>
-                        
-                      </span>
-                    </td>
-                    <td>77</td><td>82</td><td>.484</td><td>19.5</td>
+                    <td>96</td><td>63</td><td>.604</td><td>-</td>
                   </tr>
                 
                   <tr>
@@ -1282,7 +1438,19 @@
                         
                       </span>
                     </td>
-                    <td>78</td><td>81</td><td>.491</td><td>18.5</td>
+                    <td>78</td><td>81</td><td>.491</td><td>18</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/tor.png" alt="" loading="lazy">
+                        <span>Toronto Blue Jays</span>
+                        
+                      </span>
+                    </td>
+                    <td>77</td><td>82</td><td>.484</td><td>19</td>
                   </tr>
                 
               </tbody>
@@ -1304,48 +1472,12 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/min.png" alt="" loading="lazy">
-                        <span>Minnesota Twins</span>
-                        
-                      </span>
-                    </td>
-                    <td>75</td><td>84</td><td>.472</td><td>7.5</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" loading="lazy">
-                        <span>Detroit Tigers</span>
-                        
-                      </span>
-                    </td>
-                    <td>74</td><td>85</td><td>.465</td><td>8.5</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/kc.png" alt="" loading="lazy">
-                        <span>Kansas City Royals</span>
-                        
-                      </span>
-                    </td>
-                    <td>68</td><td>90</td><td>.430</td><td>14</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
                         <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/cle.png" alt="" loading="lazy">
                         <span>Cleveland Guardians</span>
                         
                       </span>
                     </td>
-                    <td>82</td><td>76</td><td>.519</td><td>-</td>
+                    <td>83</td><td>76</td><td>.522</td><td>-</td>
                   </tr>
                 
                   <tr>
@@ -1357,7 +1489,43 @@
                         
                       </span>
                     </td>
-                    <td>81</td><td>77</td><td>.513</td><td>1</td>
+                    <td>82</td><td>77</td><td>.516</td><td>1</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/min.png" alt="" loading="lazy">
+                        <span>Minnesota Twins</span>
+                        
+                      </span>
+                    </td>
+                    <td>75</td><td>84</td><td>.472</td><td>8</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" loading="lazy">
+                        <span>Detroit Tigers</span>
+                        
+                      </span>
+                    </td>
+                    <td>74</td><td>85</td><td>.465</td><td>9</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/kc.png" alt="" loading="lazy">
+                        <span>Kansas City Royals</span>
+                        
+                      </span>
+                    </td>
+                    <td>68</td><td>91</td><td>.428</td><td>15</td>
                   </tr>
                 
               </tbody>
@@ -1379,12 +1547,24 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" loading="lazy">
+                        <span>Seattle Mariners</span>
+                        
+                      </span>
+                    </td>
+                    <td>74</td><td>85</td><td>.465</td><td>5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
                         <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/ath.png" alt="" loading="lazy">
                         <span>Athletics</span>
                         
                       </span>
                     </td>
-                    <td>63</td><td>95</td><td>.399</td><td>15</td>
+                    <td>63</td><td>96</td><td>.396</td><td>16</td>
                   </tr>
                 
                   <tr>
@@ -1396,7 +1576,7 @@
                         
                       </span>
                     </td>
-                    <td>60</td><td>98</td><td>.380</td><td>18</td>
+                    <td>61</td><td>98</td><td>.384</td><td>18</td>
                   </tr>
                 
                   <tr>
@@ -1408,7 +1588,7 @@
                         
                       </span>
                     </td>
-                    <td>78</td><td>80</td><td>.494</td><td>-</td>
+                    <td>79</td><td>80</td><td>.497</td><td>-</td>
                   </tr>
                 
                   <tr>
@@ -1420,19 +1600,7 @@
                         
                       </span>
                     </td>
-                    <td>78</td><td>80</td><td>.494</td><td>-</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" loading="lazy">
-                        <span>Seattle Mariners</span>
-                        
-                      </span>
-                    </td>
-                    <td>74</td><td>84</td><td>.468</td><td>4</td>
+                    <td>79</td><td>80</td><td>.497</td><td>-</td>
                   </tr>
                 
               </tbody>
@@ -1459,7 +1627,7 @@
                         
                       </span>
                     </td>
-                    <td>93</td><td>65</td><td>.589</td><td>-</td>
+                    <td>93</td><td>66</td><td>.585</td><td>-</td>
                   </tr>
                 
                   <tr>
@@ -1471,7 +1639,7 @@
                         
                       </span>
                     </td>
-                    <td>78</td><td>80</td><td>.494</td><td>15</td>
+                    <td>78</td><td>81</td><td>.491</td><td>15</td>
                   </tr>
                 
                   <tr>
@@ -1483,7 +1651,7 @@
                         
                       </span>
                     </td>
-                    <td>75</td><td>84</td><td>.472</td><td>18.5</td>
+                    <td>75</td><td>84</td><td>.472</td><td>18</td>
                   </tr>
                 
                   <tr>
@@ -1495,7 +1663,7 @@
                         
                       </span>
                     </td>
-                    <td>73</td><td>85</td><td>.462</td><td>20</td>
+                    <td>73</td><td>86</td><td>.459</td><td>20</td>
                   </tr>
                 
                   <tr>
@@ -1507,7 +1675,7 @@
                         
                       </span>
                     </td>
-                    <td>87</td><td>71</td><td>.551</td><td>6</td>
+                    <td>87</td><td>72</td><td>.547</td><td>6</td>
                   </tr>
                 
               </tbody>
@@ -1529,12 +1697,24 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="" loading="lazy">
+                        <span>Chicago Cubs</span>
+                        
+                      </span>
+                    </td>
+                    <td>88</td><td>71</td><td>.553</td><td>12</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
                         <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/mil.png" alt="" loading="lazy">
                         <span>Milwaukee Brewers</span>
                         
                       </span>
                     </td>
-                    <td>99</td><td>59</td><td>.627</td><td>-</td>
+                    <td>100</td><td>59</td><td>.629</td><td>-</td>
                   </tr>
                 
                   <tr>
@@ -1546,7 +1726,7 @@
                         
                       </span>
                     </td>
-                    <td>80</td><td>78</td><td>.506</td><td>19</td>
+                    <td>81</td><td>78</td><td>.509</td><td>19</td>
                   </tr>
                 
                   <tr>
@@ -1558,7 +1738,7 @@
                         
                       </span>
                     </td>
-                    <td>77</td><td>81</td><td>.487</td><td>22</td>
+                    <td>77</td><td>82</td><td>.484</td><td>23</td>
                   </tr>
                 
                   <tr>
@@ -1570,19 +1750,7 @@
                         
                       </span>
                     </td>
-                    <td>73</td><td>85</td><td>.462</td><td>26</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="" loading="lazy">
-                        <span>Chicago Cubs</span>
-                        
-                      </span>
-                    </td>
-                    <td>87</td><td>71</td><td>.551</td><td>12</td>
+                    <td>74</td><td>85</td><td>.465</td><td>26</td>
                   </tr>
                 
               </tbody>
@@ -1604,12 +1772,24 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/sd.png" alt="" loading="lazy">
+                        <span>San Diego Padres</span>
+                        
+                      </span>
+                    </td>
+                    <td>89</td><td>70</td><td>.560</td><td>8</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
                         <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/lad.png" alt="" loading="lazy">
                         <span>Los Angeles Dodgers</span>
                         
                       </span>
                     </td>
-                    <td>97</td><td>61</td><td>.614</td><td>-</td>
+                    <td>97</td><td>62</td><td>.610</td><td>-</td>
                   </tr>
                 
                   <tr>
@@ -1621,7 +1801,7 @@
                         
                       </span>
                     </td>
-                    <td>65</td><td>94</td><td>.409</td><td>32.5</td>
+                    <td>65</td><td>94</td><td>.409</td><td>32</td>
                   </tr>
                 
                   <tr>
@@ -1633,19 +1813,7 @@
                         
                       </span>
                     </td>
-                    <td>57</td><td>101</td><td>.361</td><td>40</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/mlb/500/sd.png" alt="" loading="lazy">
-                        <span>San Diego Padres</span>
-                        
-                      </span>
-                    </td>
-                    <td>88</td><td>70</td><td>.557</td><td>9</td>
+                    <td>57</td><td>102</td><td>.358</td><td>40</td>
                   </tr>
                 
                   <tr>
@@ -1657,7 +1825,7 @@
                         
                       </span>
                     </td>
-                    <td>84</td><td>74</td><td>.532</td><td>13</td>
+                    <td>85</td><td>74</td><td>.535</td><td>12</td>
                   </tr>
                 
               </tbody>
@@ -1695,6 +1863,30 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/fla.png" alt="" loading="lazy">
+                        <span>Florida Panthers</span>
+                        
+                      </span>
+                    </td>
+                    <td>3</td><td>2</td><td>0</td><td>1</td><td>5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/det.png" alt="" loading="lazy">
+                        <span>Detroit Red Wings</span>
+                        
+                      </span>
+                    </td>
+                    <td>3</td><td>2</td><td>0</td><td>1</td><td>5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
                         <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/tor.png" alt="" loading="lazy">
                         <span>Toronto Maple Leafs</span>
                         
@@ -1712,43 +1904,7 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>2</td><td>0</td><td>0</td><td>4</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/fla.png" alt="" loading="lazy">
-                        <span>Florida Panthers</span>
-                        
-                      </span>
-                    </td>
-                    <td>2</td><td>1</td><td>0</td><td>1</td><td>3</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/det.png" alt="" loading="lazy">
-                        <span>Detroit Red Wings</span>
-                        
-                      </span>
-                    </td>
-                    <td>2</td><td>1</td><td>0</td><td>1</td><td>3</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/tb.png" alt="" loading="lazy">
-                        <span>Tampa Bay Lightning</span>
-                        
-                      </span>
-                    </td>
-                    <td>2</td><td>1</td><td>0</td><td>1</td><td>3</td>
+                    <td>3</td><td>2</td><td>1</td><td>0</td><td>4</td>
                   </tr>
                 
                   <tr>
@@ -1760,7 +1916,19 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
+                    <td>3</td><td>1</td><td>1</td><td>1</td><td>3</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/tb.png" alt="" loading="lazy">
+                        <span>Tampa Bay Lightning</span>
+                        
+                      </span>
+                    </td>
+                    <td>3</td><td>1</td><td>1</td><td>1</td><td>3</td>
                   </tr>
                 
                   <tr>
@@ -1799,7 +1967,31 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>2</td><td>0</td><td>0</td><td>4</td>
+                    <td>3</td><td>2</td><td>0</td><td>1</td><td>5</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/cbj.png" alt="" loading="lazy">
+                        <span>Columbus Blue Jackets</span>
+                        
+                      </span>
+                    </td>
+                    <td>3</td><td>2</td><td>1</td><td>0</td><td>4</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/car.png" alt="" loading="lazy">
+                        <span>Carolina Hurricanes</span>
+                        
+                      </span>
+                    </td>
+                    <td>3</td><td>2</td><td>1</td><td>0</td><td>4</td>
                   </tr>
                 
                   <tr>
@@ -1835,43 +2027,7 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/car.png" alt="" loading="lazy">
-                        <span>Carolina Hurricanes</span>
-                        
-                      </span>
-                    </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/cbj.png" alt="" loading="lazy">
-                        <span>Columbus Blue Jackets</span>
-                        
-                      </span>
-                    </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/nyr.png" alt="" loading="lazy">
-                        <span>New York Rangers</span>
-                        
-                      </span>
-                    </td>
-                    <td>2</td><td>0</td><td>2</td><td>0</td><td>0</td>
+                    <td>3</td><td>1</td><td>2</td><td>0</td><td>2</td>
                   </tr>
                 
                   <tr>
@@ -1883,7 +2039,19 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>0</td><td>2</td><td>0</td><td>0</td>
+                    <td>3</td><td>1</td><td>2</td><td>0</td><td>2</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/nyr.png" alt="" loading="lazy">
+                        <span>New York Rangers</span>
+                        
+                      </span>
+                    </td>
+                    <td>3</td><td>1</td><td>2</td><td>0</td><td>2</td>
                   </tr>
                 
               </tbody>
@@ -1917,12 +2085,12 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/chi.png" alt="" loading="lazy">
-                        <span>Chicago Blackhawks</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/uta.png" alt="" loading="lazy">
+                        <span>Utah Mammoth</span>
                         
                       </span>
                     </td>
-                    <td>2</td><td>1</td><td>0</td><td>1</td><td>3</td>
+                    <td>3</td><td>1</td><td>1</td><td>1</td><td>3</td>
                   </tr>
                 
                   <tr>
@@ -1931,6 +2099,18 @@
                         
                         <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/wpg.png" alt="" loading="lazy">
                         <span>Winnipeg Jets</span>
+                        
+                      </span>
+                    </td>
+                    <td>3</td><td>1</td><td>1</td><td>1</td><td>3</td>
+                  </tr>
+                
+                  <tr>
+                    <td class="team-cell">
+                      <span class="team-inner">
+                        
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/chi.png" alt="" loading="lazy">
+                        <span>Chicago Blackhawks</span>
                         
                       </span>
                     </td>
@@ -1965,12 +2145,12 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/uta.png" alt="" loading="lazy">
-                        <span>Utah Mammoth</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/stl.png" alt="" loading="lazy">
+                        <span>St. Louis Blues</span>
                         
                       </span>
                     </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
+                    <td>3</td><td>1</td><td>2</td><td>0</td><td>2</td>
                   </tr>
                 
                   <tr>
@@ -1982,19 +2162,7 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
-                  </tr>
-                
-                  <tr>
-                    <td class="team-cell">
-                      <span class="team-inner">
-                        
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/stl.png" alt="" loading="lazy">
-                        <span>St. Louis Blues</span>
-                        
-                      </span>
-                    </td>
-                    <td>2</td><td>0</td><td>2</td><td>0</td><td>0</td>
+                    <td>3</td><td>1</td><td>2</td><td>0</td><td>2</td>
                   </tr>
                 
               </tbody>
@@ -2016,24 +2184,24 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/sea.png" alt="" loading="lazy">
-                        <span>Seattle Kraken</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/edm.png" alt="" loading="lazy">
+                        <span>Edmonton Oilers</span>
                         
                       </span>
                     </td>
-                    <td>2</td><td>2</td><td>0</td><td>0</td><td>4</td>
+                    <td>3</td><td>3</td><td>0</td><td>0</td><td>6</td>
                   </tr>
                 
                   <tr>
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/edm.png" alt="" loading="lazy">
-                        <span>Edmonton Oilers</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/sea.png" alt="" loading="lazy">
+                        <span>Seattle Kraken</span>
                         
                       </span>
                     </td>
-                    <td>2</td><td>2</td><td>0</td><td>0</td><td>4</td>
+                    <td>3</td><td>3</td><td>0</td><td>0</td><td>6</td>
                   </tr>
                 
                   <tr>
@@ -2045,19 +2213,19 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>2</td><td>0</td><td>0</td><td>4</td>
+                    <td>3</td><td>3</td><td>0</td><td>0</td><td>6</td>
                   </tr>
                 
                   <tr>
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/ana.png" alt="" loading="lazy">
-                        <span>Anaheim Ducks</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/sj.png" alt="" loading="lazy">
+                        <span>San Jose Sharks</span>
                         
                       </span>
                     </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
+                    <td>3</td><td>1</td><td>1</td><td>1</td><td>3</td>
                   </tr>
                 
                   <tr>
@@ -2069,7 +2237,7 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>1</td><td>1</td><td>0</td><td>2</td>
+                    <td>3</td><td>1</td><td>1</td><td>1</td><td>3</td>
                   </tr>
                 
                   <tr>
@@ -2088,12 +2256,12 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/sj.png" alt="" loading="lazy">
-                        <span>San Jose Sharks</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nhl/500/ana.png" alt="" loading="lazy">
+                        <span>Anaheim Ducks</span>
                         
                       </span>
                     </td>
-                    <td>2</td><td>0</td><td>1</td><td>1</td><td>1</td>
+                    <td>3</td><td>1</td><td>2</td><td>0</td><td>2</td>
                   </tr>
                 
                   <tr>
@@ -2105,7 +2273,7 @@
                         
                       </span>
                     </td>
-                    <td>2</td><td>0</td><td>2</td><td>0</td><td>0</td>
+                    <td>3</td><td>0</td><td>3</td><td>0</td><td>0</td>
                   </tr>
                 
               </tbody>
@@ -2218,8 +2386,8 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/cle.png" alt="" loading="lazy">
-                        <span>Cleveland Browns</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/pit.png" alt="" loading="lazy">
+                        <span>Pittsburgh Steelers</span>
                         
                       </span>
                     </td>
@@ -2230,8 +2398,8 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/pit.png" alt="" loading="lazy">
-                        <span>Pittsburgh Steelers</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/cle.png" alt="" loading="lazy">
+                        <span>Cleveland Browns</span>
                         
                       </span>
                     </td>
@@ -2487,7 +2655,7 @@
                         
                       </span>
                     </td>
-                    <td>1</td><td>1</td><td>0</td><td>.500</td>
+                    <td>1</td><td>2</td><td>0</td><td>.333</td>
                   </tr>
                 
               </tbody>
@@ -2533,20 +2701,20 @@
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/tb.png" alt="" loading="lazy">
-                        <span>Tampa Bay Buccaneers</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/atl.png" alt="" loading="lazy">
+                        <span>Atlanta Falcons</span>
                         
                       </span>
                     </td>
-                    <td>0</td><td>2</td><td>0</td><td>.000</td>
+                    <td>1</td><td>2</td><td>0</td><td>.333</td>
                   </tr>
                 
                   <tr>
                     <td class="team-cell">
                       <span class="team-inner">
                         
-                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/atl.png" alt="" loading="lazy">
-                        <span>Atlanta Falcons</span>
+                        <img class="team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/tb.png" alt="" loading="lazy">
+                        <span>Tampa Bay Buccaneers</span>
                         
                       </span>
                     </td>
@@ -3464,574 +3632,6 @@
     
       
         <div class="date-group">
-          <p class="date-label">Friday, September 25</p>
-          
-            
-              
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/9-to-5%3a-a-dolly-parton-yoga-party/25646/" target="_blank" rel="noopener">9 to 5: A Dolly Parton Yoga Party</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Breathe Yoga Chelsea
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/a2ac-creative-pours/24774/" target="_blank" rel="noopener">A2AC Creative Pours</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Ann Arbor Art Center
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/an-acoustic-evening-with-kate-peterson/25486/" target="_blank" rel="noopener">An Acoustic Evening with Kate Peterson</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Wolverine Pickleball, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/artist-reception%3a-esther-kirshenbaum-multimedia-artist-%26%238211%3b-a-symphony-of-seeing/25624/" target="_blank" rel="noopener">Artist Reception: Esther Kirshenbaum, multimedia artist &amp;#8211; A Symphony of Seeing</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Kerrytown Concert House, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/a%c2%b2zero-treeducation-series%3a-history-of-trees-in-ann-arbor/25682/" target="_blank" rel="noopener">A²ZERO TREEducation Series: History of Trees in Ann Arbor</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Leslie Science &amp; Nature Center, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/comedian%3a-josh-adams/24471/" target="_blank" rel="noopener">Comedian: Josh Adams</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Ann Arbor Comedy Showcase
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/dolly-day-at-aadl/25634/" target="_blank" rel="noopener">Dolly Day at AADL</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Ann Arbor District Library
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/fasttrack-awards/24687/" target="_blank" rel="noopener">FastTrack Awards</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Vanguard Hotel, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/foodie-fridays-at-county-farm-park/24199/" target="_blank" rel="noopener">Foodie Fridays at County Farm Park</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;County Farm Park, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/friday-night-improv%3a-11-non-blondes/24052/" target="_blank" rel="noopener">Friday Night Improv: 11 Non-Blondes</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Hear.Say Brewing + Theater, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/full-cord/25310/" target="_blank" rel="noopener">Full Cord</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;JD&#39;s Stage Bistro, Chelsea
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/joe-pug-%26-willie-watson-at-the-ark/25640/" target="_blank" rel="noopener">Joe Pug &amp; Willie Watson at The Ark</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;The Ark, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/latin-fridays/17107/" target="_blank" rel="noopener">Latin Fridays</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Club Above, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/line-dance-with-carrie/25303/" target="_blank" rel="noopener">Line Dance with Carrie</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Robin Hills Farm, Chelsea
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/mi-fusion-connection/24709/" target="_blank" rel="noopener">MI Fusion Connection</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Rhizome Roots Studio, Ypsilanti
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/mi-fusion-connection%3a-blues-swing-west-coast-dance-%2b-live-music/25675/" target="_blank" rel="noopener">MI Fusion Connection: Blues/Swing/West Coast Dance + Live Music</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Concourse Hall, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/oktoberfest-at-lake-forest/25652/" target="_blank" rel="noopener">Oktoberfest at Lake Forest</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Lake Forest Golf Club, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/paint-your-partner-date-night-workshop/25647/" target="_blank" rel="noopener">Paint Your Partner Date Night Workshop</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Geek Brush Studio, Chelsea
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/pride-karaoke-night!/25449/" target="_blank" rel="noopener">Pride Karaoke Night!</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Necto Nightclub, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/russ-macklem-detroit-quintet-at-blue-llama/25644/" target="_blank" rel="noopener">Russ Macklem Detroit Quintet at Blue LLama</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;The Blue LLama Jazz Club, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/start-your-modern-career/24686/" target="_blank" rel="noopener">Start Your Modern Career</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;SPARK East Innovation Center, Ypsilanti
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/storytime-with-elsa/25334/" target="_blank" rel="noopener">Storytime with Elsa</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;MilkShake Factory Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/turn-up-the-heat%3a-womens-wellness-elevated/25137/" target="_blank" rel="noopener">Turn Up the Heat: Women&#39;s Wellness Elevated</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Revel Run, Chelsea
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/voting-in-america%3a-past-%26-present/25653/" target="_blank" rel="noopener">Voting in America: Past &amp; Present</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;William L. Clements Library, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/friday-night-euchre/24458/" target="_blank" rel="noopener">Friday Night Euchre</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;HOMES Campus, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/night-terrors-%26%238211%3b-michigan%e2%80%99s-premier-haunted-thrill-park/21172/" target="_blank" rel="noopener">Night Terrors &amp;#8211; Michigan’s Premier Haunted Thrill Park</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Wiard&#39;s Orchards Night Terrors, Ypsilanti
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/stabby-club%3a-needle-felting-support-group/25100/" target="_blank" rel="noopener">Stabby Club: Needle Felting Support Group</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;LullCo Design Studio, ANN ARBOR
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/weekend-horseback-riding-trail-rides/24523/" target="_blank" rel="noopener">Weekend Horseback Riding Trail Rides</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Storm Breaker Stables, Milan
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/pride-fridays/6576/" target="_blank" rel="noopener">PRIDE Fridays</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">1 AM ET</span>
-                    &nbsp;&middot;&nbsp;Necto Nightclub, Ann Arbor
-                    
-                  </p>
-                </div>
-              
-            
-          
-            
-              
-              
-                
-                <div class="event-card"
-                     data-cat="estate_sales">
-                  <span class="cat-badge estate_sales">ESTATE SALES</span>
-                  <p class="event-title">
-                    <a href="https://www.estatesales.net/OH/Sylvania/43560/5084214" target="_blank" rel="noopener">SYLVANIA CLOSING HOME</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">9 AM ET</span>
-                    &nbsp;&middot;&nbsp;3845 PEPPERWOOD COURT, Sylvania, OH 43560
-                    &nbsp;&middot;&nbsp;<em>by RiverPort Liquidators LLC · 28 mi</em>
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="estate_sales">
-                  <span class="cat-badge estate_sales">ESTATE SALES</span>
-                  <p class="event-title">
-                    <a href="https://www.estatesales.net/MI/Temperance/48182/5062674" target="_blank" rel="noopener">Blue Moon Temperance Sale! Furniture, Decor, Kitchenware, Garage items And More!</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">9 AM ET</span>
-                    &nbsp;&middot;&nbsp;6803 Rutland Rd, Temperance, MI 48182
-                    &nbsp;&middot;&nbsp;<em>by Blue Moon Estate Sales · 28 mi</em>
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="estate_sales">
-                  <span class="cat-badge estate_sales">ESTATE SALES</span>
-                  <p class="event-title">
-                    <a href="https://www.estatesales.net/OH/Toledo/43613/5078283" target="_blank" rel="noopener">Big downsizing house sale..Vintage toys, furniture, tools and more!</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">9 AM ET</span>
-                    &nbsp;&middot;&nbsp;3820 Woodmont, Toledo, OH 43613
-                    &nbsp;&middot;&nbsp;<em>by Private Listing · 29 mi</em>
-                  </p>
-                </div>
-              
-            
-          
-            
-          
-            
-              
-              
-                
-                <div class="event-card"
-                     data-cat="sports">
-                  <span class="cat-badge sports">SPORTS</span>
-                  <p class="event-title">
-                    <a href="https://duckduckgo.com/?q=Tigers+vs+Pittsburgh+Pirates+mlb" target="_blank" rel="noopener">⚾ Tigers vs Pittsburgh Pirates</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">6:40 PM ET</span>
-                    &nbsp;&middot;&nbsp;Comerica Park
-                    &nbsp;&middot;&nbsp;<em>Comerica Park</em>
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="sports">
-                  <span class="cat-badge sports">SPORTS</span>
-                  <p class="event-title">
-                    <a href="https://duckduckgo.com/?q=Rangers+%40+New+York+Islanders+nhl" target="_blank" rel="noopener">🏒 Rangers @ New York Islanders</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">7:30 PM ET</span>
-                    &nbsp;&middot;&nbsp;UBS Arena
-                    &nbsp;&middot;&nbsp;<em>UBS Arena</em>
-                  </p>
-                </div>
-              
-            
-          
-            
-          
-        </div>
-      
-        <div class="date-group">
           <p class="date-label">Saturday, September 26</p>
           
             
@@ -4039,7 +3639,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/a-natural-dye-workshop%3a-bundle-dye-at-the-joyful-willow/25491/" target="_blank" rel="noopener">A Natural Dye Workshop: Bundle Dye at The Joyful Willow</a>
@@ -4055,7 +3655,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/a2-jazz-fest/24839/" target="_blank" rel="noopener">A2 JAZZ FEST</a>
@@ -4071,7 +3671,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/buckwild-country-night/25205/" target="_blank" rel="noopener">Buckwild Country Night</a>
@@ -4087,7 +3687,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/cocktails-%26-comedy-night-at-river-raisin-distillery/25649/" target="_blank" rel="noopener">Cocktails &amp; Comedy Night at River Raisin Distillery</a>
@@ -4103,7 +3703,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/danish%3a-the-breakfast-of-vikings/25369/" target="_blank" rel="noopener">Danish: The Breakfast of Vikings</a>
@@ -4119,7 +3719,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/jake-manzi-%26-anne-erlewine/25630/" target="_blank" rel="noopener">Jake Manzi &amp; Anne Erlewine</a>
@@ -4135,7 +3735,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/karaoke-%40the-owl/25349/" target="_blank" rel="noopener">Karaoke @The Owl</a>
@@ -4151,7 +3751,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/make-n-take-saturday/25648/" target="_blank" rel="noopener">Make-n-Take Saturday</a>
@@ -4167,7 +3767,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/nickelodeon-our-world-worldwide-day-of-play/25635/" target="_blank" rel="noopener">Nickelodeon Our World Worldwide Day of Play</a>
@@ -4183,7 +3783,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/pittsfield-township-fall-market/25470/" target="_blank" rel="noopener">Pittsfield Township Fall Market</a>
@@ -4199,7 +3799,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/ron-pope-at-the-ark/25641/" target="_blank" rel="noopener">Ron Pope at The Ark</a>
@@ -4215,7 +3815,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/schmaltz/25631/" target="_blank" rel="noopener">Schmaltz</a>
@@ -4231,7 +3831,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/tailgate-with-ypsi-meals-on-wheels-and-eastern-michigan-football/25060/" target="_blank" rel="noopener">Tailgate with Ypsi Meals on Wheels and Eastern Michigan Football</a>
@@ -4247,7 +3847,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/telling-it-flight-to-25/25035/" target="_blank" rel="noopener">Telling It Flight to 25</a>
@@ -4263,7 +3863,23 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/u-m-football-vs-iowa/1663/" target="_blank" rel="noopener">U-M Football vs. Iowa</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;Michigan Stadium, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/webster-fall-festival/25400/" target="_blank" rel="noopener">Webster Fall Festival</a>
@@ -4279,7 +3895,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/wiard%e2%80%99s-orchards-%26-country-fair/21170/" target="_blank" rel="noopener">Wiard’s Orchards &amp; Country Fair</a>
@@ -4295,7 +3911,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/ypsilanti-farmers-market/23771/" target="_blank" rel="noopener">Ypsilanti Farmers Market</a>
@@ -4311,7 +3927,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/frequency-saturdays/14429/" target="_blank" rel="noopener">Frequency Saturdays</a>
@@ -4321,6 +3937,102 @@
                   <p class="event-meta">
                     <span class="time">1 AM ET</span>
                     &nbsp;&middot;&nbsp;Necto Nightclub, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="adrian">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">U12 GIRLS Soccer</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">8 AM ET</span>
+                    &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="adrian">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">U15 BOYS Soccer</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">8 AM ET</span>
+                    &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="adrian">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Woodshop Safety Class - 4 Spots Left!</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">8 AM ET</span>
+                    &nbsp;&middot;&nbsp;1375 N Main St, Adrian, MI 49221, USA, Adrian, MI
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="adrian">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Community Walk Event</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">8:30 AM ET</span>
+                    &nbsp;&middot;&nbsp;1018 N Main St, Adrian, MI 49221, USA, Adrian, MI
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="adrian">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Dance Mix - Jazzercise</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">8:30 AM ET</span>
+                    &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="adrian">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.visitlenawee.com/events/" target="_blank" rel="noopener">Yoga</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">8:30 AM ET</span>
+                    &nbsp;&middot;&nbsp;810 N Evans St, Tecumseh, MI 49286, USA, Tecumseh, MI
                     
                   </p>
                 </div>
@@ -4341,24 +4053,8 @@
                   </p>
                   <p class="event-meta">
                     <span class="time">9 AM ET</span>
-                    &nbsp;&middot;&nbsp;Ann Arbor, MI 48104
+                    &nbsp;&middot;&nbsp;2514 Hawthorne Rd, Ann Arbor, MI 48104
                     &nbsp;&middot;&nbsp;<em>by Such A Find Estate Liquidation · 22 mi</em>
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="estate_sales">
-                  <span class="cat-badge estate_sales">ESTATE SALES</span>
-                  <p class="event-title">
-                    <a href="https://www.estatesales.net/MI/Jackson/49201/5092635" target="_blank" rel="noopener">Longenberger, Shop Smith, Gun Safe</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">10 AM ET</span>
-                    &nbsp;&middot;&nbsp;Jackson, MI 49201
-                    &nbsp;&middot;&nbsp;<em>by Itzgottago · 27 mi</em>
                   </p>
                 </div>
               
@@ -4415,7 +4111,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/ann-arbor-jazz-workshop-%26-jazz-jam/25680/" target="_blank" rel="noopener">Ann Arbor Jazz Workshop &amp; Jazz Jam</a>
@@ -4431,7 +4127,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/brewed-awakenings/25293/" target="_blank" rel="noopener">Brewed Awakenings</a>
@@ -4447,7 +4143,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/chefs-in-the-garden/24857/" target="_blank" rel="noopener">Chefs in the Garden</a>
@@ -4463,7 +4159,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/fall-market/25224/" target="_blank" rel="noopener">Fall Market</a>
@@ -4479,23 +4175,23 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
-                    <a href="https://www.annarbor.org/event/garden-glass-art-sale/25691/" target="_blank" rel="noopener">Garden Glass Art Sale</a>
+                    <a href="https://www.annarbor.org/event/garden-glass-art-sale/25650/" target="_blank" rel="noopener">Garden Glass Art Sale</a>
                     
                     
                   </p>
                   <p class="event-meta">
                     <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;The Nisson&#39;s 1227 Lutz, Ann Arbor, Michigan, United States
+                    &nbsp;&middot;&nbsp;Larry Nisson Studio, Ann Arbor
                     
                   </p>
                 </div>
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/homemade-pasta-at-lakehouse/25042/" target="_blank" rel="noopener">Homemade Pasta at Lakehouse</a>
@@ -4511,7 +4207,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/rivalry-ride-2026/25115/" target="_blank" rel="noopener">RIVALRY RIDE 2026</a>
@@ -4527,7 +4223,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/sunday-yoga-at-bl%c3%b8m-mead-%2b-cider/10746/" target="_blank" rel="noopener">Sunday Yoga at Bløm Mead + Cider</a>
@@ -4543,7 +4239,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/the-seah-korean-art-song-gala/25615/" target="_blank" rel="noopener">The SeAH Korean Art Song Gala</a>
@@ -4559,7 +4255,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/whitmore-lake-farmers-market/24525/" target="_blank" rel="noopener">Whitmore Lake Farmers Market</a>
@@ -4575,7 +4271,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/women-in-jazz-showcase/25700/" target="_blank" rel="noopener">Women in Jazz Showcase</a>
@@ -4591,7 +4287,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/phil-ogilvies-rhythm-kings/25507/" target="_blank" rel="noopener">Phil Ogilvie&#39;s Rhythm Kings</a>
@@ -4607,7 +4303,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/tabletop-sundays/25034/" target="_blank" rel="noopener">Tabletop Sundays</a>
@@ -4623,7 +4319,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/university-of-michigan-climate-week/24585/" target="_blank" rel="noopener">University of Michigan Climate Week</a>
@@ -4639,7 +4335,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/mic-drop-the-improvised-singing-competition/22575/" target="_blank" rel="noopener">Mic Drop - The Improvised Singing Competition</a>
@@ -4692,7 +4388,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/factory-mondays/14437/" target="_blank" rel="noopener">Factory Mondays</a>
@@ -4708,7 +4404,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/premiere-environmental-documentary-film%3a-%e2%80%9cthe-coalition%e2%80%9d-with-expert-panel-%26-film-makers/25683/" target="_blank" rel="noopener">Premiere Environmental Documentary Film: “The Coalition” with expert panel &amp; film makers</a>
@@ -4724,7 +4420,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/willi-carlisle-%26%238211%3b-the-universal-bubba-tour/25697/" target="_blank" rel="noopener">Willi Carlisle &amp;#8211; The Universal Bubba Tour</a>
@@ -4740,7 +4436,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/women-in-tech/24688/" target="_blank" rel="noopener">Women in Tech</a>
@@ -4774,7 +4470,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/fiction-at-literati%3a-nicholas-russell/25695/" target="_blank" rel="noopener">Fiction at Literati: Nicholas Russell</a>
@@ -4790,7 +4486,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/the-business-of-life-sciences/24689/" target="_blank" rel="noopener">The Business of Life Sciences</a>
@@ -4806,7 +4502,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/ypsitasty/24807/" target="_blank" rel="noopener">YpsiTasty</a>
@@ -4822,23 +4518,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
-                  <span class="cat-badge local">LOCAL</span>
-                  <p class="event-title">
-                    <a href="https://www.annarbor.org/event/ypsitasty-grub-crawl-%26-shop-local-event/25728/" target="_blank" rel="noopener">YpsiTasty Grub Crawl &amp; Shop Local Event</a>
-                    
-                    
-                  </p>
-                  <p class="event-meta">
-                    <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Downtown Ypsilanti
-                    
-                  </p>
-                </div>
-              
-                
-                <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/stitch-%26-bitch/25098/" target="_blank" rel="noopener">Stitch &amp; Bitch</a>
@@ -4854,7 +4534,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/babies-%26-brews/13751/" target="_blank" rel="noopener">Babies &amp; Brews</a>
@@ -4888,7 +4568,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/ann-arbor-mobility-summit/24690/" target="_blank" rel="noopener">Ann Arbor Mobility Summit</a>
@@ -4904,7 +4584,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/fiction-at-literati%3a-sarah-anderson/25694/" target="_blank" rel="noopener">Fiction at Literati: Sarah Anderson</a>
@@ -4920,7 +4600,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/geeks-who-drink/25681/" target="_blank" rel="noopener">Geeks Who Drink</a>
@@ -4936,7 +4616,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/jonathan-turley%3a-rage-and-the-republic/24805/" target="_blank" rel="noopener">Jonathan Turley: Rage and the Republic</a>
@@ -4952,7 +4632,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/live-music-wednesdays/25684/" target="_blank" rel="noopener">Live Music Wednesdays</a>
@@ -4968,7 +4648,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/oktoberfest-beer-%26-wine-strolling-tasting/25295/" target="_blank" rel="noopener">Oktoberfest Beer &amp; Wine Strolling Tasting</a>
@@ -4984,7 +4664,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/open-mic-wednesday-w-annie-bacon-%26-forrest-hejkal/25685/" target="_blank" rel="noopener">Open Mic Wednesday w/ Annie Bacon &amp; Forrest Hejkal</a>
@@ -5000,7 +4680,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/the-stories-we-carry%3a-writer-colum-mccann-in-conversation-with-michigan-publics-april-baer/25659/" target="_blank" rel="noopener">The Stories We Carry: Writer Colum McCann in Conversation with Michigan Public&#39;s April Baer</a>
@@ -5016,7 +4696,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/whiskey-wednesday/24227/" target="_blank" rel="noopener">Whiskey Wednesday</a>
@@ -5032,7 +4712,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/ypsi-fine-arts-club/12196/" target="_blank" rel="noopener">Ypsi Fine Arts Club</a>
@@ -5066,7 +4746,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/2026-whittemore-lecture-in-landscape-architecture/25490/" target="_blank" rel="noopener">2026 Whittemore Lecture in Landscape Architecture</a>
@@ -5082,23 +4762,23 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
-                    <a href="https://www.annarbor.org/event/black-lagoon-pop-up/25464/" target="_blank" rel="noopener">Black Lagoon Pop Up</a>
+                    <a href="https://www.annarbor.org/event/acoustic-tuesday-jams-at-og-brewing/24580/" target="_blank" rel="noopener">Acoustic Tuesday Jams at OG Brewing</a>
                     
                     
                   </p>
                   <p class="event-meta">
                     <span class="time">12 AM ET</span>
-                    &nbsp;&middot;&nbsp;Hunã, Ann Arbor
+                    &nbsp;&middot;&nbsp;Original Gravity Brewing, Milan
                     
                   </p>
                 </div>
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/brain-plasticity-ukulele-collective-%26-blueshouse/25698/" target="_blank" rel="noopener">Brain Plasticity Ukulele Collective &amp; Blueshouse</a>
@@ -5114,7 +4794,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/comedian%3a-tommy-ryman/24844/" target="_blank" rel="noopener">Comedian: Tommy Ryman</a>
@@ -5130,7 +4810,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/ellen-rowe-trio-ft-rob-bickley-%26-pete-siers/25701/" target="_blank" rel="noopener">Ellen Rowe Trio ft. Rob Bickley &amp; Pete Siers</a>
@@ -5146,7 +4826,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/holly-bowling-at-the-ark/25699/" target="_blank" rel="noopener">Holly Bowling at The Ark</a>
@@ -5162,7 +4842,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/lgbt-history-month-kickoff%3a-student-film-festival/25325/" target="_blank" rel="noopener">LGBT History Month Kickoff: Student Film Festival</a>
@@ -5178,7 +4858,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/lgbtq-night%3a-queer-open-mic/25686/" target="_blank" rel="noopener">LGBTQ Night: Queer Open Mic</a>
@@ -5194,7 +4874,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/michigan-arts-festival/25664/" target="_blank" rel="noopener">Michigan Arts Festival</a>
@@ -5210,7 +4890,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/national-jiffy-mix-day/25702/" target="_blank" rel="noopener">National &#34;JIFFY&#34; Mix Day</a>
@@ -5226,7 +4906,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/penny-stamps-series%3a-vijay-gupta/25317/" target="_blank" rel="noopener">Penny Stamps Series: Vijay Gupta</a>
@@ -5242,7 +4922,7 @@
               
                 
                 <div class="event-card"
-                     data-cat="local">
+                     data-cat="local" data-area="annarbor">
                   <span class="cat-badge local">LOCAL</span>
                   <p class="event-title">
                     <a href="https://www.annarbor.org/event/rog%c3%a9rio-m-pinto%3a-freire-and-drama/25696/" target="_blank" rel="noopener">Rogério M. Pinto: Freire and Drama</a>
@@ -5252,6 +4932,118 @@
                   <p class="event-meta">
                     <span class="time">12 AM ET</span>
                     &nbsp;&middot;&nbsp;Literati Bookstore, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/small-bite-sessions%3a-tiny-olive-oil-world-tour/25275/" target="_blank" rel="noopener">Small Bite Sessions: Tiny Olive Oil World Tour</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;Zingerman&#39;s Delicatessen, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/the-holdup/24477/" target="_blank" rel="noopener">The Holdup</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;Blind Pig/ 8 Ball Saloon, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/trail-raiser-for-the-b2b-trail/25299/" target="_blank" rel="noopener">Trail Raiser for the B2B Trail</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;The Collins Off Main, Chelsea
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/black-lagoon-pop-up/25464/" target="_blank" rel="noopener">Black Lagoon Pop Up</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;Hunã, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/pub-trivia-at-conor-oneills-irish-pub/24307/" target="_blank" rel="noopener">Pub Trivia at Conor O&#39;Neill&#39;s Irish Pub</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;Conor O&#39;Neill&#39;s Irish Pub &amp; Restaurant, ANN ARBOR
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/silent-book-club-at-brightworks/25709/" target="_blank" rel="noopener">Silent Book Club at BrightWorks</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;BrightWorks Forest Cove, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/tiki-trivia/24228/" target="_blank" rel="noopener">Tiki Trivia</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;The Circ Bar, Ann Arbor
                     
                   </p>
                 </div>
@@ -5287,37 +5079,124 @@
           
         </div>
       
+        <div class="date-group">
+          <p class="date-label">Friday, October 2</p>
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="local" data-area="annarbor">
+                  <span class="cat-badge local">LOCAL</span>
+                  <p class="event-title">
+                    <a href="https://www.annarbor.org/event/bruce-hornsby-%26-the-noisemakers/23408/" target="_blank" rel="noopener">Bruce Hornsby &amp; the Noisemakers</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">12 AM ET</span>
+                    &nbsp;&middot;&nbsp;U-M Hill Auditorium, Ann Arbor
+                    
+                  </p>
+                </div>
+              
+            
+          
+            
+              
+              
+                
+                <div class="event-card"
+                     data-cat="estate_sales">
+                  <span class="cat-badge estate_sales">ESTATE SALES</span>
+                  <p class="event-title">
+                    <a href="https://www.estatesales.net/MI/Ypsilanti/48197/4992750" target="_blank" rel="noopener">Ypsilanti again!</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">9 AM ET</span>
+                    &nbsp;&middot;&nbsp;Ypsilanti, MI 48197
+                    &nbsp;&middot;&nbsp;<em>by Two Blondes With Junk In The Trunk Estate Sales · 26 mi</em>
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="estate_sales">
+                  <span class="cat-badge estate_sales">ESTATE SALES</span>
+                  <p class="event-title">
+                    <a href="https://www.estatesales.net/OH/Toledo/43623/5089206" target="_blank" rel="noopener">Blue Moon Toledo Sale! Tools Galore, Garden Tools, Furniture,  Decor &amp; Much More!</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">9 AM ET</span>
+                    &nbsp;&middot;&nbsp;Toledo, OH 43623
+                    &nbsp;&middot;&nbsp;<em>by Blue Moon Estate Sales · 27 mi</em>
+                  </p>
+                </div>
+              
+                
+                <div class="event-card"
+                     data-cat="estate_sales">
+                  <span class="cat-badge estate_sales">ESTATE SALES</span>
+                  <p class="event-title">
+                    <a href="https://www.estatesales.net/MI/Ann Arbor/48103/5024343" target="_blank" rel="noopener">Ann Arbor Estate Sale</a>
+                    
+                    
+                  </p>
+                  <p class="event-meta">
+                    <span class="time">10 AM ET</span>
+                    &nbsp;&middot;&nbsp;Ann Arbor, MI 48103
+                    &nbsp;&middot;&nbsp;<em>by Aaron&#39;s Estate Sales, LLC. · 22 mi</em>
+                  </p>
+                </div>
+              
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
     
   </section>
 
 </main>
 
 <footer class="site-footer">
-  &#9733; = high priority &nbsp;&middot;&nbsp; Updated September 24, 2026 at 9:19 AM ET
+  &#9733; = high priority &nbsp;&middot;&nbsp; Updated September 25, 2026 at 9:18 AM ET
 </footer>
 
 <script>
   (function () {
     const STORAGE_KEY = 'digest_hidden_cats';
+    const AREA_STORAGE_KEY = 'digest_hidden_areas';
     const ALL_CATS = ['local', 'estate_sales', 'sports', 'playoffs', 'esports'];
 
     // ── Preferences ────────────────────────────────────────────────────────
-    function loadHidden() {
+    function loadHidden(key) {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(key);
         if (raw) return new Set(JSON.parse(raw));
       } catch (_) {}
       return new Set(); // nothing hidden by default
     }
 
-    function saveHidden(hidden) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...hidden])); } catch (_) {}
+    function saveHidden(key, set) {
+      try { localStorage.setItem(key, JSON.stringify([...set])); } catch (_) {}
     }
 
-    let hidden = loadHidden();
+    let hidden = loadHidden(STORAGE_KEY);
+    let hiddenAreas = loadHidden(AREA_STORAGE_KEY);
 
     // Sync chip UI to loaded prefs
-    document.querySelectorAll('.pref-chip').forEach(chip => {
+    document.querySelectorAll('.pref-chip[data-pref]').forEach(chip => {
       const cat = chip.dataset.pref;
       const cb  = chip.querySelector('input[type="checkbox"]');
       const isChecked = !hidden.has(cat);
@@ -5325,15 +5204,23 @@
       chip.classList.toggle('checked', isChecked);
     });
 
+    document.querySelectorAll('.pref-chip[data-area]').forEach(chip => {
+      const isChecked = !hiddenAreas.has(chip.dataset.area);
+      chip.querySelector('input[type="checkbox"]').checked = isChecked;
+      chip.classList.toggle('checked', isChecked);
+    });
+
     // Chip click handler
     document.querySelectorAll('.pref-chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        const cat = chip.dataset.pref;
+        const isArea = 'area' in chip.dataset;
+        const key = isArea ? chip.dataset.area : chip.dataset.pref;
+        const set = isArea ? hiddenAreas : hidden;
         const cb  = chip.querySelector('input[type="checkbox"]');
         cb.checked = !cb.checked;
         chip.classList.toggle('checked', cb.checked);
-        if (cb.checked) hidden.delete(cat); else hidden.add(cat);
-        saveHidden(hidden);
+        if (cb.checked) set.delete(key); else set.add(key);
+        saveHidden(isArea ? AREA_STORAGE_KEY : STORAGE_KEY, set);
         // Re-apply current filter
         applyFilter(activeCat());
       });
@@ -5367,6 +5254,8 @@
         } else {
           show = (cardCat === cat);
         }
+        // Town toggles apply on every tab, not just All
+        if (card.dataset.area && hiddenAreas.has(card.dataset.area)) show = false;
         card.style.display = show ? '' : 'none';
       });
 
