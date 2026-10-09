@@ -9,8 +9,6 @@ name: Local Sources Probe
 
 on:
   workflow_dispatch:
-  push:   # TEMPORARY: lets the Yodel probe run from this branch; remove before merge
-    branches: [ccr-9db7d756-tw4qtu]
 
 jobs:
   probe:
