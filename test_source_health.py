@@ -172,6 +172,25 @@ def test_summary_separates_the_four_states():
     )
 
 
+def test_a_bot_wall_is_blocked_not_suspect():
+    """A Cloudflare wall is explained, so it sits apart from broken markup."""
+    print("\n[test_a_bot_wall_is_blocked_not_suspect]")
+    errors.clear()
+
+    errors.note_blocked("adrian", "events.yodel.today answers with a Cloudflare challenge")
+    errors.note_count("adrian", 0)
+
+    s = errors.summary()
+    check("blocked is its own bucket", [x["source"] for x in s["blocked"]] == ["adrian"], str(s["blocked"]))
+    check("not suspect", s["suspect"] == [], str(s["suspect"]))
+    check("not an unexplained empty", s["empty_sources"] == [], str(s["empty_sources"]))
+
+    errors.note_suspect("adrian", "parsed nothing")
+    s = errors.summary()
+    check("suspect still outranks blocked", [x["source"] for x in errors.summary()["suspect"]] == ["adrian"],
+          str(s["suspect"]))
+
+
 def test_suspect_outranks_softer_verdicts():
     """A source that reports twice keeps the most alarming verdict."""
     print("\n[test_suspect_outranks_softer_verdicts]")

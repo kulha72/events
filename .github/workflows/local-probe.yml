@@ -38,3 +38,7 @@ jobs:
       - name: Why does the Herald calendar yield no events?
         if: always()
         run: python scripts/local_probe.py herald
+
+      - name: Which browser gets past the Yodel challenge?
+        if: always()
+        run: python scripts/local_probe.py yodel-challenge

@@ -14,7 +14,9 @@ This follows the embed instead:
      publishes for search engines
 
 The widget answers a plain HTTP request with 403, so the render is not
-optional here.
+optional here. It is behind Cloudflare, whose challenge does not clear for a
+GitHub runner in any browser setup tried; that is reported as blocked rather
+than as a parsing failure.
 
 Requires: playwright, with chromium installed.
 """
@@ -110,6 +112,19 @@ def _scrape_events() -> list[dict]:
             degraded=(how == "CSS selectors" or not from_page),
         )
         return events
+
+    if eventpage.is_challenge_page(soup):
+        # Every runner since the switch to Yodel has stopped here, and no
+        # browser setup gets through (scripts/local_probe.py yodel-challenge):
+        # Cloudflare will not clear a GitHub runner. That needs a feed, not a
+        # parser fix, so say so rather than flag it as broken markup.
+        errors.note_blocked(
+            "adrian",
+            "events.yodel.today answers GitHub runners with a Cloudflare challenge "
+            "that headless Chromium does not pass — needs an iCal/RSS feed from "
+            "Yodel or Visit Lenawee",
+        )
+        return []
 
     errors.note_suspect(
         "adrian",

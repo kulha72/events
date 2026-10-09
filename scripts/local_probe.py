@@ -840,6 +840,100 @@ def probe_annarbor_widen() -> None:
         print(f"    raw: {str(widened)[:300]}")
 
 
+
+# ── Round 5: which browser gets past Yodel's Cloudflare challenge? ───────────
+
+YODEL_WIDGET_URL = "https://events.yodel.today/y/widget/699331672d0ab3b826bf79e5"
+
+
+def probe_yodel_challenge() -> None:
+    """Every run since the Yodel switch has stopped at "Just a moment...".
+
+    The collector renders in Playwright's default headless Chromium, which is
+    the stripped-down headless shell, under a User-Agent claiming Chrome 127
+    from a 153 engine. Try that against the full Chromium build in the new
+    headless mode, with and without the UA override, and through the bureau's
+    own page with the widget in its iframe.
+    """
+    from playwright.sync_api import sync_playwright
+
+    head(f"adrian — getting past the challenge  {YODEL_WIDGET_URL}")
+
+    def real_ua(browser) -> str:
+        page = browser.new_page()
+        ua = page.evaluate("navigator.userAgent")
+        page.close()
+        return ua.replace("HeadlessChrome", "Chrome")
+
+    variants = (
+        ("shell + UA 127 (today)", None, "fixed", False),
+        ("shell + matching UA", None, "real", False),
+        ("chromium new-headless + UA 127", "chromium", "fixed", False),
+        ("chromium new-headless + matching UA", "chromium", "real", False),
+        ("chromium new-headless, own UA", "chromium", None, False),
+        ("chromium new-headless + matching UA, via visitlenawee iframe", "chromium", "real", True),
+    )
+
+    with sync_playwright() as pw:
+        for label, channel, ua_mode, via_frame in variants:
+            print(f"\n  --- {label}")
+            try:
+                kwargs = {"headless": True,
+                          "args": ["--disable-blink-features=AutomationControlled"]}
+                if channel:
+                    kwargs["channel"] = channel
+                browser = pw.chromium.launch(**kwargs)
+            except Exception as e:
+                print(f"    launch failed: {type(e).__name__}: {str(e)[:300]}")
+                continue
+            try:
+                print(f"    engine {browser.version}")
+                ctx_kwargs = {"locale": "en-US", "viewport": {"width": 1280, "height": 1800}}
+                if ua_mode == "fixed":
+                    ctx_kwargs["user_agent"] = BROWSER_UA
+                elif ua_mode == "real":
+                    ctx_kwargs["user_agent"] = real_ua(browser)
+                context = browser.new_context(**ctx_kwargs)
+                page = context.new_page()
+                page.goto(SITES["adrian"] if via_frame else YODEL_WIDGET_URL,
+                          timeout=60_000, wait_until="domcontentloaded")
+                print(f"    UA sent: {page.evaluate('navigator.userAgent')}")
+                print(f"    webdriver: {page.evaluate('navigator.webdriver')}")
+                brands = page.evaluate(
+                    "navigator.userAgentData ? navigator.userAgentData.brands.map(b => b.brand) : []")
+                print(f"    userAgentData brands: {brands}")
+
+                target = page
+                titles = []
+                for _ in range(20):
+                    page.wait_for_timeout(2_000)
+                    if via_frame:
+                        target = next((f for f in page.frames if "yodel.today" in f.url), None)
+                        if target is None:
+                            titles.append("(no yodel frame yet)")
+                            continue
+                    try:
+                        titles.append(target.title())
+                    except Exception as e:
+                        titles.append(f"({type(e).__name__})")
+                    if titles[-1] and "just a moment" not in titles[-1].lower() \
+                            and not titles[-1].startswith("("):
+                        page.wait_for_timeout(4_000)
+                        break
+                print(f"    titles over time: {titles}")
+                html_text = target.content() if target is not None else ""
+                soup = BeautifulSoup(html_text, "html.parser")
+                print(f"    {len(soup.get_text(strip=True))} chars text, "
+                      f"{len(soup.find_all('script', type='application/ld+json'))} ld+json blocks, "
+                      f"{len(parse_jsonld_preview(soup))} events")
+                cookies = [c["name"] for c in context.cookies()]
+                print(f"    cookies: {cookies}")
+            except Exception as e:
+                print(f"    blew up: {type(e).__name__}: {str(e)[:300]}")
+            finally:
+                browser.close()
+
+
 def main() -> None:
     wanted = [a.lower() for a in sys.argv[1:]] or list(SITES) + ["tca"]
 
@@ -878,6 +972,7 @@ def main() -> None:
         "collect": probe_collectors,
         "herald": probe_herald,
         "annarbor-widen": probe_annarbor_widen,
+        "yodel-challenge": probe_yodel_challenge,
     }
     for name, fn in round2.items():
         if name in wanted:
