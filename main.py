@@ -197,6 +197,8 @@ def main() -> None:
         print(f"  DEGRADED {s['source']}: {s['reason']}")
     for s in health["idle"]:
         print(f"  idle {s['source']}: {s['reason']}")
+    for s in health["blocked"]:
+        print(f"  blocked {s['source']}: {s['reason']}")
     for s in health["not_configured"]:
         print(f"  not configured {s['source']}: {s['reason']}")
     if not health["failures"] and not health["suspect"] and not health["empty_sources"]:

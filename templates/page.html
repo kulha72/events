@@ -270,10 +270,10 @@
 </p>
 {% endif %}
 
-{% if health.idle or health.not_configured %}
+{% if health.idle or health.blocked or health.not_configured %}
 <p class="feed-health-quiet">
   <span class="feed-health-quiet-label">Nothing expected from:</span>
-  {% for s in health.idle + health.not_configured -%}
+  {% for s in health.idle + (health.blocked or []) + health.not_configured -%}
     <strong>{{ s.source }}</strong> ({{ s.reason }}){% if not loop.last %} &middot; {% endif %}
   {%- endfor %}
 </p>

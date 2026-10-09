@@ -580,6 +580,11 @@ def _is_challenge_title(title: str) -> bool:
     return any(marker in lowered for marker in _CHALLENGE_TITLES)
 
 
+def is_challenge_page(soup: BeautifulSoup) -> bool:
+    """Whether a rendered page is still a bot interstitial rather than the site."""
+    return bool(soup.title) and _is_challenge_title(soup.title.get_text())
+
+
 def new_browser_page(pw, **context_kwargs):
     """Open a page that looks like somebody's desktop Chrome, not a crawler."""
     browser = pw.chromium.launch(

@@ -41,6 +41,7 @@ _strategies: dict[str, dict] = {}
 # first two and start pointing at the third.
 _SUSPECT = "suspect"
 _IDLE = "idle"
+_BLOCKED = "blocked"
 _NOT_CONFIGURED = "not_configured"
 
 _status: dict[str, dict] = {}
@@ -88,8 +89,9 @@ def note_count(source: str, count: int) -> None:
 
 def _set_status(source: str, kind: str, reason: str) -> None:
     # A source that fetched several endpoints can report more than once. Keep
-    # the most alarming verdict: suspect outranks idle outranks not-configured.
-    rank = {_NOT_CONFIGURED: 0, _IDLE: 1, _SUSPECT: 2}
+    # the most alarming verdict: suspect outranks blocked outranks idle
+    # outranks not-configured.
+    rank = {_NOT_CONFIGURED: 0, _IDLE: 1, _BLOCKED: 2, _SUSPECT: 3}
     existing = _status.get(source)
     if existing and rank[existing["kind"]] >= rank[kind]:
         return
@@ -111,6 +113,19 @@ def note_idle(source: str, reason: str) -> None:
     The off-season case — an NBA playoff feed in August is working perfectly.
     """
     _set_status(source, _IDLE, reason)
+
+
+def note_blocked(source: str, reason: str) -> None:
+    """The site answered with a bot wall we do not get past.
+
+    Not a markup change — there is nothing to re-parse — and not a fault a
+    code fix will clear, so reporting it as suspect every day only trains the
+    reader to skip the health block. It is listed with the explained empties,
+    saying what is in the way.
+    """
+    clean = _condense(redact(reason))
+    print(f"  [{source}] Blocked: {clean}")
+    _set_status(source, _BLOCKED, clean)
 
 
 def note_strategy(source: str, message: str, degraded: bool = False) -> None:
@@ -152,8 +167,8 @@ def summary() -> dict:
     as one line with a count rather than 30 near-identical rows.
 
     An empty source is only interesting when nobody can explain it. Sources
-    that explained themselves — nothing configured, nothing in season, markup
-    stopped matching — are reported under that explanation instead of being
+    that explained themselves — nothing configured, nothing in season, behind a
+    bot wall, markup stopped matching — are reported under that explanation instead of being
     swept into one undifferentiated "no events" list.
     """
     grouped: dict[str, dict] = {}
@@ -182,6 +197,7 @@ def summary() -> dict:
             key=lambda s: s["source"],
         ),
         "idle": _of_kind(_IDLE),
+        "blocked": _of_kind(_BLOCKED),
         "not_configured": _of_kind(_NOT_CONFIGURED),
         "empty_sources": sorted(
             s for s, n in _counts.items()

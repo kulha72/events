@@ -322,6 +322,44 @@ def test_the_widget_is_read_through_its_json_ld():
     )
 
 
+CHALLENGE_PAGE = """
+<html><head><title>Just a moment...</title></head>
+<body><div>Verifying you are human. This may take a few seconds.</div></body></html>
+"""
+
+
+def _run_adrian_against(rendered_html: str):
+    errors.clear()
+    originals = (adrian._discover_widget_id, adrian.eventpage.render_page)
+    adrian._discover_widget_id = lambda: (adrian.KNOWN_WIDGET_ID, "")
+    adrian.eventpage.render_page = lambda *a, **k: BeautifulSoup(rendered_html, "html.parser")
+    try:
+        return adrian._scrape_events(), errors.summary()
+    finally:
+        adrian._discover_widget_id, adrian.eventpage.render_page = originals
+
+
+def test_the_cloudflare_wall_is_reported_as_blocked():
+    print("\n[test_the_cloudflare_wall_is_reported_as_blocked]")
+    events, health = _run_adrian_against(CHALLENGE_PAGE)
+    check("no events", events == [])
+    check("reported as blocked", [s["source"] for s in health["blocked"]] == ["adrian"],
+          str(health["blocked"]))
+    check("says what is in the way", health["blocked"] and "Cloudflare" in health["blocked"][0]["reason"])
+    check("not reported as suspect", health["suspect"] == [], str(health["suspect"]))
+
+
+def test_a_widget_with_nothing_on_it_is_still_suspect():
+    print("\n[test_a_widget_with_nothing_on_it_is_still_suspect]")
+    events, health = _run_adrian_against(
+        "<html><head><title>Yodel - Lenawee, MI Event Calendar</title></head><body></body></html>"
+    )
+    check("no events", events == [])
+    check("reported as suspect", [s["source"] for s in health["suspect"]] == ["adrian"],
+          str(health["suspect"]))
+    check("not reported as blocked", health["blocked"] == [], str(health["blocked"]))
+
+
 # ── TCA: the VBO widget ──────────────────────────────────────────────────────
 
 VBO_LIST = """
