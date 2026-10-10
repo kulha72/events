@@ -166,6 +166,13 @@
   .result-d { background: #fff8e1; color: #e65100; }
 
   /* Standings */
+  .standings-section > summary { list-style: none; cursor: pointer; }
+  .standings-section > summary::-webkit-details-marker { display: none; }
+  .standings-section > summary h2 { display: flex; align-items: center; gap: 8px; }
+  .standings-section > summary h2::after { content: "\25B8"; font-size: 12px; margin-left: auto;
+                                           transition: transform .15s; }
+  .standings-section[open] > summary h2::after { transform: rotate(90deg); }
+  .standings-section > summary:hover h2 { color: var(--text); }
   .standings-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
   .standings-tab { border: 2px solid var(--border); background: #fff; border-radius: 20px;
                    padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
@@ -409,8 +416,8 @@
 
   {# ── STANDINGS ── #}
   {% if standings %}
-  <section class="digest-section" id="standingsSection">
-    <h2>Standings</h2>
+  <details class="digest-section standings-section" id="standingsSection">
+    <summary><h2>Standings</h2></summary>
     <div class="standings-tabs">
       {% for lg in standings %}
         <button class="standings-tab{% if loop.first %} active{% endif %}" data-league="{{ lg.key }}">
@@ -453,7 +460,7 @@
         {% endfor %}
       </div>
     {% endfor %}
-  </section>
+  </details>
   {% endif %}
 
   {# ── COMING UP ── #}
