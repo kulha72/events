@@ -166,6 +166,13 @@
   .result-d { background: #fff8e1; color: #e65100; }
 
   /* Standings */
+  .standings-section > summary { list-style: none; cursor: pointer; }
+  .standings-section > summary::-webkit-details-marker { display: none; }
+  .standings-section > summary h2 { display: flex; align-items: center; gap: 8px; }
+  .standings-section > summary h2::after { content: "\25B8"; font-size: 12px; margin-left: auto;
+                                           transition: transform .15s; }
+  .standings-section[open] > summary h2::after { transform: rotate(90deg); }
+  .standings-section > summary:hover h2 { color: var(--text); }
   .standings-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
   .standings-tab { border: 2px solid var(--border); background: #fff; border-radius: 20px;
                    padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
@@ -240,15 +247,15 @@
   <h3>NPR Top Headlines</h3>
   <ul class="headlines-list">
     
-      <li><a href="https://www.npr.org/2026/11/14/nx-s1-6032604/organ-transplant-donor-dead-ethics" target="_blank" rel="noopener">An organ transplant controversy tests &#39;the dead donor rule&#39;</a></li>
+      <li><a href="https://www.npr.org/2026/11/14/nx-s1-6034952/alaska-results-ranked-choice-voting-nonpartisan-primary" target="_blank" rel="noopener">Alaska voters aren&#39;t ditching ranked choice voting, top-four primaries</a></li>
     
-      <li><a href="https://www.npr.org/2026/11/14/nx-s1-6040299/hegseth-impeachment-democrats-house-test" target="_blank" rel="noopener">Hegseth&#39;s failed impeachment was a warning to Democrats. Where will they go from here?</a></li>
+      <li><a href="https://www.npr.org/2026/11/14/nx-s1-6028743/perspective-a-new-kind-of-white-house-press-secretary" target="_blank" rel="noopener">Perspective: A new kind of White House press secretary</a></li>
     
       <li><a href="https://www.npr.org/2026/11/14/nx-s1-6040507/democrats-male-candidates-masculinity-trump" target="_blank" rel="noopener">As Democrats win big, thirst traps of male candidates take social media by storm</a></li>
     
-      <li><a href="https://www.npr.org/2026/11/14/g-s1-151719/midterms-alaska-governor-kreiss-tomkins" target="_blank" rel="noopener">Democrat Jonathan Kreiss-Tomkins wins race for Alaska governor, replaces a Republican</a></li>
+      <li><a href="https://www.npr.org/2026/11/14/nx-s1-6032604/organ-transplant-donor-dead-ethics" target="_blank" rel="noopener">An organ transplant controversy tests &#39;the dead donor rule&#39;</a></li>
     
-      <li><a href="https://www.npr.org/2026/11/13/nx-s1-6040418/dhs-head-markwayne-mullin-says-there-is-not-a-threat-to-the-u-s-amid-faa-ground-stop" target="_blank" rel="noopener">DHS head Markwayne Mullin says there is not a threat to the U.S. amid FAA ground stop</a></li>
+      <li><a href="https://www.npr.org/2026/11/14/nx-s1-6040299/hegseth-impeachment-democrats-house-test" target="_blank" rel="noopener">Hegseth&#39;s failed impeachment was a warning to Democrats. Where will they go from here?</a></li>
     
   </ul>
 </div>
@@ -1053,8 +1060,8 @@
 
   
   
-  <section class="digest-section" id="standingsSection">
-    <h2>Standings</h2>
+  <details class="digest-section standings-section" id="standingsSection">
+    <summary><h2>Standings</h2></summary>
     <div class="standings-tabs">
       
         <button class="standings-tab active" data-league="mlb">
@@ -3322,7 +3329,7 @@
         
       </div>
     
-  </section>
+  </details>
   
 
   
@@ -3547,7 +3554,7 @@
                      data-cat="esports">
                   <span class="cat-badge esports">ESPORTS</span>
                   <p class="event-title">
-                    🎮 Grand Final: TS vs TBD
+                    🎮 Spirit vs FURIA
                     
                   </p>
                   <p class="event-meta">
@@ -4800,7 +4807,7 @@
 </main>
 
 <footer class="site-footer">
-  &#9733; = high priority &nbsp;&middot;&nbsp; Updated November 14, 2026 at 7:50 AM ET
+  &#9733; = high priority &nbsp;&middot;&nbsp; Updated November 14, 2026 at 9:51 AM ET
 </footer>
 
 <script>
