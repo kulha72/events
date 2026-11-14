@@ -20,9 +20,10 @@ Run: python test_local_sources.py
 """
 
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
+import requests
 from bs4 import BeautifulSoup
 
 import errors
@@ -200,13 +201,16 @@ def test_the_ann_arbor_scrape_runs_end_to_end():
         )
 
     original = annarbor.eventpage.render_page_capturing
+    original_fetch = annarbor._fetch_detail
     annarbor.eventpage.render_page_capturing = fake_render
+    annarbor._fetch_detail = lambda session, url: ""  # no network in tests
     try:
         errors.clear()
         events = annarbor._scrape_events(date(2026, 8, 25), 7)
         health = errors.summary()
     finally:
         annarbor.eventpage.render_page_capturing = original
+        annarbor._fetch_detail = original_fetch
         errors.clear()
 
     check("the calendar page was rendered", calls.get("url") == annarbor.BASE_URL)
@@ -238,13 +242,16 @@ def test_a_refused_page_two_still_delivers_the_first_screen():
                 {"error": "status 403 on page 1"})
 
     original = annarbor.eventpage.render_page_capturing
+    original_fetch = annarbor._fetch_detail
     annarbor.eventpage.render_page_capturing = fake_render
+    annarbor._fetch_detail = lambda session, url: ""  # no network in tests
     try:
         errors.clear()
         events = annarbor._scrape_events(date(2026, 8, 25), 7)
         health = errors.summary()
     finally:
         annarbor.eventpage.render_page_capturing = original
+        annarbor._fetch_detail = original_fetch
         errors.clear()
 
     check("the first screen still arrives", len(events) == 2, str(len(events)))
@@ -328,36 +335,190 @@ CHALLENGE_PAGE = """
 """
 
 
-def _run_adrian_against(rendered_html: str):
+def _run_adrian_against(rendered_html: str, library=None, city=None):
+    """Run the Adrian scrape with Yodel rendering `rendered_html`.
+
+    `library` and `city` are what the two backup calendars return: a list of
+    raw events, or an exception to raise. Both default to failing, so these
+    tests see the Yodel verdict on its own.
+    """
     errors.clear()
-    originals = (adrian._discover_widget_id, adrian.eventpage.render_page)
+    originals = (adrian._discover_widget_id, adrian.eventpage.render_page,
+                 adrian._library_events, adrian._city_events)
+
+    def answer(value):
+        def fetch(*_a, **_k):
+            if isinstance(value, Exception):
+                raise value
+            return value
+        return fetch
+
     adrian._discover_widget_id = lambda: (adrian.KNOWN_WIDGET_ID, "")
     adrian.eventpage.render_page = lambda *a, **k: BeautifulSoup(rendered_html, "html.parser")
+    adrian._library_events = answer(library if library is not None else OSError("offline"))
+    adrian._city_events = answer(city if city is not None else OSError("offline"))
     try:
-        return adrian._scrape_events(), errors.summary()
+        return adrian._scrape_events(date(2026, 11, 14), 7), errors.summary()
     finally:
-        adrian._discover_widget_id, adrian.eventpage.render_page = originals
+        (adrian._discover_widget_id, adrian.eventpage.render_page,
+         adrian._library_events, adrian._city_events) = originals
 
 
-def test_the_cloudflare_wall_is_reported_as_blocked():
-    print("\n[test_the_cloudflare_wall_is_reported_as_blocked]")
-    events, health = _run_adrian_against(CHALLENGE_PAGE)
+def test_the_cloudflare_wall_is_named_when_the_backups_cover_it():
+    print("\n[test_the_cloudflare_wall_is_named_when_the_backups_cover_it]")
+    # Used to be reported as `blocked` with an empty section. With the library
+    # and city calendars filling in, the wall is a degraded path, not an empty
+    # source, so it moves to the degraded list (with the wall still named).
+    events, health = _run_adrian_against(CHALLENGE_PAGE, library=[], city=[])
     check("no events", events == [])
-    check("reported as blocked", [s["source"] for s in health["blocked"]] == ["adrian"],
-          str(health["blocked"]))
-    check("says what is in the way", health["blocked"] and "Cloudflare" in health["blocked"][0]["reason"])
+    check("not reported as blocked", health["blocked"] == [], str(health["blocked"]))
+    check("degraded, naming Cloudflare",
+          health["degraded"] and "blocked: " in health["degraded"][0]["reason"]
+          and "Cloudflare" in health["degraded"][0]["reason"], str(health["degraded"]))
     check("not reported as suspect", health["suspect"] == [], str(health["suspect"]))
 
 
-def test_a_widget_with_nothing_on_it_is_still_suspect():
-    print("\n[test_a_widget_with_nothing_on_it_is_still_suspect]")
+def test_a_widget_with_nothing_on_it_is_still_called_out():
+    print("\n[test_a_widget_with_nothing_on_it_is_still_called_out]")
     events, health = _run_adrian_against(
-        "<html><head><title>Yodel - Lenawee, MI Event Calendar</title></head><body></body></html>"
+        "<html><head><title>Yodel - Lenawee, MI Event Calendar</title></head><body></body></html>",
+        library=[], city=[],
     )
     check("no events", events == [])
-    check("reported as suspect", [s["source"] for s in health["suspect"]] == ["adrian"],
-          str(health["suspect"]))
+    check("degraded as suspect, not blocked",
+          health["degraded"] and "suspect: " in health["degraded"][0]["reason"],
+          str(health["degraded"]))
     check("not reported as blocked", health["blocked"] == [], str(health["blocked"]))
+
+
+def test_every_calendar_failing_is_one_failure_that_keeps_the_yodel_diagnosis():
+    print("\n[test_every_calendar_failing_is_one_failure_that_keeps_the_yodel_diagnosis]")
+    events, health = _run_adrian_against(CHALLENGE_PAGE)
+    check("no events", events == [])
+    check("one failure line", len(health["failures"]) == 1 and health["failures"][0]["count"] == 1,
+          str(health["failures"]))
+    first = health["failures"][0]["first"] if health["failures"] else ""
+    check("names both backups", "library feed" in first and "city calendar" in first, first)
+    check("and still says what is in Yodel's way", "Cloudflare" in first, first)
+
+LIBRARY_RSS = """<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:ev="http://purl.org/rss/1.0/modules/event/" version="2.0">
+<channel>
+  <title>Upcoming Events RSS Feed</title>
+  <item>
+    <title>Main Weavers Group</title>
+    <pubDate>Sat, 14 Nov 2026 10:00:00 -0500</pubDate>
+    <ev:endDate>Sat, 14 Nov 2026 14:00:00 -0500</ev:endDate>
+    <link>https://lenawee.lib.mi.us/main-weavers-group-52</link>
+    <ev:location>Lenawee District Library - Main Branch</ev:location>
+  </item>
+  <item>
+    <title>Clayton Game Night</title>
+    <pubDate>Mon, 16 Nov 2026 17:00:00 -0500</pubDate>
+    <ev:endDate>Mon, 16 Nov 2026 19:00:00 -0500</ev:endDate>
+    <link>https://lenawee.lib.mi.us/clayton-game-night</link>
+  </item>
+  <item>
+    <title>Board Meeting</title>
+    <pubDate>Tue, 17 Nov 2026 16:00:00 -0500</pubDate>
+    <link>https://lenawee.lib.mi.us/board-meeting</link>
+  </item>
+  <item>
+    <title>Undated</title>
+    <link>https://lenawee.lib.mi.us/undated</link>
+  </item>
+</channel></rss>
+"""
+
+
+def test_the_library_feed_keeps_its_times():
+    print("\n[test_the_library_feed_keeps_its_times]")
+    events = adrian._parse_library_feed(LIBRARY_RSS)
+    check("two events, board meeting and undated dropped",
+          [e["title"] for e in events] == ["Main Weavers Group", "Clayton Game Night"],
+          str([e["title"] for e in events]))
+    if len(events) != 2:
+        return
+    weavers = events[0]
+    check("start at 10 AM local",
+          weavers["start_dt"] == datetime(2026, 11, 14, 10, 0, tzinfo=TZ), str(weavers["start_dt"]))
+    check("end at 2 PM local",
+          weavers["end_dt"] == datetime(2026, 11, 14, 14, 0, tzinfo=TZ), str(weavers["end_dt"]))
+    check("timed, not all-day", weavers["all_day"] is False)
+    check("branch as location", weavers["location"] == "Lenawee District Library - Main Branch")
+    check("links to the event", weavers["url"] == "https://lenawee.lib.mi.us/main-weavers-group-52")
+    check("a branchless item still has a location",
+          events[1]["location"] == "Lenawee District Library", events[1]["location"])
+
+
+CITY_DOCS = [
+    {"title": "Adrian City Commission Meeting", "start": "2026-11-17T18:00:00",
+     "end": "2026-11-17T20:00:00", "url": "", "location": "159 E Maumee St."},
+    {"title": "Adrian First Friday", "start": "2026-02-06T17:00:00",
+     "end": "2026-02-06T20:00:00", "url": "", "location": "Downtown Adrian",
+     "rrule": "DTSTART:20260206T170000\nRDATE:20260206T170000\n"
+              "RRULE:FREQ=MONTHLY;INTERVAL=1;BYSETPOS=1;BYDAY=FR"},
+    {"title": "Downtown Holiday Market", "start": "2026-11-21T09:00:00",
+     "end": "2026-11-21T14:00:00", "url": "https://example.org/market", "location": ""},
+    {"title": "Small Business Saturday", "start": "2026-11-28T00:00:00",
+     "url": "", "location": "", "allDay": True},
+    {"title": "Long gone", "start": "2021-06-01T10:00:00", "url": "", "location": ""},
+]
+
+
+def test_the_city_calendar_skips_meetings_and_expands_repeats():
+    print("\n[test_the_city_calendar_skips_meetings_and_expands_repeats]")
+    events = adrian._parse_city_calendar(CITY_DOCS, date(2026, 11, 14), 21)
+    titles = [(e["title"], e["start_dt"].date()) for e in events]
+    check("meetings left out", all("Meeting" not in t for t, _ in titles), str(titles))
+    check("a one-off public event kept",
+          ("Downtown Holiday Market", date(2026, 11, 21)) in titles, str(titles))
+    check("a monthly repeat lands on its first Friday",
+          ("Adrian First Friday", date(2026, 12, 4)) in titles, str(titles))
+    check("and only inside the window",
+          sum(t == "Adrian First Friday" for t, _ in titles) == 1, str(titles))
+    check("old entries ignored", all(t != "Long gone" for t, _ in titles))
+    ff = next((e for e in events if e["title"] == "Adrian First Friday"), None)
+    check("repeat keeps its time and length",
+          ff and ff["start_dt"] == datetime(2026, 12, 4, 17, 0, tzinfo=TZ)
+          and ff["end_dt"] == datetime(2026, 12, 4, 20, 0, tzinfo=TZ), str(ff))
+    market = next((e for e in events if e["title"] == "Downtown Holiday Market"), None)
+    check("an event's own link is kept", market and market["url"] == "https://example.org/market")
+    check("no location falls back to the town", market and market["location"] == "Adrian, MI")
+    sbs = next((e for e in events if e["title"] == "Small Business Saturday"), None)
+    check("all-day stays all-day", sbs and sbs["all_day"] is True and sbs["end_dt"] is None, str(sbs))
+
+
+def test_a_walled_yodel_is_degraded_when_the_backups_deliver():
+    print("\n[test_a_walled_yodel_is_degraded_when_the_backups_deliver]")
+    library = adrian._parse_library_feed(LIBRARY_RSS)
+    events, health = _run_adrian_against(CHALLENGE_PAGE, library=library, city=[])
+    check("the library's events arrive", len(events) == 2, str(len(events)))
+    check("not blocked", health["blocked"] == [], str(health["blocked"]))
+    check("not a failure", health["failures"] == [], str(health["failures"]))
+    check("degraded, naming the wall and what filled in",
+          health["degraded"] and "Cloudflare" in health["degraded"][0]["reason"]
+          and "library" in health["degraded"][0]["reason"],
+          str(health["degraded"]))
+
+
+def test_a_failing_backup_is_reported_even_when_the_other_works():
+    print("\n[test_a_failing_backup_is_reported_even_when_the_other_works]")
+    library = adrian._parse_library_feed(LIBRARY_RSS)
+    events, health = _run_adrian_against(
+        CHALLENGE_PAGE, library=library, city=OSError("503 Service Unavailable"))
+    check("the library's events still arrive", len(events) == 2, str(len(events)))
+    check("the city calendar is a failure",
+          len(health["failures"]) == 1 and "city calendar" in health["failures"][0]["first"],
+          str(health["failures"]))
+
+
+def test_the_same_event_from_two_calendars_is_listed_once():
+    print("\n[test_the_same_event_from_two_calendars_is_listed_once]")
+    one = {"title": "First Friday", "start_dt": datetime(2026, 12, 4, 17, 0, tzinfo=TZ),
+           "end_dt": None, "all_day": False, "location": "x", "url": "a"}
+    two = dict(one, title="first friday", url="b")
+    check("deduped", len(adrian._dedupe([one, two])) == 1)
 
 
 # ── TCA: the VBO widget ──────────────────────────────────────────────────────
@@ -557,6 +718,181 @@ def test_a_herald_calendar_that_differs_by_month_is_still_suspect():
     check("reported as suspect", [s["source"] for s in health["suspect"]] == ["tecumseh"],
           str(health["suspect"]))
     check("not reported as idle", health["idle"] == [], str(health["idle"]))
+
+
+# ── Ann Arbor: start times from the event's own page ─────────────────────────
+#
+# The API's startDate is local midnight on every listing, so the clock time
+# only exists on the event page. Trimmed from the live pages for
+# /event/the-verve-pipe/26244/ and /event/babies-%26-brews/13751/.
+
+VERVE_PIPE_PAGE = """
+<script>
+    var dates = "November 14, 2026";
+    var startDate = "Saturday, November 14, 2026 8:00 PM";
+    var endDate = "November 14, 2026";
+
+    var time = "8:00 PM";
+</script>
+<script type="application/ld+json">{"@type":"Event","name":"The Verve Pipe",
+ "startDate":"2026-11-14","endDate":"2026-11-14"}</script>
+"""
+
+BABIES_AND_BREWS_PAGE = """
+<script>
+    var dates = "";
+    var startDate = "Tuesday, November 17, 2026 4:00 PM";
+    var endDate = "Tuesday, November 17, 2026 6:00 PM";
+
+    var time = "4:00 PM to 6:00 PM";
+</script>
+"""
+
+NO_TIME_PAGE = """
+<script>
+    var dates = "November 14, 2026";
+    var startDate = "November 14, 2026";
+    var endDate = "November 14, 2026";
+    var time = "";
+</script>
+"""
+
+
+def test_the_api_start_date_is_not_a_clock_time():
+    print("\n[test_the_api_start_date_is_not_a_clock_time]")
+    # Midnight Detroit in winter (05:00Z) and in summer (04:00Z): both are
+    # just "the day it began", which used to come out as 12 AM or 1 AM.
+    for stamp in ("2026-11-14T05:00:00.000Z", "2023-12-12T05:00:00.000Z",
+                  "2026-08-25T04:00:00.000Z"):
+        start, all_day = annarbor._doc_start({"startDate": stamp}, date(2026, 11, 14))
+        check(f"{stamp} is all-day", all_day is True, str(start))
+        check(f"{stamp} filed at local midnight on the listed day",
+              start == datetime(2026, 11, 14, 0, 0, tzinfo=TZ), str(start))
+    start, all_day = annarbor._doc_start({"startDate": "2026-11-15T01:00:00.000Z"},
+                                         date(2026, 11, 14))
+    check("a real local time (8 PM) is kept",
+          not all_day and start == datetime(2026, 11, 14, 20, 0, tzinfo=TZ), str(start))
+
+
+def test_event_page_times_are_read():
+    print("\n[test_event_page_times_are_read]")
+    check("a single start time",
+          annarbor._detail_times(VERVE_PIPE_PAGE) == (time(20, 0), None),
+          str(annarbor._detail_times(VERVE_PIPE_PAGE)))
+    check("a start-to-end range",
+          annarbor._detail_times(BABIES_AND_BREWS_PAGE) == (time(16, 0), time(18, 0)),
+          str(annarbor._detail_times(BABIES_AND_BREWS_PAGE)))
+    check("a page with no time names none",
+          annarbor._detail_times(NO_TIME_PAGE) == (None, None),
+          str(annarbor._detail_times(NO_TIME_PAGE)))
+    check("startDate is the fallback when time is blank",
+          annarbor._detail_times('var startDate = "Friday, May 1, 2026 7:30 PM"; var time = "";')
+          == (time(19, 30), None))
+    check("the way people write it",
+          annarbor._clock_times("7 p.m. to 9:15pm, or noon")
+          == [time(19, 0), time(21, 15), time(12, 0)],
+          str(annarbor._clock_times("7 p.m. to 9:15pm, or noon")))
+    check("12 AM is midnight, 12 PM is noon",
+          annarbor._clock_times("12:00 AM 12:30 PM") == [time(0, 0), time(12, 30)])
+
+
+class _PageSession:
+    """Answers event-page GETs from a dict; anything else raises."""
+
+    def __init__(self, pages):
+        self.pages = pages
+        self.calls = []
+
+    def get(self, url, timeout=None):
+        self.calls.append(url)
+        if url not in self.pages:
+            raise requests.HTTPError(f"404 for {url}")
+
+        class _Resp:
+            text = self.pages[url]
+
+            def raise_for_status(self):
+                pass
+
+        return _Resp()
+
+
+def test_all_day_api_events_get_their_page_time():
+    print("\n[test_all_day_api_events_get_their_page_time]")
+    verve = "https://www.annarbor.org/event/the-verve-pipe/26244/"
+    brews = "https://www.annarbor.org/event/babies-%26-brews/13751/"
+    events = annarbor._events_from_docs([
+        {"title": "The Verve Pipe", "date": "2026-11-15T04:59:59.000Z",
+         "startDate": "2026-11-14T05:00:00.000Z", "url": "/event/the-verve-pipe/26244/"},
+        # A weekly event: two occurrences, one page, and the page shows the
+        # next occurrence's date, which is not the one being listed.
+        {"title": "Babies & Brews", "date": "2026-11-11T04:59:59.000Z",
+         "url": "/event/babies-%26-brews/13751/"},
+        {"title": "Babies & Brews", "date": "2026-11-18T04:59:59.000Z",
+         "url": "/event/babies-%26-brews/13751/"},
+        {"title": "Holiday Lights", "date": "2026-11-15T04:59:59.000Z",
+         "url": "/event/holiday-lights/1/"},
+        {"title": "Gone", "date": "2026-11-15T04:59:59.000Z", "url": "/event/gone/2/"},
+    ])
+    check("all start as all-day", all(e["all_day"] for e in events))
+
+    session = _PageSession({
+        verve: VERVE_PIPE_PAGE,
+        brews: BABIES_AND_BREWS_PAGE,
+        "https://www.annarbor.org/event/holiday-lights/1/": NO_TIME_PAGE,
+    })
+    timed, failures = annarbor._add_times(events, session=session)
+    by = {(e["title"], e["start_dt"].day): e for e in events}
+
+    v = by[("The Verve Pipe", 14)]
+    check("The Verve Pipe is at 8 PM on the 14th",
+          v["start_dt"] == datetime(2026, 11, 14, 20, 0, tzinfo=TZ) and not v["all_day"],
+          str(v))
+    b1, b2 = by[("Babies & Brews", 10)], by[("Babies & Brews", 17)]
+    check("each weekly occurrence keeps its own day",
+          b1["start_dt"] == datetime(2026, 11, 10, 16, 0, tzinfo=TZ)
+          and b2["start_dt"] == datetime(2026, 11, 17, 16, 0, tzinfo=TZ),
+          f"{b1['start_dt']} {b2['start_dt']}")
+    check("and gets its end time",
+          b1["end_dt"] == datetime(2026, 11, 10, 18, 0, tzinfo=TZ), str(b1["end_dt"]))
+    check("a shared page is fetched once", session.calls.count(brews) == 1, str(session.calls))
+    check("a page with no time leaves it all-day",
+          by[("Holiday Lights", 14)]["all_day"] is True)
+    check("an unreadable page leaves it all-day", by[("Gone", 14)]["all_day"] is True)
+    check("three got a time", timed == 3, str(timed))
+    check("the unreadable page is reported", len(failures) == 1 and "gone" in failures[0],
+          str(failures))
+
+
+def test_unreadable_event_pages_degrade_not_fail():
+    print("\n[test_unreadable_event_pages_degrade_not_fail]")
+
+    def fake_render(url, capture_pattern, **kwargs):
+        return (soup_of("<html><body></body></html>"),
+                [{"url": "https://www.annarbor.org/x?token=abc", "json": API_PAYLOAD}],
+                {"data": {"docs": {"docs": API_PAYLOAD["docs"]["docs"]}}})
+
+    def refuse(session, url):
+        raise requests.HTTPError("403 Forbidden")
+
+    original, original_fetch = annarbor.eventpage.render_page_capturing, annarbor._fetch_detail
+    annarbor.eventpage.render_page_capturing = fake_render
+    annarbor._fetch_detail = refuse
+    try:
+        errors.clear()
+        events = annarbor._scrape_events(date(2026, 8, 25), 7)
+        health = errors.summary()
+    finally:
+        annarbor.eventpage.render_page_capturing = original
+        annarbor._fetch_detail = original_fetch
+        errors.clear()
+
+    check("events still arrive", len(events) == 2, str(len(events)))
+    check("still all-day", all(e["all_day"] for e in events))
+    check("not a failure", health["failures"] == [], str(health["failures"]))
+    check("flagged as degraded, saying why",
+          health["degraded"] and "unreadable" in health["degraded"][0]["reason"],
+          str(health["degraded"]))
 
 
 if __name__ == "__main__":

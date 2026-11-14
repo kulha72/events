@@ -191,6 +191,28 @@ def test_a_bot_wall_is_blocked_not_suspect():
           str(s["suspect"]))
 
 
+def test_telegram_names_a_blocked_source_but_not_an_idle_one():
+    """A walled source is empty for a reason nobody chose; say so in the push."""
+    print("\n[test_telegram_names_a_blocked_source_but_not_an_idle_one]")
+    from formatters.telegram_formatter import format_telegram
+
+    health = {
+        "failures": [], "suspect": [], "degraded": [], "empty_sources": [],
+        "idle": [{"source": "playoffs", "kind": "idle", "reason": "out of season"}],
+        "blocked": [{"source": "adrian", "kind": "blocked", "reason": "Cloudflare challenge"}],
+        "not_configured": [], "total": 0,
+    }
+    text = "\n".join(format_telegram([], [], [], {"timezone": "America/Detroit"}, health=health))
+    check("the problems header appears", "Feed problems" in text, text[:300])
+    check("the blocked source is named with its reason",
+          "adrian" in text and "Cloudflare challenge" in text, text[:300])
+    check("the idle source is not", "playoffs" not in text, text[:300])
+
+    quiet = dict(health, blocked=[])
+    text = "\n".join(format_telegram([], [], [], {"timezone": "America/Detroit"}, health=quiet))
+    check("idle alone raises no alarm", "Feed problems" not in text, text[:300])
+
+
 def test_suspect_outranks_softer_verdicts():
     """A source that reports twice keeps the most alarming verdict."""
     print("\n[test_suspect_outranks_softer_verdicts]")
@@ -241,6 +263,8 @@ if __name__ == "__main__":
     test_unconfigured_sources_report_as_dormant()
     test_configured_source_still_reports_missing_key()
     test_summary_separates_the_four_states()
+    test_a_bot_wall_is_blocked_not_suspect()
+    test_telegram_names_a_blocked_source_but_not_an_idle_one()
     test_suspect_outranks_softer_verdicts()
     test_failure_supersedes_status()
     test_secrets_are_redacted_in_status_reasons()
