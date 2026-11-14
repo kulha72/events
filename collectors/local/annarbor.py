@@ -18,10 +18,13 @@ The API refuses `requests` outright ("Invalid credentials" without a token,
 Requires: playwright, with chromium installed.
 """
 
+import re
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
+import requests
 from dateutil import parser as dateparser
 
 from collectors.base import BaseCollector
@@ -154,9 +157,9 @@ def _doc_start(doc: dict, day: date):
     """The occurrence's start, and whether the feed gave a clock time for it.
 
     `date` is only ever the end of the local day, so it says nothing about
-    when the event begins. A few listings do carry a real `startDate` or a
-    separate `startTime`; when one does, use it rather than filing the event
-    at midnight.
+    when the event begins. A listing that carries a separate `startTime`, or a
+    `startDate` at a real local time, gets it; the rest are all-day here and
+    `_add_times` looks them up on the event's page.
     """
     for key in ("startTime", "start_time", "starttime"):
         raw = doc.get(key)
@@ -166,9 +169,16 @@ def _doc_start(doc: dict, day: date):
         if start and not all_day:
             return start.replace(year=day.year, month=day.month, day=day.day), False
 
+    # `startDate` is a timestamp ("2026-11-14T05:00:00.000Z"), but on every
+    # listing seen it is local midnight: the day the event began, not a clock
+    # time. Reading it as one filed events at 12 AM (1 AM in summer, for a
+    # series that began in winter). Only a local time other than midnight is
+    # taken as a real start; otherwise the event page supplies it later.
     start, all_day = eventpage.parse_start(doc.get("startDate"), LOCAL_TZ, reference=day)
     if start and not all_day:
-        return start.replace(year=day.year, month=day.month, day=day.day), False
+        local = start.astimezone(LOCAL_TZ)
+        if local.time() != time.min:
+            return datetime.combine(day, local.time().replace(tzinfo=None), tzinfo=LOCAL_TZ), False
 
     # Nothing named a time, so this is an all-day listing.
     return datetime.combine(day, time.min, tzinfo=LOCAL_TZ), True
@@ -210,6 +220,141 @@ def _events_from_docs(docs: list[dict]) -> list[dict]:
     return events
 
 
+# ── Start times from each event's own page ───────────────────────────────────
+#
+# The events API never carries a clock time: `startDate` is local midnight on
+# every listing, so without help every Ann Arbor event reads as all-day ("The
+# Verve Pipe" at The Ark is 8:00 PM; the digest showed no time at all). The
+# event's own page does carry it, in the script that draws the page:
+#
+#     var startDate = "Saturday, November 14, 2026 8:00 PM";
+#     var time = "4:00 PM to 6:00 PM";
+#
+# A plain `requests` fetch of that page is answered (it is the calendar's API
+# that insists on the browser), so one GET per distinct event fills it in.
+
+_DETAIL_PREFIX = SITE_ROOT + "/event/"
+_DETAIL_WORKERS = 6
+_DETAIL_TIMEOUT = 15
+_MAX_DETAIL_FETCHES = 120
+
+_JS_VAR_RE = r'var\s+{name}\s*=\s*"([^"]*)"'
+_CLOCK_RE = re.compile(
+    r"\b(noon|midnight|(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m\b\.?)",
+    re.IGNORECASE,
+)
+
+
+def _js_var(html: str, name: str) -> str:
+    m = re.search(_JS_VAR_RE.format(name=re.escape(name)), html)
+    return m.group(1).strip() if m else ""
+
+
+def _clock_times(text: str) -> list[time]:
+    """Every clock time written in `text`, in order ("4:00 PM to 6 p.m.")."""
+    found = []
+    for m in _CLOCK_RE.finditer(text or ""):
+        word = m.group(1).lower()
+        if word == "noon":
+            found.append(time(12, 0))
+            continue
+        if word == "midnight":
+            found.append(time(0, 0))
+            continue
+        hour, minute = int(m.group(2)), int(m.group(3) or 0)
+        if not (1 <= hour <= 12 and minute < 60):
+            continue
+        hour = hour % 12 + (12 if m.group(4).lower() == "p" else 0)
+        found.append(time(hour, minute))
+    return found
+
+
+def _detail_times(html: str) -> tuple[time | None, time | None]:
+    """Start and end clock times from an event page, or (None, None).
+
+    `time` is the page's own summary ("8:00 PM", "4:00 PM to 6:00 PM"); when
+    it is empty, `startDate`/`endDate` can still carry a time after the date.
+    Only the clock time is kept: for a recurring event the page shows its next
+    occurrence, not necessarily the one being listed.
+    """
+    times = _clock_times(_js_var(html, "time"))
+    if times:
+        return times[0], (times[1] if len(times) > 1 else None)
+    start = _clock_times(_js_var(html, "startDate"))
+    if not start:
+        return None, None
+    end = _clock_times(_js_var(html, "endDate"))
+    return start[0], (end[0] if end else None)
+
+
+def _fetch_detail(session, url: str) -> str:
+    resp = session.get(url, timeout=_DETAIL_TIMEOUT)
+    resp.raise_for_status()
+    return resp.text
+
+
+def _add_times(events: list[dict], session=None) -> tuple[int, list[str]]:
+    """Fill in start (and end) times for all-day events from their pages.
+
+    Changes `events` in place. Returns how many got a time, and the fetches
+    that failed. An event whose page names no time stays all-day.
+    """
+    urls = []
+    for ev in events:
+        url = ev.get("url") or ""
+        if ev.get("all_day") and url.startswith(_DETAIL_PREFIX) and url not in urls:
+            urls.append(url)
+    urls = urls[:_MAX_DETAIL_FETCHES]
+    if not urls:
+        return 0, []
+
+    if session is None:
+        session = requests.Session()
+        session.headers.update({"User-Agent": eventpage.BROWSER_UA})
+
+    def fetch(url):
+        try:
+            return url, _detail_times(_fetch_detail(session, url)), None
+        except Exception as e:  # one bad page must not cost the others
+            return url, (None, None), f"{url}: {e}"
+
+    with ThreadPoolExecutor(max_workers=_DETAIL_WORKERS) as pool:
+        results = list(pool.map(fetch, urls))
+
+    by_url = {url: times for url, times, _ in results}
+    failures = [err for _, _, err in results if err]
+
+    timed = 0
+    for ev in events:
+        start_t, end_t = by_url.get(ev.get("url"), (None, None))
+        if not ev.get("all_day") or start_t is None:
+            continue
+        day = ev["start_dt"].date()
+        ev["start_dt"] = datetime.combine(day, start_t, tzinfo=LOCAL_TZ)
+        if end_t is not None:
+            end_dt = datetime.combine(day, end_t, tzinfo=LOCAL_TZ)
+            if end_dt <= ev["start_dt"]:  # runs past midnight
+                end_dt += timedelta(days=1)
+            ev["end_dt"] = end_dt
+        ev["all_day"] = False
+        timed += 1
+    return timed, failures
+
+
+def _with_times(events: list[dict]) -> tuple[list[dict], str]:
+    """`_add_times`, and what went wrong reading pages ("" if nothing did)."""
+    try:
+        _timed, failures = _add_times(events)
+    except Exception as e:
+        return events, f"start times not read: {e}"
+    if failures:
+        return events, (
+            f"{len(failures)} event page(s) unreadable, left without a time "
+            f"(first: {failures[0]})"
+        )
+    return events, ""
+
+
 def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
     cutoff = today + timedelta(days=lookahead_days)
 
@@ -238,23 +383,24 @@ def _scrape_events(today: date, lookahead_days: int) -> list[dict]:
         for d in _docs_of(p.get("json") if isinstance(p, dict) and "json" in p else p)
     ]
     if docs:
-        events = _events_from_docs(docs + from_page)
+        events, untimed = _with_times(_events_from_docs(docs + from_page))
         stopped = widened.get("error")
         errors.note_strategy(
             "annarbor",
             f"annarbor.org: {len(events)} events from the events API"
-            + (f" — paging stopped at {stopped}" if stopped else ""),
-            degraded=bool(stopped),
+            + (f" — paging stopped at {stopped}" if stopped else "")
+            + (f" — {untimed}" if untimed else ""),
+            degraded=bool(stopped or untimed),
         )
         return events
 
     if from_page:
-        events = _events_from_docs(from_page)
+        events, untimed = _with_times(_events_from_docs(from_page))
         why = widened.get("error") or "no further screens"
         errors.note_strategy(
             "annarbor",
             f"annarbor.org: {len(events)} events from the calendar's first screen only "
-            f"— paging got {why}",
+            f"— paging got {why}" + (f" — {untimed}" if untimed else ""),
             degraded=True,
         )
         return events

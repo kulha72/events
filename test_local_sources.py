@@ -20,9 +20,10 @@ Run: python test_local_sources.py
 """
 
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
+import requests
 from bs4 import BeautifulSoup
 
 import errors
@@ -200,13 +201,16 @@ def test_the_ann_arbor_scrape_runs_end_to_end():
         )
 
     original = annarbor.eventpage.render_page_capturing
+    original_fetch = annarbor._fetch_detail
     annarbor.eventpage.render_page_capturing = fake_render
+    annarbor._fetch_detail = lambda session, url: ""  # no network in tests
     try:
         errors.clear()
         events = annarbor._scrape_events(date(2026, 8, 25), 7)
         health = errors.summary()
     finally:
         annarbor.eventpage.render_page_capturing = original
+        annarbor._fetch_detail = original_fetch
         errors.clear()
 
     check("the calendar page was rendered", calls.get("url") == annarbor.BASE_URL)
@@ -238,13 +242,16 @@ def test_a_refused_page_two_still_delivers_the_first_screen():
                 {"error": "status 403 on page 1"})
 
     original = annarbor.eventpage.render_page_capturing
+    original_fetch = annarbor._fetch_detail
     annarbor.eventpage.render_page_capturing = fake_render
+    annarbor._fetch_detail = lambda session, url: ""  # no network in tests
     try:
         errors.clear()
         events = annarbor._scrape_events(date(2026, 8, 25), 7)
         health = errors.summary()
     finally:
         annarbor.eventpage.render_page_capturing = original
+        annarbor._fetch_detail = original_fetch
         errors.clear()
 
     check("the first screen still arrives", len(events) == 2, str(len(events)))
@@ -557,6 +564,181 @@ def test_a_herald_calendar_that_differs_by_month_is_still_suspect():
     check("reported as suspect", [s["source"] for s in health["suspect"]] == ["tecumseh"],
           str(health["suspect"]))
     check("not reported as idle", health["idle"] == [], str(health["idle"]))
+
+
+# ── Ann Arbor: start times from the event's own page ─────────────────────────
+#
+# The API's startDate is local midnight on every listing, so the clock time
+# only exists on the event page. Trimmed from the live pages for
+# /event/the-verve-pipe/26244/ and /event/babies-%26-brews/13751/.
+
+VERVE_PIPE_PAGE = """
+<script>
+    var dates = "November 14, 2026";
+    var startDate = "Saturday, November 14, 2026 8:00 PM";
+    var endDate = "November 14, 2026";
+
+    var time = "8:00 PM";
+</script>
+<script type="application/ld+json">{"@type":"Event","name":"The Verve Pipe",
+ "startDate":"2026-11-14","endDate":"2026-11-14"}</script>
+"""
+
+BABIES_AND_BREWS_PAGE = """
+<script>
+    var dates = "";
+    var startDate = "Tuesday, November 17, 2026 4:00 PM";
+    var endDate = "Tuesday, November 17, 2026 6:00 PM";
+
+    var time = "4:00 PM to 6:00 PM";
+</script>
+"""
+
+NO_TIME_PAGE = """
+<script>
+    var dates = "November 14, 2026";
+    var startDate = "November 14, 2026";
+    var endDate = "November 14, 2026";
+    var time = "";
+</script>
+"""
+
+
+def test_the_api_start_date_is_not_a_clock_time():
+    print("\n[test_the_api_start_date_is_not_a_clock_time]")
+    # Midnight Detroit in winter (05:00Z) and in summer (04:00Z): both are
+    # just "the day it began", which used to come out as 12 AM or 1 AM.
+    for stamp in ("2026-11-14T05:00:00.000Z", "2023-12-12T05:00:00.000Z",
+                  "2026-08-25T04:00:00.000Z"):
+        start, all_day = annarbor._doc_start({"startDate": stamp}, date(2026, 11, 14))
+        check(f"{stamp} is all-day", all_day is True, str(start))
+        check(f"{stamp} filed at local midnight on the listed day",
+              start == datetime(2026, 11, 14, 0, 0, tzinfo=TZ), str(start))
+    start, all_day = annarbor._doc_start({"startDate": "2026-11-15T01:00:00.000Z"},
+                                         date(2026, 11, 14))
+    check("a real local time (8 PM) is kept",
+          not all_day and start == datetime(2026, 11, 14, 20, 0, tzinfo=TZ), str(start))
+
+
+def test_event_page_times_are_read():
+    print("\n[test_event_page_times_are_read]")
+    check("a single start time",
+          annarbor._detail_times(VERVE_PIPE_PAGE) == (time(20, 0), None),
+          str(annarbor._detail_times(VERVE_PIPE_PAGE)))
+    check("a start-to-end range",
+          annarbor._detail_times(BABIES_AND_BREWS_PAGE) == (time(16, 0), time(18, 0)),
+          str(annarbor._detail_times(BABIES_AND_BREWS_PAGE)))
+    check("a page with no time names none",
+          annarbor._detail_times(NO_TIME_PAGE) == (None, None),
+          str(annarbor._detail_times(NO_TIME_PAGE)))
+    check("startDate is the fallback when time is blank",
+          annarbor._detail_times('var startDate = "Friday, May 1, 2026 7:30 PM"; var time = "";')
+          == (time(19, 30), None))
+    check("the way people write it",
+          annarbor._clock_times("7 p.m. to 9:15pm, or noon")
+          == [time(19, 0), time(21, 15), time(12, 0)],
+          str(annarbor._clock_times("7 p.m. to 9:15pm, or noon")))
+    check("12 AM is midnight, 12 PM is noon",
+          annarbor._clock_times("12:00 AM 12:30 PM") == [time(0, 0), time(12, 30)])
+
+
+class _PageSession:
+    """Answers event-page GETs from a dict; anything else raises."""
+
+    def __init__(self, pages):
+        self.pages = pages
+        self.calls = []
+
+    def get(self, url, timeout=None):
+        self.calls.append(url)
+        if url not in self.pages:
+            raise requests.HTTPError(f"404 for {url}")
+
+        class _Resp:
+            text = self.pages[url]
+
+            def raise_for_status(self):
+                pass
+
+        return _Resp()
+
+
+def test_all_day_api_events_get_their_page_time():
+    print("\n[test_all_day_api_events_get_their_page_time]")
+    verve = "https://www.annarbor.org/event/the-verve-pipe/26244/"
+    brews = "https://www.annarbor.org/event/babies-%26-brews/13751/"
+    events = annarbor._events_from_docs([
+        {"title": "The Verve Pipe", "date": "2026-11-15T04:59:59.000Z",
+         "startDate": "2026-11-14T05:00:00.000Z", "url": "/event/the-verve-pipe/26244/"},
+        # A weekly event: two occurrences, one page, and the page shows the
+        # next occurrence's date, which is not the one being listed.
+        {"title": "Babies & Brews", "date": "2026-11-11T04:59:59.000Z",
+         "url": "/event/babies-%26-brews/13751/"},
+        {"title": "Babies & Brews", "date": "2026-11-18T04:59:59.000Z",
+         "url": "/event/babies-%26-brews/13751/"},
+        {"title": "Holiday Lights", "date": "2026-11-15T04:59:59.000Z",
+         "url": "/event/holiday-lights/1/"},
+        {"title": "Gone", "date": "2026-11-15T04:59:59.000Z", "url": "/event/gone/2/"},
+    ])
+    check("all start as all-day", all(e["all_day"] for e in events))
+
+    session = _PageSession({
+        verve: VERVE_PIPE_PAGE,
+        brews: BABIES_AND_BREWS_PAGE,
+        "https://www.annarbor.org/event/holiday-lights/1/": NO_TIME_PAGE,
+    })
+    timed, failures = annarbor._add_times(events, session=session)
+    by = {(e["title"], e["start_dt"].day): e for e in events}
+
+    v = by[("The Verve Pipe", 14)]
+    check("The Verve Pipe is at 8 PM on the 14th",
+          v["start_dt"] == datetime(2026, 11, 14, 20, 0, tzinfo=TZ) and not v["all_day"],
+          str(v))
+    b1, b2 = by[("Babies & Brews", 10)], by[("Babies & Brews", 17)]
+    check("each weekly occurrence keeps its own day",
+          b1["start_dt"] == datetime(2026, 11, 10, 16, 0, tzinfo=TZ)
+          and b2["start_dt"] == datetime(2026, 11, 17, 16, 0, tzinfo=TZ),
+          f"{b1['start_dt']} {b2['start_dt']}")
+    check("and gets its end time",
+          b1["end_dt"] == datetime(2026, 11, 10, 18, 0, tzinfo=TZ), str(b1["end_dt"]))
+    check("a shared page is fetched once", session.calls.count(brews) == 1, str(session.calls))
+    check("a page with no time leaves it all-day",
+          by[("Holiday Lights", 14)]["all_day"] is True)
+    check("an unreadable page leaves it all-day", by[("Gone", 14)]["all_day"] is True)
+    check("three got a time", timed == 3, str(timed))
+    check("the unreadable page is reported", len(failures) == 1 and "gone" in failures[0],
+          str(failures))
+
+
+def test_unreadable_event_pages_degrade_not_fail():
+    print("\n[test_unreadable_event_pages_degrade_not_fail]")
+
+    def fake_render(url, capture_pattern, **kwargs):
+        return (soup_of("<html><body></body></html>"),
+                [{"url": "https://www.annarbor.org/x?token=abc", "json": API_PAYLOAD}],
+                {"data": {"docs": {"docs": API_PAYLOAD["docs"]["docs"]}}})
+
+    def refuse(session, url):
+        raise requests.HTTPError("403 Forbidden")
+
+    original, original_fetch = annarbor.eventpage.render_page_capturing, annarbor._fetch_detail
+    annarbor.eventpage.render_page_capturing = fake_render
+    annarbor._fetch_detail = refuse
+    try:
+        errors.clear()
+        events = annarbor._scrape_events(date(2026, 8, 25), 7)
+        health = errors.summary()
+    finally:
+        annarbor.eventpage.render_page_capturing = original
+        annarbor._fetch_detail = original_fetch
+        errors.clear()
+
+    check("events still arrive", len(events) == 2, str(len(events)))
+    check("still all-day", all(e["all_day"] for e in events))
+    check("not a failure", health["failures"] == [], str(health["failures"]))
+    check("flagged as degraded, saying why",
+          health["degraded"] and "unreadable" in health["degraded"][0]["reason"],
+          str(health["degraded"]))
 
 
 if __name__ == "__main__":
