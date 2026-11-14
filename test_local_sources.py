@@ -335,36 +335,190 @@ CHALLENGE_PAGE = """
 """
 
 
-def _run_adrian_against(rendered_html: str):
+def _run_adrian_against(rendered_html: str, library=None, city=None):
+    """Run the Adrian scrape with Yodel rendering `rendered_html`.
+
+    `library` and `city` are what the two backup calendars return: a list of
+    raw events, or an exception to raise. Both default to failing, so these
+    tests see the Yodel verdict on its own.
+    """
     errors.clear()
-    originals = (adrian._discover_widget_id, adrian.eventpage.render_page)
+    originals = (adrian._discover_widget_id, adrian.eventpage.render_page,
+                 adrian._library_events, adrian._city_events)
+
+    def answer(value):
+        def fetch(*_a, **_k):
+            if isinstance(value, Exception):
+                raise value
+            return value
+        return fetch
+
     adrian._discover_widget_id = lambda: (adrian.KNOWN_WIDGET_ID, "")
     adrian.eventpage.render_page = lambda *a, **k: BeautifulSoup(rendered_html, "html.parser")
+    adrian._library_events = answer(library if library is not None else OSError("offline"))
+    adrian._city_events = answer(city if city is not None else OSError("offline"))
     try:
-        return adrian._scrape_events(), errors.summary()
+        return adrian._scrape_events(date(2026, 11, 14), 7), errors.summary()
     finally:
-        adrian._discover_widget_id, adrian.eventpage.render_page = originals
+        (adrian._discover_widget_id, adrian.eventpage.render_page,
+         adrian._library_events, adrian._city_events) = originals
 
 
-def test_the_cloudflare_wall_is_reported_as_blocked():
-    print("\n[test_the_cloudflare_wall_is_reported_as_blocked]")
-    events, health = _run_adrian_against(CHALLENGE_PAGE)
+def test_the_cloudflare_wall_is_named_when_the_backups_cover_it():
+    print("\n[test_the_cloudflare_wall_is_named_when_the_backups_cover_it]")
+    # Used to be reported as `blocked` with an empty section. With the library
+    # and city calendars filling in, the wall is a degraded path, not an empty
+    # source, so it moves to the degraded list (with the wall still named).
+    events, health = _run_adrian_against(CHALLENGE_PAGE, library=[], city=[])
     check("no events", events == [])
-    check("reported as blocked", [s["source"] for s in health["blocked"]] == ["adrian"],
-          str(health["blocked"]))
-    check("says what is in the way", health["blocked"] and "Cloudflare" in health["blocked"][0]["reason"])
+    check("not reported as blocked", health["blocked"] == [], str(health["blocked"]))
+    check("degraded, naming Cloudflare",
+          health["degraded"] and "blocked: " in health["degraded"][0]["reason"]
+          and "Cloudflare" in health["degraded"][0]["reason"], str(health["degraded"]))
     check("not reported as suspect", health["suspect"] == [], str(health["suspect"]))
 
 
-def test_a_widget_with_nothing_on_it_is_still_suspect():
-    print("\n[test_a_widget_with_nothing_on_it_is_still_suspect]")
+def test_a_widget_with_nothing_on_it_is_still_called_out():
+    print("\n[test_a_widget_with_nothing_on_it_is_still_called_out]")
     events, health = _run_adrian_against(
-        "<html><head><title>Yodel - Lenawee, MI Event Calendar</title></head><body></body></html>"
+        "<html><head><title>Yodel - Lenawee, MI Event Calendar</title></head><body></body></html>",
+        library=[], city=[],
     )
     check("no events", events == [])
-    check("reported as suspect", [s["source"] for s in health["suspect"]] == ["adrian"],
-          str(health["suspect"]))
+    check("degraded as suspect, not blocked",
+          health["degraded"] and "suspect: " in health["degraded"][0]["reason"],
+          str(health["degraded"]))
     check("not reported as blocked", health["blocked"] == [], str(health["blocked"]))
+
+
+def test_every_calendar_failing_is_one_failure_that_keeps_the_yodel_diagnosis():
+    print("\n[test_every_calendar_failing_is_one_failure_that_keeps_the_yodel_diagnosis]")
+    events, health = _run_adrian_against(CHALLENGE_PAGE)
+    check("no events", events == [])
+    check("one failure line", len(health["failures"]) == 1 and health["failures"][0]["count"] == 1,
+          str(health["failures"]))
+    first = health["failures"][0]["first"] if health["failures"] else ""
+    check("names both backups", "library feed" in first and "city calendar" in first, first)
+    check("and still says what is in Yodel's way", "Cloudflare" in first, first)
+
+LIBRARY_RSS = """<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:ev="http://purl.org/rss/1.0/modules/event/" version="2.0">
+<channel>
+  <title>Upcoming Events RSS Feed</title>
+  <item>
+    <title>Main Weavers Group</title>
+    <pubDate>Sat, 14 Nov 2026 10:00:00 -0500</pubDate>
+    <ev:endDate>Sat, 14 Nov 2026 14:00:00 -0500</ev:endDate>
+    <link>https://lenawee.lib.mi.us/main-weavers-group-52</link>
+    <ev:location>Lenawee District Library - Main Branch</ev:location>
+  </item>
+  <item>
+    <title>Clayton Game Night</title>
+    <pubDate>Mon, 16 Nov 2026 17:00:00 -0500</pubDate>
+    <ev:endDate>Mon, 16 Nov 2026 19:00:00 -0500</ev:endDate>
+    <link>https://lenawee.lib.mi.us/clayton-game-night</link>
+  </item>
+  <item>
+    <title>Board Meeting</title>
+    <pubDate>Tue, 17 Nov 2026 16:00:00 -0500</pubDate>
+    <link>https://lenawee.lib.mi.us/board-meeting</link>
+  </item>
+  <item>
+    <title>Undated</title>
+    <link>https://lenawee.lib.mi.us/undated</link>
+  </item>
+</channel></rss>
+"""
+
+
+def test_the_library_feed_keeps_its_times():
+    print("\n[test_the_library_feed_keeps_its_times]")
+    events = adrian._parse_library_feed(LIBRARY_RSS)
+    check("two events, board meeting and undated dropped",
+          [e["title"] for e in events] == ["Main Weavers Group", "Clayton Game Night"],
+          str([e["title"] for e in events]))
+    if len(events) != 2:
+        return
+    weavers = events[0]
+    check("start at 10 AM local",
+          weavers["start_dt"] == datetime(2026, 11, 14, 10, 0, tzinfo=TZ), str(weavers["start_dt"]))
+    check("end at 2 PM local",
+          weavers["end_dt"] == datetime(2026, 11, 14, 14, 0, tzinfo=TZ), str(weavers["end_dt"]))
+    check("timed, not all-day", weavers["all_day"] is False)
+    check("branch as location", weavers["location"] == "Lenawee District Library - Main Branch")
+    check("links to the event", weavers["url"] == "https://lenawee.lib.mi.us/main-weavers-group-52")
+    check("a branchless item still has a location",
+          events[1]["location"] == "Lenawee District Library", events[1]["location"])
+
+
+CITY_DOCS = [
+    {"title": "Adrian City Commission Meeting", "start": "2026-11-17T18:00:00",
+     "end": "2026-11-17T20:00:00", "url": "", "location": "159 E Maumee St."},
+    {"title": "Adrian First Friday", "start": "2026-02-06T17:00:00",
+     "end": "2026-02-06T20:00:00", "url": "", "location": "Downtown Adrian",
+     "rrule": "DTSTART:20260206T170000\nRDATE:20260206T170000\n"
+              "RRULE:FREQ=MONTHLY;INTERVAL=1;BYSETPOS=1;BYDAY=FR"},
+    {"title": "Downtown Holiday Market", "start": "2026-11-21T09:00:00",
+     "end": "2026-11-21T14:00:00", "url": "https://example.org/market", "location": ""},
+    {"title": "Small Business Saturday", "start": "2026-11-28T00:00:00",
+     "url": "", "location": "", "allDay": True},
+    {"title": "Long gone", "start": "2021-06-01T10:00:00", "url": "", "location": ""},
+]
+
+
+def test_the_city_calendar_skips_meetings_and_expands_repeats():
+    print("\n[test_the_city_calendar_skips_meetings_and_expands_repeats]")
+    events = adrian._parse_city_calendar(CITY_DOCS, date(2026, 11, 14), 21)
+    titles = [(e["title"], e["start_dt"].date()) for e in events]
+    check("meetings left out", all("Meeting" not in t for t, _ in titles), str(titles))
+    check("a one-off public event kept",
+          ("Downtown Holiday Market", date(2026, 11, 21)) in titles, str(titles))
+    check("a monthly repeat lands on its first Friday",
+          ("Adrian First Friday", date(2026, 12, 4)) in titles, str(titles))
+    check("and only inside the window",
+          sum(t == "Adrian First Friday" for t, _ in titles) == 1, str(titles))
+    check("old entries ignored", all(t != "Long gone" for t, _ in titles))
+    ff = next((e for e in events if e["title"] == "Adrian First Friday"), None)
+    check("repeat keeps its time and length",
+          ff and ff["start_dt"] == datetime(2026, 12, 4, 17, 0, tzinfo=TZ)
+          and ff["end_dt"] == datetime(2026, 12, 4, 20, 0, tzinfo=TZ), str(ff))
+    market = next((e for e in events if e["title"] == "Downtown Holiday Market"), None)
+    check("an event's own link is kept", market and market["url"] == "https://example.org/market")
+    check("no location falls back to the town", market and market["location"] == "Adrian, MI")
+    sbs = next((e for e in events if e["title"] == "Small Business Saturday"), None)
+    check("all-day stays all-day", sbs and sbs["all_day"] is True and sbs["end_dt"] is None, str(sbs))
+
+
+def test_a_walled_yodel_is_degraded_when_the_backups_deliver():
+    print("\n[test_a_walled_yodel_is_degraded_when_the_backups_deliver]")
+    library = adrian._parse_library_feed(LIBRARY_RSS)
+    events, health = _run_adrian_against(CHALLENGE_PAGE, library=library, city=[])
+    check("the library's events arrive", len(events) == 2, str(len(events)))
+    check("not blocked", health["blocked"] == [], str(health["blocked"]))
+    check("not a failure", health["failures"] == [], str(health["failures"]))
+    check("degraded, naming the wall and what filled in",
+          health["degraded"] and "Cloudflare" in health["degraded"][0]["reason"]
+          and "library" in health["degraded"][0]["reason"],
+          str(health["degraded"]))
+
+
+def test_a_failing_backup_is_reported_even_when_the_other_works():
+    print("\n[test_a_failing_backup_is_reported_even_when_the_other_works]")
+    library = adrian._parse_library_feed(LIBRARY_RSS)
+    events, health = _run_adrian_against(
+        CHALLENGE_PAGE, library=library, city=OSError("503 Service Unavailable"))
+    check("the library's events still arrive", len(events) == 2, str(len(events)))
+    check("the city calendar is a failure",
+          len(health["failures"]) == 1 and "city calendar" in health["failures"][0]["first"],
+          str(health["failures"]))
+
+
+def test_the_same_event_from_two_calendars_is_listed_once():
+    print("\n[test_the_same_event_from_two_calendars_is_listed_once]")
+    one = {"title": "First Friday", "start_dt": datetime(2026, 12, 4, 17, 0, tzinfo=TZ),
+           "end_dt": None, "all_day": False, "location": "x", "url": "a"}
+    two = dict(one, title="first friday", url="b")
+    check("deduped", len(adrian._dedupe([one, two])) == 1)
 
 
 # ── TCA: the VBO widget ──────────────────────────────────────────────────────
