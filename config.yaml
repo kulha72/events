@@ -68,6 +68,16 @@ sports:
       extra_leagues: ["conmebol.sudamericana"]
       espn_team_id: 5484
       source: "espn"
+    # Not on ESPN: read from the school's / club's own site.
+    - name: "Adrian Hockey"
+      league: "NCAA D-III"
+      source: "sidearm"
+      url: "https://adrianbulldogs.com/sports/mens-ice-hockey/schedule"
+      sidearm_site: "https://adrianbulldogs.com"
+      sidearm_sport_id: 13   # men's NCAA team (the ACHA club sides have other ids)
+    - name: "Walleye"
+      league: "ECHL"
+      source: "toledo_walleye"
   tours:
     - name: "PGA Tour"
       league: "pga"

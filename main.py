@@ -37,6 +37,8 @@ from collectors.sports.espn import ESPNCollector
 from collectors.sports.standings import collect_standings
 from collectors.sports.football_data import FootballDataCollector
 from collectors.sports.api_football import APIFootballCollector
+from collectors.sports.sidearm import SidearmCollector
+from collectors.sports.walleye import WalleyeCollector
 from collectors.esports.liquipedia import LiquipediaCollector
 from collectors.esports.pandascore import PandaScoreCollector
 from collectors.esports.startgg import StartGGCollector
@@ -106,6 +108,8 @@ def main() -> None:
         espn_collector,
         FootballDataCollector(config),
         APIFootballCollector(config),
+        SidearmCollector(config),
+        WalleyeCollector(config),
         LiquipediaCollector(config),
         PandaScoreCollector(config),
         StartGGCollector(config),
