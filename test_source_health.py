@@ -63,6 +63,10 @@ def test_config_league_keys_all_resolve():
     config = yaml.safe_load(open("config.yaml"))
     missing = []
     for team in config.get("sports", {}).get("teams", []):
+        # LEAGUE_MAP is ESPN's; teams read from another source (Adrian hockey,
+        # the Walleye) carry a display label in `league`, not an ESPN key.
+        if team.get("source") != "espn":
+            continue
         for league in [team.get("league")] + team.get("extra_leagues", []):
             if league and league not in LEAGUE_MAP:
                 missing.append(f"{team.get('name')}:{league}")
